@@ -1,4 +1,4 @@
-// Hamburger Menu Toggle
+
 const navToggle = document.getElementById('nav-toggle');
 const navMenu = document.getElementById('nav-menu');
 
@@ -7,7 +7,7 @@ navToggle.addEventListener('click', () => {
     navToggle.classList.toggle('active');
 });
 
-// Close menu when clicking on a link
+
 document.querySelectorAll('.nav-link').forEach(link => {
     link.addEventListener('click', () => {
         navMenu.classList.remove('active');
@@ -15,7 +15,7 @@ document.querySelectorAll('.nav-link').forEach(link => {
     });
 });
 
-// Smooth scrolling for anchor links
+
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     anchor.addEventListener('click', function (e) {
         e.preventDefault();
@@ -29,7 +29,7 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     });
 });
 
-// Favorite Button Functionality
+
 const favoriteBtn = document.getElementById('favorite-btn');
 let isFavorite = false;
 
@@ -40,31 +40,31 @@ favoriteBtn.addEventListener('click', () => {
         favoriteBtn.classList.add('active');
         favoriteBtn.innerHTML = '<i class="fas fa-heart"></i> Favorilerden Çıkar';
         
-        // Add animation
+        
         favoriteBtn.style.animation = 'pulse 0.5s ease';
         setTimeout(() => {
             favoriteBtn.style.animation = '';
         }, 500);
         
-        // Show notification
+       
         showNotification('Breaking Bad favorilere eklendi! ❤️');
     } else {
         favoriteBtn.classList.remove('active');
         favoriteBtn.innerHTML = '<i class="fas fa-heart"></i> Favorilere Ekle';
         
-        // Show notification
+      
         showNotification('Breaking Bad favorilerden çıkarıldı 💔');
     }
 });
 
-// Notification function
+
 function showNotification(message) {
-    // Create notification element
+   
     const notification = document.createElement('div');
     notification.className = 'notification';
     notification.textContent = message;
     
-    // Style the notification
+
     notification.style.cssText = `
         position: fixed;
         top: 100px;
@@ -80,15 +80,15 @@ function showNotification(message) {
         transition: transform 0.3s ease;
     `;
     
-    // Add to page
+   
     document.body.appendChild(notification);
     
-    // Animate in
+ 
     setTimeout(() => {
         notification.style.transform = 'translateX(0)';
     }, 100);
     
-    // Remove after 3 seconds
+  
     setTimeout(() => {
         notification.style.transform = 'translateX(400px)';
         setTimeout(() => {
@@ -97,7 +97,7 @@ function showNotification(message) {
     }, 3000);
 }
 
-// Navbar background change on scroll
+
 window.addEventListener('scroll', () => {
     const navbar = document.querySelector('.navbar');
     if (window.scrollY > 100) {
@@ -122,7 +122,7 @@ const observer = new IntersectionObserver((entries) => {
     });
 }, observerOptions);
 
-// Observe all sections for animation
+
 document.querySelectorAll('section').forEach(section => {
     section.style.opacity = '0';
     section.style.transform = 'translateY(30px)';
@@ -130,7 +130,7 @@ document.querySelectorAll('section').forEach(section => {
     observer.observe(section);
 });
 
-// Add pulse animation CSS
+
 const style = document.createElement('style');
 style.textContent = `
     @keyframes pulse {
@@ -141,7 +141,7 @@ style.textContent = `
 `;
 document.head.appendChild(style);
 
-// Character cards hover effect enhancement
+
 document.querySelectorAll('.character-card').forEach(card => {
     card.addEventListener('mouseenter', () => {
         card.style.transform = 'translateY(-10px) scale(1.02)';
@@ -152,7 +152,7 @@ document.querySelectorAll('.character-card').forEach(card => {
     });
 });
 
-// Episode cards click effect
+
 document.querySelectorAll('.episode').forEach(episode => {
     episode.addEventListener('click', () => {
         episode.style.transform = 'translateX(10px) scale(1.02)';
@@ -164,14 +164,14 @@ document.querySelectorAll('.episode').forEach(episode => {
 
 console.log('Breaking Bad Fan Site loaded successfully! 🎬');
 
-// Dil değiştirme fonksiyonları
+
 let currentLanguage = 'tr';
 
-// Dil değiştirme fonksiyonu
+
 function changeLanguage(lang) {
     currentLanguage = lang;
     
-    // Tüm çevrilebilir elementleri bul
+   
     const translatableElements = document.querySelectorAll('[data-tr][data-en]');
     
     translatableElements.forEach(element => {
@@ -182,30 +182,30 @@ function changeLanguage(lang) {
         }
     });
     
-    // Dil butonunu güncelle
+   
     const currentLangSpan = document.querySelector('.current-lang');
     if (currentLangSpan) {
         currentLangSpan.textContent = lang.toUpperCase();
     }
     
-    // Dropdown'ı kapat
+  
     const dropdown = document.getElementById('language-dropdown');
     if (dropdown) {
         dropdown.classList.remove('active');
     }
     
-    // Dil tercihini localStorage'a kaydet
+   
     localStorage.setItem('preferredLanguage', lang);
 }
 
-// Sayfa yüklendiğinde dil tercihini kontrol et
+
 document.addEventListener('DOMContentLoaded', function() {
     const savedLanguage = localStorage.getItem('preferredLanguage');
     if (savedLanguage) {
         changeLanguage(savedLanguage);
     }
     
-    // Dil seçici event listener'ları
+
     const languageBtn = document.getElementById('language-btn');
     const languageDropdown = document.getElementById('language-dropdown');
     const langOptions = document.querySelectorAll('.lang-option');
@@ -226,7 +226,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // Dropdown dışına tıklandığında kapat
+   
     document.addEventListener('click', function(e) {
         if (!languageBtn.contains(e.target) && !languageDropdown.contains(e.target)) {
             languageDropdown.classList.remove('active');
