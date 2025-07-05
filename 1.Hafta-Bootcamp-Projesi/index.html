@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
-    <!-- Navigation -->
+   
     <nav class="navbar">
         <div class="nav-container">
             <div class="nav-logo">
@@ -16,17 +16,36 @@
             </div>
             
             <div class="nav-menu" id="nav-menu">
-                <a href="#home" class="nav-link">Ana Sayfa</a>
-                <a href="#characters" class="nav-link">Karakterler</a>
-                <a href="#episodes" class="nav-link">Bölümler</a>
-                <a href="#favorite-scene" class="nav-link">Favori Sahne</a>
-                <a href="#about" class="nav-link">Hakkında</a>
+                <a href="#home" class="nav-link" data-tr="Ana Sayfa" data-en="Home">Ana Sayfa</a>
+                <a href="#characters" class="nav-link" data-tr="Karakterler" data-en="Characters">Karakterler</a>
+                <a href="#episodes" class="nav-link" data-tr="Bölümler" data-en="Episodes">Bölümler</a>
+                <a href="#favorite-scene" class="nav-link" data-tr="Favori Sahne" data-en="Favorite Scene">Favori Sahne</a>
+                <a href="#about" class="nav-link" data-tr="Hakkında" data-en="About">Hakkında</a>
             </div>
             
-            <div class="nav-toggle" id="nav-toggle">
-                <span class="bar"></span>
-                <span class="bar"></span>
-                <span class="bar"></span>
+            <div class="nav-controls">
+                <div class="language-selector">
+                    <button class="language-btn" id="language-btn">
+                        <i class="fas fa-globe"></i>
+                        <span class="current-lang">TR</span>
+                    </button>
+                    <div class="language-dropdown" id="language-dropdown">
+                        <div class="lang-option" data-lang="tr">
+                            <span class="flag">🇹🇷</span>
+                            <span>Turkish</span>
+                        </div>
+                        <div class="lang-option" data-lang="en">
+                            <span class="flag">🇺🇸</span>
+                            <span>English</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="nav-toggle" id="nav-toggle">
+                    <span class="bar"></span>
+                    <span class="bar"></span>
+                    <span class="bar"></span>
+                </div>
             </div>
         </div>
     </nav>
@@ -35,13 +54,13 @@
     <section id="home" class="hero">
         <div class="hero-content">
             <h1 class="hero-title">Breaking Bad</h1>
-            <p class="hero-subtitle">"I am the one who knocks."</p>
-            <p class="hero-description">
+            <p class="hero-subtitle" data-tr='"I am the one who knocks."' data-en='"I am the one who knocks."'>"I am the one who knocks."</p>
+            <p class="hero-description" data-tr="Kimya öğretmeni Walter White'ın kanser teşhisi konulduktan sonra uyuşturucu üretimine başlaması ve bu süreçte geçirdiği dönüşümü anlatan çok ödüllü drama dizisi." data-en="A critically acclaimed drama series about Walter White, a chemistry teacher who turns to drug manufacturing after being diagnosed with cancer, and his transformation throughout the process.">
                 Kimya öğretmeni Walter White'ın kanser teşhisi konulduktan sonra 
                 uyuşturucu üretimine başlaması ve bu süreçte geçirdiği dönüşümü 
                 anlatan çok ödüllü drama dizisi.
             </p>
-            <button class="favorite-btn" id="favorite-btn">
+            <button class="favorite-btn" id="favorite-btn" data-tr="Favorilere Ekle" data-en="Add to Favorites">
                 <i class="fas fa-heart"></i> Favorilere Ekle
             </button>
         </div>
@@ -53,7 +72,7 @@
     <!-- Characters Section -->
     <section id="characters" class="characters">
         <div class="container">
-            <h2 class="section-title">Ana Karakterler</h2>
+            <h2 class="section-title" data-tr="Ana Karakterler" data-en="Main Characters">Ana Karakterler</h2>
             <div class="characters-grid">
                 <div class="character-card">
                     <div class="character-image">
@@ -62,7 +81,7 @@
                     <div class="character-info">
                         <h3>Walter White</h3>
                         <p class="character-role">Heisenberg</p>
-                        <p>Kimya öğretmeni olan Walter, kanser teşhisi konulduktan sonra ailesinin geleceği için uyuşturucu üretimine başlar.</p>
+                        <p data-tr="Kimya öğretmeni olan Walter, kanser teşhisi konulduktan sonra ailesinin geleceği için uyuşturucu üretimine başlar." data-en="Walter, a chemistry teacher, starts manufacturing drugs for his family's future after being diagnosed with cancer.">Kimya öğretmeni olan Walter, kanser teşhisi konulduktan sonra ailesinin geleceği için uyuşturucu üretimine başlar.</p>
                     </div>
                 </div>
 
@@ -73,7 +92,7 @@
                     <div class="character-info">
                         <h3>Jesse Pinkman</h3>
                         <p class="character-role">Cap'n Cook</p>
-                        <p>Walter'ın eski öğrencisi ve uyuşturucu üretimindeki ortağı. Vicdani çatışmalar yaşayan karmaşık bir karakter.</p>
+                        <p data-tr="Walter'ın eski öğrencisi ve uyuşturucu üretimindeki ortağı. Vicdani çatışmalar yaşayan karmaşık bir karakter." data-en="Walter's former student and partner in drug manufacturing. A complex character experiencing moral conflicts.">Walter'ın eski öğrencisi ve uyuşturucu üretimindeki ortağı. Vicdani çatışmalar yaşayan karmaşık bir karakter.</p>
                     </div>
                 </div>
 
@@ -83,8 +102,8 @@
                     </div>
                     <div class="character-info">
                         <h3>Skyler White</h3>
-                        <p class="character-role">Walter'ın Eşi</p>
-                        <p>Walter'ın eşi ve ailenin geçimini sağlayan kişi. Kocasının dönüşümünü izlemek zorunda kalır.</p>
+                        <p class="character-role" data-tr="Walter'ın Eşi" data-en="Walter's Wife">Walter'ın Eşi</p>
+                        <p data-tr="Walter'ın eşi ve ailenin geçimini sağlayan kişi. Kocasının dönüşümünü izlemek zorunda kalır." data-en="Walter's wife and the family's breadwinner. She has to watch her husband's transformation.">Walter'ın eşi ve ailenin geçimini sağlayan kişi. Kocasının dönüşümünü izlemek zorunda kalır.</p>
                     </div>
                 </div>
             </div>
@@ -94,32 +113,32 @@
     <!-- Episodes Section -->
     <section id="episodes" class="episodes">
         <div class="container">
-            <h2 class="section-title">Bölümler</h2>
+            <h2 class="section-title" data-tr="Bölümler" data-en="Episodes">Bölümler</h2>
             <div class="episodes-table">
                 <div class="episode">
                     <div class="episode-number">S01E01</div>
                     <div class="episode-title">Pilot</div>
-                    <div class="episode-description">Walter White'ın kanser teşhisi konulması ve ilk uyuşturucu üretimine başlaması.</div>
+                    <div class="episode-description" data-tr="Walter White'ın kanser teşhisi konulması ve ilk uyuşturucu üretimine başlaması." data-en="Walter White's cancer diagnosis and his first attempt at drug manufacturing.">Walter White'ın kanser teşhisi konulması ve ilk uyuşturucu üretimine başlaması.</div>
                 </div>
                 <div class="episode">
                     <div class="episode-number">S01E02</div>
                     <div class="episode-title">Cat's in the Bag...</div>
-                    <div class="episode-description">Walter ve Jesse'nin ilk üretimlerini satmaya çalışması ve karşılaştıkları zorluklar.</div>
+                    <div class="episode-description" data-tr="Walter ve Jesse'nin ilk üretimlerini satmaya çalışması ve karşılaştıkları zorluklar." data-en="Walter and Jesse's attempt to sell their first batch and the challenges they face.">Walter ve Jesse'nin ilk üretimlerini satmaya çalışması ve karşılaştıkları zorluklar.</div>
                 </div>
                 <div class="episode">
                     <div class="episode-number">S02E13</div>
                     <div class="episode-title">ABQ</div>
-                    <div class="episode-description">Walter'ın kanser tedavisinin sonuçları ve ailesiyle ilişkisindeki değişimler.</div>
+                    <div class="episode-description" data-tr="Walter'ın kanser tedavisinin sonuçları ve ailesiyle ilişkisindeki değişimler." data-en="The results of Walter's cancer treatment and changes in his family relationships.">Walter'ın kanser tedavisinin sonuçları ve ailesiyle ilişkisindeki değişimler.</div>
                 </div>
                 <div class="episode">
                     <div class="episode-number">S03E07</div>
                     <div class="episode-title">One Minute</div>
-                    <div class="episode-description">Hank'in Tuco'nun kuzenleriyle karşılaşması ve yaşadığı travmatik deneyim.</div>
+                    <div class="episode-description" data-tr="Hank'in Tuco'nun kuzenleriyle karşılaşması ve yaşadığı travmatik deneyim." data-en="Hank's encounter with Tuco's cousins and the traumatic experience he goes through.">Hank'in Tuco'nun kuzenleriyle karşılaşması ve yaşadığı travmatik deneyim.</div>
                 </div>
                 <div class="episode">
                     <div class="episode-number">S05E16</div>
                     <div class="episode-title">Felina</div>
-                    <div class="episode-description">Dizinin final bölümü. Walter'ın son planını uygulaması ve hikayenin sonu.</div>
+                    <div class="episode-description" data-tr="Dizinin final bölümü. Walter'ın son planını uygulaması ve hikayenin sonu." data-en="The series finale. Walter's execution of his final plan and the end of the story.">Dizinin final bölümü. Walter'ın son planını uygulaması ve hikayenin sonu.</div>
                 </div>
             </div>
         </div>
@@ -128,15 +147,15 @@
     <!-- Favorite Scene Section -->
     <section id="favorite-scene" class="favorite-scene">
         <div class="container">
-            <h2 class="section-title">Favori Sahne</h2>
+            <h2 class="section-title" data-tr="Favori Sahne" data-en="Favorite Scene">Favori Sahne</h2>
             <div class="scene-content">
                 <div class="scene-description">
-                    <h3>"I am the one who knocks"</h3>
-                    <p>Walter White'ın Skyler'e kendisinin artık tehlikeli bir adam olduğunu anlattığı unutulmaz sahne. Bu sahne, Walter'ın karakterindeki dönüşümün en net göstergelerinden biridir.</p>
-                    <p>Walter artık sadece bir kimya öğretmeni değil, uyuşturucu dünyasında korkulan bir figür haline gelmiştir.</p>
+                    <h3 data-tr='"I am the one who knocks"' data-en='"I am the one who knocks"'>"I am the one who knocks"</h3>
+                    <p data-tr="Walter White'ın Skyler'e kendisinin artık tehlikeli bir adam olduğunu anlattığı unutulmaz sahne. Bu sahne, Walter'ın karakterindeki dönüşümün en net göstergelerinden biridir." data-en="The unforgettable scene where Walter White tells Skyler that he is now a dangerous man. This scene is one of the clearest indicators of Walter's character transformation.">Walter White'ın Skyler'e kendisinin artık tehlikeli bir adam olduğunu anlattığı unutulmaz sahne. Bu sahne, Walter'ın karakterindeki dönüşümün en net göstergelerinden biridir.</p>
+                    <p data-tr="Walter artık sadece bir kimya öğretmeni değil, uyuşturucu dünyasında korkulan bir figür haline gelmiştir." data-en="Walter is no longer just a chemistry teacher, but has become a feared figure in the drug world.">Walter artık sadece bir kimya öğretmeni değil, uyuşturucu dünyasında korkulan bir figür haline gelmiştir.</p>
                 </div>
                 <div class="scene-video">
-                    <iframe width="560" height="400" src="https://www.youtube.com/embed/Ca3kPemW2CE?si=j06YzzWmJiJcsas4" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                    <iframe width="560" height="600" src="https://www.youtube.com/embed/Ca3kPemW2CE?si=j06YzzWmJiJcsas4" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
                 </div>
             </div>
         </div>
@@ -145,15 +164,15 @@
     <!-- About Section -->
     <section id="about" class="about">
         <div class="container">
-            <h2 class="section-title">Hakkında</h2>
+            <h2 class="section-title" data-tr="Hakkında" data-en="About">Hakkında</h2>
             <div class="about-content">
                 <div class="about-text">
-                    <h3>Web Sitesi Tasarımcısı</h3>
-                    <p>Bu web sitesi, Breaking Bad dizisinin hayranı tarafından tasarlanmıştır. Dizinin etkileyici hikayesi, karakter gelişimi ve sinematografik kalitesi bu projeye ilham kaynağı olmuştur.</p>
+                    <h3 data-tr="Web Sitesi Tasarımcısı" data-en="Website Designer">Web Sitesi Tasarımcısı</h3>
+                    <p data-tr="Bu web sitesi, Breaking Bad dizisinin hayranı tarafından tasarlanmıştır. Dizinin etkileyici hikayesi, karakter gelişimi ve sinematografik kalitesi bu projeye ilham kaynağı olmuştur." data-en="This website was designed by a fan of Breaking Bad. The series' impressive story, character development, and cinematic quality have been the inspiration for this project.">Bu web sitesi, Breaking Bad dizisinin hayranı tarafından tasarlanmıştır. Dizinin etkileyici hikayesi, karakter gelişimi ve sinematografik kalitesi bu projeye ilham kaynağı olmuştur.</p>
                     <div class="social-links">
                         <a href="https://github.com/yalcinyagizkorkmaz" class="social-link"><i class="fab fa-github"></i> GitHub</a>
                         <a href="https://www.linkedin.com/in/yalcin-yagiz-korkmaz/" class="social-link"><i class="fab fa-linkedin"></i> LinkedIn</a>
-                        <a href="#" class="social-link"><i class="fab fa-twitter"></i> Twitter</a>
+                        <a href="https://x.com/home" class="social-link"><i class="fab fa-twitter"></i> Twitter</a>
                     </div>
                 </div>
             </div>
@@ -163,7 +182,7 @@
     <!-- Footer -->
     <footer class="footer">
         <div class="container">
-            <p>&copy; 2024 Breaking Bad Fan Site. Tüm hakları saklıdır.</p>
+            <p data-tr="&copy; 2024 Breaking Bad Fan Site. Tüm hakları saklıdır." data-en="&copy; 2024 Breaking Bad Fan Site. All rights reserved.">&copy; 2024 Breaking Bad Fan Site. Tüm hakları saklıdır.</p>
         </div>
     </footer>
 

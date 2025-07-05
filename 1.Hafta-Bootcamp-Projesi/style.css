@@ -86,6 +86,89 @@ body {
     width: 100%;
 }
 
+.nav-controls {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.language-selector {
+    position: relative;
+}
+
+.language-btn {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #fff;
+    padding: 8px 12px;
+    border-radius: 25px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+}
+
+.language-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateY(-2px);
+}
+
+.language-btn i {
+    font-size: 1rem;
+}
+
+.current-lang {
+    font-weight: 600;
+}
+
+.language-dropdown {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background: rgba(0, 0, 0, 0.95);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    padding: 0.5rem 0;
+    min-width: 150px;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+    z-index: 1001;
+}
+
+.language-dropdown.active {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.lang-option {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 15px;
+    color: #fff;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.lang-option:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.lang-option .flag {
+    font-size: 1.2rem;
+}
+
+.lang-option span:last-child {
+    font-weight: 500;
+}
+
 .nav-toggle {
     display: none;
     flex-direction: column;
@@ -189,7 +272,7 @@ body {
     font-size: 2.5rem;
     font-weight: 700;
     margin-bottom: 3rem;
-    color: #1e3c72;
+    color: #090d57;
 }
 
 .characters-grid {
@@ -334,7 +417,7 @@ body {
 .scene-video iframe {
     width: 100%;
     height: 100%;
-    min-height: 400px;
+    min-height: 350px;
     border: none;
 }
 
@@ -445,6 +528,23 @@ body {
 
     .nav-menu.active {
         left: 0;
+    }
+
+    .nav-controls {
+        gap: 0.5rem;
+    }
+
+    .language-btn {
+        padding: 6px 10px;
+        font-size: 0.8rem;
+    }
+
+    .language-btn .current-lang {
+        display: none;
+    }
+
+    .language-dropdown {
+        min-width: 120px;
     }
 
     .nav-toggle {

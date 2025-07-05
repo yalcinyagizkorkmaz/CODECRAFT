@@ -162,4 +162,74 @@ document.querySelectorAll('.episode').forEach(episode => {
     });
 });
 
-console.log('Breaking Bad Fan Site loaded successfully! 🎬'); 
+console.log('Breaking Bad Fan Site loaded successfully! 🎬');
+
+// Dil değiştirme fonksiyonları
+let currentLanguage = 'tr';
+
+// Dil değiştirme fonksiyonu
+function changeLanguage(lang) {
+    currentLanguage = lang;
+    
+    // Tüm çevrilebilir elementleri bul
+    const translatableElements = document.querySelectorAll('[data-tr][data-en]');
+    
+    translatableElements.forEach(element => {
+        if (lang === 'tr') {
+            element.textContent = element.getAttribute('data-tr');
+        } else {
+            element.textContent = element.getAttribute('data-en');
+        }
+    });
+    
+    // Dil butonunu güncelle
+    const currentLangSpan = document.querySelector('.current-lang');
+    if (currentLangSpan) {
+        currentLangSpan.textContent = lang.toUpperCase();
+    }
+    
+    // Dropdown'ı kapat
+    const dropdown = document.getElementById('language-dropdown');
+    if (dropdown) {
+        dropdown.classList.remove('active');
+    }
+    
+    // Dil tercihini localStorage'a kaydet
+    localStorage.setItem('preferredLanguage', lang);
+}
+
+// Sayfa yüklendiğinde dil tercihini kontrol et
+document.addEventListener('DOMContentLoaded', function() {
+    const savedLanguage = localStorage.getItem('preferredLanguage');
+    if (savedLanguage) {
+        changeLanguage(savedLanguage);
+    }
+    
+    // Dil seçici event listener'ları
+    const languageBtn = document.getElementById('language-btn');
+    const languageDropdown = document.getElementById('language-dropdown');
+    const langOptions = document.querySelectorAll('.lang-option');
+    
+    if (languageBtn) {
+        languageBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            languageDropdown.classList.toggle('active');
+        });
+    }
+    
+    if (langOptions) {
+        langOptions.forEach(option => {
+            option.addEventListener('click', function() {
+                const lang = this.getAttribute('data-lang');
+                changeLanguage(lang);
+            });
+        });
+    }
+    
+    // Dropdown dışına tıklandığında kapat
+    document.addEventListener('click', function(e) {
+        if (!languageBtn.contains(e.target) && !languageDropdown.contains(e.target)) {
+            languageDropdown.classList.remove('active');
+        }
+    });
+}); 
