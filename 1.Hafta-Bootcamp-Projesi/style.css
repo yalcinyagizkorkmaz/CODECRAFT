@@ -90,6 +90,7 @@ body {
     display: flex;
     align-items: center;
     gap: 1rem;
+    margin-right: 30px;
 }
 
 .language-selector {
@@ -259,6 +260,7 @@ body {
     border-radius: 15px;
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
     background-color: #f8f9fa;
+
 }
 
 /* Characters Section */
