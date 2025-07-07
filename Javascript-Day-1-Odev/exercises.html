@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JavaScript Alıştırmaları</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>JavaScript Alıştırmaları</h1>
+            <p>Prompt, Array, Object ve Reduce metodları ile çalışma</p>
+        </div>
+        
+        <div class="exercise-container">
+            <!-- Kullanıcı Bilgileri -->
+            <div class="exercise-card">
+                <h3>Kullanıcı Bilgileri</h3>
+                <form id="user-form" class="user-form">
+                    <div class="form-group">
+                        <label for="user-name">İsim:</label>
+                        <input type="text" id="user-name" name="name" placeholder="Adınızı giriniz" class="form-input" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="user-age">Yaş:</label>
+                        <input type="number" id="user-age" name="age" placeholder="Yaşınızı giriniz" class="form-input" min="1" max="120" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="user-job">Meslek:</label>
+                        <input type="text" id="user-job" name="job" placeholder="Mesleğinizi giriniz" class="form-input" required>
+                    </div>
+                    <button type="submit" class="exercise-btn">
+                        <i class="fas fa-user"></i> Bilgileri Kaydet
+                    </button>
+                </form>
+                <div id="user-info" class="info-display" style="display: none;">
+                    <p>Kullanıcı bilgileri henüz girilmedi.</p>
+                </div>
+            </div>
+
+            <!-- Sepet Yönetimi -->
+            <div class="exercise-card" id="cart-section" style="display: none;">
+                <h3>Sepet Yönetimi</h3>
+                
+                <!-- Ürün Ekleme -->
+                <div class="cart-controls">
+                    <input type="text" id="product-name" placeholder="Ürün adı" class="cart-input">
+                    <input type="number" id="product-price" placeholder="Fiyat" class="cart-input" min="0" step="0.01">
+                    <button id="add-product" class="exercise-btn">
+                        <i class="fas fa-plus"></i> Ürün Ekle
+                    </button>
+                </div>
+
+                <!-- Sepet Listesi -->
+                <div class="cart-list">
+                    <h4>Sepetteki Ürünler</h4>
+                    <div id="cart-items" class="cart-items">
+                        <p>Sepet boş</p>
+                    </div>
+                </div>
+
+                <!-- Sepet Toplamı -->
+                <div class="cart-total">
+                    <h4>Toplam Fiyat: <span id="total-price">0.00</span> ₺</h4>
+                </div>
+
+                <!-- Sepeti Temizle -->
+                <button id="clear-cart" class="exercise-btn clear-btn">
+                    <i class="fas fa-trash"></i> Sepeti Temizle
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="exercises.js"></script>
+</body>
+</html> 
