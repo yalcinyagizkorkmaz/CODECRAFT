@@ -1,0 +1,104 @@
+body {
+    background: linear-gradient(135deg, #e0eafc 0%, #cfdef3 50%, #f9f9f9 100%);
+    font-family: 'Segoe UI', Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    margin: 0;
+}
+
+input[type="number"] {
+    padding: 10px;
+    font-size: 1.1em;
+    border: 1px solid #bbb;
+    border-radius: 5px;
+    width: 180px;
+    margin-bottom: 15px;
+    margin-right: 10px;
+    outline: none;
+    transition: border 0.2s;
+}
+
+input[type="number"]:focus {
+    border: 1.5px solid #007bff;
+}
+
+.button-group {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    margin-bottom: 15px;
+}
+
+#start {
+    padding: 10px 20px;
+    font-size: 1.1em;
+    border: none;
+    border-radius: 5px;
+    background: #007bff;
+    color: white;
+    margin-right: 15px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+#start:hover {
+    background: #0056b3;
+}
+
+#reset {
+    padding: 10px 20px;
+    font-size: 1.1em;
+    border: none;
+    border-radius: 5px;
+    margin-left: 15px;
+    background: #dc3545;
+    color: white;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+#reset:hover {
+    background: #a71d2a;
+}
+
+#countdown {
+    margin-top: 25px;
+    font-size: 1.3em;
+    color: #333;
+    font-weight: bold;
+    letter-spacing: 1px;
+}
+
+.card {
+    background: #fff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 380px;
+    max-width: 420px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    box-shadow: 0 8px 32px 0 rgba(0,0,0,0.18), 0 1.5px 6px rgba(0,0,0,0.10);
+    transition: transform 0.2s, box-shadow 0.2s;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    padding: 36px 32px 32px 32px;
+}
+
+.card:hover {
+    transform: translateY(-4px) scale(1.02);
+    box-shadow: 0 16px 48px 0 rgba(0,0,0,0.22), 0 3px 12px rgba(0,0,0,0.13);
+}
+
+.card h2 {
+    margin-top: 0;
+    margin-bottom: 18px;
+    font-size: 1.6em;
+    color: #348e6d;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-align: center;
+}
