@@ -9,13 +9,17 @@
 
 <body>
     <div class="card">
-        <h2>Geri Sayım Sayacı</h2>
-        <input type="number" id="time" placeholder="Saniye giriniz" min="1">
+        <h2 class="card-title">Geri Sayım Sayacı</h2>
+        <div class="input-group">
+            <input type="number" id="time" placeholder="Saniye giriniz" min="1">
+        </div>
         <div class="button-group">
             <button id="start">Başlat</button>
             <button id="reset">Sıfırla</button>
         </div>
-        <p id="countdown">Süre giriniz ve başlatın.</p>
+        <div class="countdown-group">
+            <strong id="countdown">Süre giriniz ve başlatın.</strong>
+        </div>
     </div>
     <script src="count.js"></script>
 </body>
