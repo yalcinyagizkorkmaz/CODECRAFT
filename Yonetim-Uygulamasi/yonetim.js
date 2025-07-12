@@ -4,6 +4,7 @@ const hataMesaji = document.getElementById('hataMesaji');
 const filtreBtn = document.getElementById('filtreBtn');
 const siralaSelect = document.getElementById('siralaSelect');
 
+
 let gorevler = [];
 let sadeceTamamlanan = false;
 
