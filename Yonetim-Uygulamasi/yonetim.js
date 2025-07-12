@@ -9,9 +9,10 @@ let sadeceTamamlanan = false;
 
 gorevForm.addEventListener('submit', function(e) {
     e.preventDefault();
+    const baslik = document.getElementById('baslik').value;
+    console.log(baslik); 
     hataMesaji.textContent = '';
     try {
-        const baslik = document.getElementById('baslik').value.trim();
         const aciklama = document.getElementById('aciklama').value.trim();
         const oncelikRadio = document.querySelector('input[name="oncelik"]:checked');
         if (!baslik) {
@@ -40,6 +41,7 @@ gorevForm.addEventListener('submit', function(e) {
 });
 
 gorevListesi.addEventListener('click', function(e) {
+    console.log(e.target);
     e.stopPropagation();
     const li = e.target.closest('li');
     if (!li) return;
@@ -68,12 +70,33 @@ siralaSelect.addEventListener('change', function() {
     renderGorevler();
 });
 
+
+const oncelikRadios = document.querySelectorAll('input[name="oncelik"]');
+
+oncelikRadios.forEach(function(radio) {
+    radio.addEventListener('change', function(e) {
+        console.log('Seçilen öncelik:', e.target.value);
+    });
+});
+
+
+const baslikInput = document.getElementById('baslik');
+const aciklamaInput = document.getElementById('aciklama');
+
+baslikInput.addEventListener('mouseover', function() {
+    console.log('Başlık inputunun üzerine gelindi.');
+});
+
+aciklamaInput.addEventListener('mouseover', function() {
+    console.log('Açıklama textarea üzerine gelindi.');
+});
+
 function renderGorevler() {
     let gosterilecekler = [...gorevler];
     if (sadeceTamamlanan) {
         gosterilecekler = gosterilecekler.filter(g => g.tamamlandi);
     }
-    if (siralaSelect.value === 'oncelik') {
+    if (siralaSelect.value === 'oncelikAsc') {
         const oncelikSirasi = { 'Düşük': 1, 'Orta': 2, 'Yüksek': 3 };
         gosterilecekler.sort((a, b) => oncelikSirasi[a.oncelik] - oncelikSirasi[b.oncelik]);
     }
