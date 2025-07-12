@@ -144,6 +144,20 @@ button[type="submit"]:hover {
 .gorev-item button.sil-btn:hover {
     background: #a71d2a;
 }
+#filtreBtn{
+    background: #445e55;
+    color: #fff;
+}
+#filtreBtn:hover{
+    background: #86c6ad;
+}
+#siralaSelect{
+    background: #445e55;
+    color: #fff;
+}
+#siralaSelect:hover{
+    background: #86c6ad;
+}
 @media (max-width: 500px) {
     .todo-card {
         width: 98vw;
