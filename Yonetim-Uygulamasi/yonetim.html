@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>Görev Listesi</title>
+    <link rel="stylesheet" href="yonetim.css">
+</head>
+<body>
+    <div class="todo-card">
+        <h2>Görev Listesi</h2>
+        <form id="gorevForm">
+            <input type="text" id="baslik" placeholder="Görev Başlığı *" required>
+            <textarea id="aciklama" placeholder="Açıklama (opsiyonel)"></textarea>
+            <div class="oncelik-group">
+                <label><input type="radio" name="oncelik" value="Düşük"> Düşük</label>
+                <label><input type="radio" name="oncelik" value="Orta"> Orta</label>
+                <label><input type="radio" name="oncelik" value="Yüksek"> Yüksek</label>
+            </div>
+            <button type="submit">Ekle</button>
+        </form>
+        <div class="filter-sort">
+            <button id="filtreBtn">Sadece tamamlananları göster</button>
+            <select id="siralaSelect">
+                <option value="varsayilan">Varsayılan</option>
+                <option value="oncelikAsc">Önceliğe Göre (Düşük → Yüksek)</option>
+                <option value="oncelikDesc">Önceliğe Göre (Yüksek → Düşük)</option>
+            </select>
+        </div>
+        <div id="hataMesaji" class="hata-mesaji"></div>
+        <ul id="gorevListesi"></ul>
+    </div>
+    <script src="yonetim.js"></script>
+</body>
+</html>
