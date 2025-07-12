@@ -87,9 +87,15 @@ const aciklamaInput = document.getElementById('aciklama');
 baslikInput.addEventListener('mouseover', function() {
     console.log('Başlık inputunun üzerine gelindi.');
 });
+baslikInput.addEventListener('mouseout', function() {
+    console.log('Başlık inputundan çıkıldı.');
+});
 
 aciklamaInput.addEventListener('mouseover', function() {
     console.log('Açıklama textarea üzerine gelindi.');
+});
+aciklamaInput.addEventListener('mouseout', function() {
+    console.log('Açıklama textarea üzerinden çıkıldı.');
 });
 
 function renderGorevler() {
