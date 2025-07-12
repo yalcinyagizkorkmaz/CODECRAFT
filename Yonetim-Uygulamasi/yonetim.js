@@ -20,6 +20,7 @@ gorevForm.addEventListener('submit', function(e) {
             return;
         }
         if (!oncelikRadio) {
+            console.log('Lütfen bir öncelik seçiniz!');
             hataMesaji.textContent = 'Lütfen bir öncelik seçiniz!';
             return;
         }
