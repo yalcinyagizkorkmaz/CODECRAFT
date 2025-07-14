@@ -14,9 +14,14 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #939dc8 0%, #764ba2 100%);
             min-height: 100vh;
             padding: 20px;
+        }
+        .h2{
+            margin-bottom: 20px;
+            padding-top: 20px;
+           
         }
 
         .container {
@@ -204,7 +209,7 @@
         </div>
 
         <div class="form-section">
-            <h2>Yeni Öğrenci Ekle</h2>
+            <h2 class="h2">Yeni Öğrenci Ekle</h2>
             <div class="form-group">
                 <input type="text" id="studentName" placeholder="Öğrenci Adı" required>
                 <input type="text" id="studentSurname" placeholder="Öğrenci Soyadı" required>
@@ -240,7 +245,7 @@
         </div>
 
         <div class="table-section">
-            <h2>Öğrenci Listesi</h2>
+            <h2 class="h2">Öğrenci Listesi</h2>
             <div class="table-container">
                 <table id="studentTable">
                     <thead>
@@ -254,7 +259,7 @@
                         </tr>
                     </thead>
                     <tbody id="studentTableBody">
-                        <!-- Öğrenci verileri buraya eklenecek -->
+                        <!-- Öğrenci veriler -->
                     </tbody>
                 </table>
                 <div id="emptyMessage" class="empty-message" style="display: none;">
@@ -265,7 +270,7 @@
     </div>
 
     <script>
-        // Statik JSON verisi
+     
         let studentData = [
             {
                 id: 1,
@@ -307,16 +312,16 @@
         let nextId = 6;
         let selectedStudents = [];
 
-        // Sayfa yüklendiğinde çalışacak fonksiyonlar
+
         $(document).ready(function() {
             displayStudents();
             updateStats();
             setupEventListeners();
         });
 
-        // Event listener'ları ayarla
+   
         function setupEventListeners() {
-            // Yeni öğrenci ekleme
+           
             $('#addStudent').click(function(){
                 const result = addNewStudent();
                 if(result){
@@ -338,7 +343,7 @@
                 });
             });
             
-            // Enter tuşu ile öğrenci ekleme
+          
             $('#studentName, #studentSurname, #studentClass, #studentAge').keypress(function(e) {
                 if (e.which === 13) {
                     const result = addNewStudent();
@@ -348,20 +353,27 @@
                 }
             });
 
-            // Tablo satırına tıklama (seçim)
+        
             $(document).on('click', '#studentTableBody tr', function() {
                 const studentId = parseInt($(this).data('id'));
                 toggleStudentSelection(studentId, $(this));
             });
 
-            // Silme butonuna tıklama
+        
             $(document).on('click', '.delete-btn', function(e) {
                 e.stopPropagation();
                 const studentId = parseInt($(this).closest('tr').data('id'));
                 deleteStudent(studentId);
             });
 
-            // jQuery hover efekti - mouseenter
+          
+            $(document).on('click', '.edit-btn', function(e) {
+                e.stopPropagation();
+                const studentId = parseInt($(this).closest('tr').data('id'));
+                editStudent(studentId);
+            });
+
+       
             $(document).on('mouseenter', '#studentTableBody tr', function() {
                 $(this).css({
                     'background': 'green',
@@ -369,9 +381,8 @@
                 });
             });
 
-            // jQuery hover efekti - mouseleave
             $(document).on('mouseleave', '#studentTableBody tr', function() {
-                // Eğer satır seçili değilse normal haline döndür
+              
                 if (!$(this).hasClass('selected')) {
                     $(this).css({
                         'background': 'blue',
@@ -380,7 +391,7 @@
                 }
             });
 
-            // Buton hover efektleri - mouseenter
+        
             $(document).on('mouseenter', '.btn-primary', function() {
                 $(this).css({
                     'transform': 'translateY(-2px)',
@@ -388,7 +399,7 @@
                 });
             });
 
-            // Buton hover efektleri - mouseleave
+      
             $(document).on('mouseleave', '.btn-primary', function() {
                 $(this).css({
                     'transform': 'translateY(0)',
@@ -396,7 +407,7 @@
                 });
             });
 
-            // Silme butonu hover efektleri - mouseenter
+       
             $(document).on('mouseenter', '.btn-danger', function() {
                 $(this).css({
                     'transform': 'translateY(-2px)',
@@ -404,8 +415,24 @@
                 });
             });
 
-            // Silme butonu hover efektleri - mouseleave
+     
             $(document).on('mouseleave', '.btn-danger', function() {
+                $(this).css({
+                    'transform': 'translateY(0)',
+                    'box-shadow': 'none'
+                });
+            });
+
+     
+            $(document).on('mouseenter', '.edit-btn', function() {
+                $(this).css({
+                    'transform': 'translateY(-2px)',
+                    'box-shadow': '0 5px 15px rgba(102, 126, 234, 0.4)'
+                });
+            });
+
+      
+            $(document).on('mouseleave', '.edit-btn', function() {
                 $(this).css({
                     'transform': 'translateY(0)',
                     'box-shadow': 'none'
@@ -413,14 +440,14 @@
             });
         }
 
-        // Yeni öğrenci ekleme
+    
         function addNewStudent() {
             const name = $('#studentName').val().trim();
             const surname = $('#studentSurname').val().trim();
             const className = $('#studentClass').val();
             const age = parseInt($('#studentAge').val());
 
-            // Validasyon
+         
             if (!name || !surname || !className || !age) {
                 showNotification('Lütfen tüm alanları doldurun!', 'error');
                 return false;
@@ -431,30 +458,60 @@
                 return false;
             }
 
-            // Yeni öğrenci objesi oluştur
-            const newStudent = {
-                id: nextId++,
-                name: name,
-                surname: surname,
-                class: className,
-                age: age
-            };
 
-            // Veriyi diziye ekle
-            studentData.push(newStudent);
+            const editId = $('#addStudent').attr('data-edit-id');
+            
+            if (editId) {
+             
+                const studentIndex = studentData.findIndex(s => s.id === parseInt(editId));
+                if (studentIndex !== -1) {
+                    studentData[studentIndex] = {
+                        id: parseInt(editId),
+                        name: name,
+                        surname: surname,
+                        class: className,
+                        age: age
+                    };
+                    
+                 
+                    $('#addStudent').text('Öğrenci Ekle').removeAttr('data-edit-id');
+                    
+                   
+                    displayStudents();
+                    updateStats();
+                    
+            
+                    $('#studentName, #studentSurname, #studentClass, #studentAge').val('');
+                    $('#studentName').focus();
+                    
+                    return true;
+                }
+            } else {
+            
+                const newStudent = {
+                    id: nextId++,
+                    name: name,
+                    surname: surname,
+                    class: className,
+                    age: age
+                };
 
-            // Tabloyu güncelle
-            displayStudents();
-            updateStats();
+              
+                studentData.push(newStudent);
 
-            // Formu temizle
-            $('#studentName, #studentSurname, #studentClass, #studentAge').val('');
-            $('#studentName').focus();
+                // Tabloyu güncelle
+                displayStudents();
+                updateStats();
 
-            return true;
+           
+                $('#studentName, #studentSurname, #studentClass, #studentAge').val('');
+                $('#studentName').focus();
+
+                return true;
+            }
         }
 
-        // Öğrencileri tabloda göster
+       
         function displayStudents() {
             const tbody = $('#studentTableBody');
             tbody.empty();
@@ -478,13 +535,14 @@
                         <td>
                             <div class="action-buttons">
                                 <button class="btn btn-danger btn-small delete-btn">Sil</button>
+                                <button class="btn btn-primary btn-small edit-btn">Düzenle</button>
                             </div>
                         </td>
                     </tr>
                 `;
                 tbody.append(row);
                 
-                // Eğer seçili ise stil uygula
+             
                 if (isSelected) {
                     const newRow = tbody.find(`tr[data-id="${student.id}"]`);
                     newRow.css({
@@ -496,24 +554,23 @@
             });
         }
 
-        // Öğrenci seçimi
         function toggleStudentSelection(studentId, rowElement) {
             const index = selectedStudents.indexOf(studentId);
             
             if (index > -1) {
-                // Seçimi kaldır
+               
                 selectedStudents.splice(index, 1);
                 rowElement.removeClass('selected');
-                // Normal haline döndür
+               
                 rowElement.css({
                     'background': 'white',
                     'transform': 'scale(1)'
                 });
             } else {
-                // Seçimi ekle
+               
                 selectedStudents.push(studentId);
                 rowElement.addClass('selected');
-                // Seçili stil uygula
+                
                 rowElement.css({
                     'background': 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
                     'color': 'white',
@@ -524,7 +581,7 @@
             updateStats();
         }
 
-        // Öğrenci silme
+       
         function deleteStudent(studentId) {
             if (confirm('Bu öğrenciyi silmek istediğinizden emin misiniz?')) {
                 studentData = studentData.filter(student => student.id !== studentId);
@@ -532,11 +589,36 @@
                 
                 displayStudents();
                 updateStats();
-                showNotification('Öğrenci başarıyla silindi!', 'success');
+                showNotification('Öğrenci başarıyla silindi!', 'danger');
             }
         }
 
-        // İstatistikleri güncelle
+      
+        function editStudent(studentId) {
+            const student = studentData.find(s => s.id === studentId);
+            if (!student) return;
+
+            
+            $('#studentName').val(student.name);
+            $('#studentSurname').val(student.surname);
+            $('#studentClass').val(student.class);
+            $('#studentAge').val(student.age);
+
+          
+            $('#addStudent').text('Öğrenciyi Güncelle').attr('data-edit-id', studentId);
+
+           
+            $('#studentName').focus();
+
+           
+            $('html, body').animate({
+                scrollTop: $('.form-section').offset().top - 50
+            }, 500);
+
+            showNotification('Öğrenci bilgileri forma yüklendi. Değişiklikleri yapıp "Öğrenciyi Güncelle" butonuna tıklayın.', 'success');
+        }
+
+      
         function updateStats() {
             $('#totalStudents').text(studentData.length);
             $('#selectedStudents').text(selectedStudents.length);
@@ -550,7 +632,7 @@
             }
         }
 
-        // Bildirim gösterme
+      
         function showNotification(message, type) {
             const notification = $(`
                 <div style="
@@ -578,7 +660,7 @@
             }, 3000);
         }
 
-        // CSS animasyonu için style ekle
+   
         $('<style>')
             .prop('type', 'text/css')
             .html(`
