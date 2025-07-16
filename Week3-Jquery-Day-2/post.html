@@ -14,7 +14,7 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #172048 0%, #422360 100%);
             min-height: 100vh;
             padding: 20px;
         }
@@ -154,7 +154,7 @@
         </div>
         
         <div id="postContainer">
-            <!-- Postlar buraya yüklenecek -->
+            <!-- Postlar buraya gelecek -->
         </div>
     </div>
 
@@ -169,10 +169,13 @@
             let hasMorePosts = true;
             const postsPerPage = 5;
             
-            // İlk postları yükle
-            loadPosts();
+            // İlk postları yüklüyoruz fakat bir saniye gecikme ile yüklüyoruz.
+            showLoadingIndicator();
+            setTimeout(function() {
+                loadPosts();
+            }, 1000);
             
-            // Sonsuz kaydırma için scroll eventi
+         
             $(window).scroll(function() {
                 if ($(window).scrollTop() + $(window).height() >= $(document).height() - 100) {
                     if (!isLoading && hasMorePosts) {
@@ -197,23 +200,27 @@
                             return;
                         }
                         
-                        posts.forEach(function(post) {
-                            const postHtml = `
-                                <div class="post-item">
-                                    <div class="post-id">Post #${post.id}</div>
-                                    <div class="post-title">${post.title}</div>
-                                    <div class="post-body">${post.body}</div>
-                                </div>
-                            `;
-                            $('#postContainer').append(postHtml);
+                       
+                        setTimeout(function() {
+                            posts.forEach(function(post) {
+                                const postHtml = `
+                                    <div class="post-item">
+                                        <div class="post-id">Post #${post.id}</div>
+                                        <div class="post-title">${post.title}</div>
+                                        <div class="post-body">${post.body}</div>
+                                    </div>
+                                `;
+                                $('#postContainer').append(postHtml);
+                            });
+                            
+                            currentPage++;
+                            hideLoadingIndicator();
                         });
-                        
-                        currentPage++;
-                        hideLoadingIndicator();
                     })
                     .fail(function(xhr, status, error) {
-                        console.error('API isteği başarısız:', error);
-                        showErrorMessage('Postlar yüklenirken bir hata oluştu. Lütfen tekrar deneyin.');
+                        console.error('API isteği başarısız oldu:', error);
+                        hasMorePosts = false; 
+                        showErrorMessage('Postlar yüklenirken bir hata oluştu. Lütfen sayfayı yenileyip tekrar deneyin.');
                         hideLoadingIndicator();
                     })
                     .always(function() {
@@ -223,6 +230,7 @@
             
             function showLoadingIndicator() {
                 $('#scrollIndicator').text('Yeni postlar yükleniyor...').addClass('show');
+                console.log('Yeni postlar yükleniyor...');
                
             }
             
@@ -249,13 +257,15 @@
                 hideLoadingIndicator();
             }
             
-            // Sayfa yüklendiğinde hoş geldin mesajı
+            // Sayfa yüklendiğinde hoş geldin mesajını gösteriyor eğer hata gelirse göstermiyor.(Fail durumunda) göstermiyor.
             setTimeout(function() {
-                $('#scrollIndicator').text('Sayfayı aşağı kaydırarak daha fazla post yükleyin!').addClass('show');
-                setTimeout(function() {
-                    $('#scrollIndicator').removeClass('show');
-                }, 3000);
-            }, 1000);
+                if (hasMorePosts) {
+                    $('#scrollIndicator').text('Sayfayı aşağı kaydırarak daha fazla post yükleyin!').addClass('show');
+                    setTimeout(function() {
+                        $('#scrollIndicator').removeClass('show');
+                    }, 1500);
+                }
+            },1500);
         });
     </script>
 </body>
