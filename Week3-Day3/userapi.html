@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Random User API - Kullanıcı Profilleri</title>
+    
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    
+    <!-- Fancybox CSS ve JS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.css"/>
+    <script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.umd.js"></script>
+    
+    <!-- Slick Slider CSS ve JS -->
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css"/>
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick-theme.css"/>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .controls {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .btn {
+            background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            margin: 0 10px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .user-count {
+            padding: 10px;
+            border: none;
+            border-radius: 20px;
+            text-align: center;
+            font-size: 16px;
+            margin: 0 10px;
+            width: 80px;
+        }
+
+        .loading {
+            text-align: center;
+            color: white;
+            font-size: 18px;
+            margin: 20px 0;
+        }
+
+        .spinner {
+            border: 4px solid rgba(255,255,255,0.3);
+            border-top: 4px solid white;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .user-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .user-card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        .user-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+            border: 2px solid #667eea;
+        }
+
+        .user-card img {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            margin-bottom: 15px;
+            border: 4px solid #667eea;
+            transition: all 0.3s ease;
+        }
+
+        .user-card:hover img {
+            transform: scale(1.1);
+            border-color: #ff6b6b;
+        }
+
+        .user-card h3 {
+            color: #333;
+            margin-bottom: 8px;
+            font-size: 1.3rem;
+        }
+
+        .user-card p {
+            color: #666;
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+        }
+
+        .user-card .email {
+            color: #667eea;
+            font-weight: bold;
+        }
+
+        .slider-section {
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 40px;
+        }
+
+        .slider-section h2 {
+            color: white;
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 1.8rem;
+        }
+
+        .slider-card {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 0 10px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .slider-card img {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            margin-bottom: 10px;
+            border: 3px solid #667eea;
+        }
+
+        .slider-card h4 {
+            color: #333;
+            margin-bottom: 5px;
+            font-size: 1rem;
+        }
+
+        .slider-card p {
+            color: #666;
+            font-size: 0.8rem;
+        }
+
+        .shake {
+            animation: shake 0.5s ease-in-out;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        .bounce {
+            animation: bounce 0.6s ease-in-out;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-10px); }
+            60% { transform: translateY(-5px); }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.8s ease-in-out forwards;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .modal-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-header img {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            border: 5px solid #667eea;
+            margin-bottom: 15px;
+        }
+
+        .modal-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .info-item {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .info-item strong {
+            color: #667eea;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        @media (max-width: 768px) {
+            .user-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .modal-info {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>👥 Random User API</h1>
+            <p>Rastgele kullanıcı profillerini keşfedin!</p>
+        </div>
+
+        <div class="controls">
+            <input type="number" class="user-count" id="userCount" value="6" min="1" max="20" placeholder="Sayı">
+            <button class="btn" id="loadUsers">Kullanıcıları Yükle</button>
+            <button class="btn" id="clearUsers">Temizle</button>
+        </div>
+
+        <div class="loading" id="loading" style="display: none;">
+            <div class="spinner"></div>
+            <p>Kullanıcılar yükleniyor...</p>
+        </div>
+
+        <div class="user-grid" id="userGrid"></div>
+
+        <div class="slider-section">
+            <h2>🎠 Kullanıcı Slider</h2>
+            <div class="user-slider" id="userSlider"></div>
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function() {
+            let allUsers = [];
+            
+            // Sayfa yüklendiğinde kullanıcıları yükle
+            loadUsers();
+            
+            // Kullanıcıları yükle butonu
+            $('#loadUsers').click(function() {
+                $(this).addClass('shake');
+                setTimeout(() => $(this).removeClass('shake'), 500);
+                loadUsers();
+            });
+            
+            // Temizle butonu
+            $('#clearUsers').click(function() {
+                $(this).addClass('bounce');
+                setTimeout(() => $(this).removeClass('bounce'), 600);
+                clearUsers();
+            });
+            
+            function loadUsers() {
+                const count = $('#userCount').val();
+                $('#loading').show();
+                $('#userGrid').empty();
+                
+                $.ajax({
+                    url: `https://randomuser.me/api/?results=${count}`,
+                    method: 'GET',
+                    success: function(data) {
+                        $('#loading').hide();
+                        allUsers = data.results;
+                        displayUsers(data.results);
+                        updateSlider(data.results);
+                    },
+                    error: function(xhr, status, error) {
+                        $('#loading').hide();
+                        alert('Kullanıcılar yüklenirken hata oluştu: ' + error);
+                    }
+                });
+            }
+            
+            function displayUsers(users) {
+                const userGrid = $('#userGrid');
+                
+                users.forEach((user, index) => {
+                    const card = createUserCard(user, index);
+                    userGrid.append(card);
+                    
+                    // Animasyonlu görünüm
+                    setTimeout(() => {
+                        card.addClass('fade-in');
+                    }, index * 100);
+                });
+            }
+            
+            function createUserCard(user, index) {
+                const card = $(`
+                    <div class="user-card" data-user-index="${index}">
+                        <img src="${user.picture.large}" alt="${user.name.first} ${user.name.last}">
+                        <h3>${user.name.first} ${user.name.last}</h3>
+                        <p class="email">${user.email}</p>
+                        <p>📍 ${user.location.country}</p>
+                        <p>📱 ${user.phone}</p>
+                        <p>🎂 ${new Date(user.dob.date).toLocaleDateString('tr-TR')}</p>
+                    </div>
+                `);
+                
+                // Kart tıklama olayı
+                card.click(function() {
+                    $(this).addClass('bounce');
+                    setTimeout(() => $(this).removeClass('bounce'), 600);
+                    showUserModal(user);
+                });
+                
+                // Hover efektleri
+                card.hover(
+                    function() {
+                        $(this).find('img').fadeTo(300, 0.8);
+                    },
+                    function() {
+                        $(this).find('img').fadeTo(300, 1);
+                    }
+                );
+                
+                return card;
+            }
+            
+            function showUserModal(user) {
+                const modalContent = `
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <img src="${user.picture.large}" alt="${user.name.first} ${user.name.last}">
+                            <h2>${user.name.first} ${user.name.last}</h2>
+                            <p style="color: #667eea; font-weight: bold;">${user.email}</p>
+                        </div>
+                        
+                        <div class="modal-info">
+                            <div class="info-item">
+                                <strong>📱 Telefon</strong>
+                                <span>${user.phone}</span>
+                            </div>
+                            <div class="info-item">
+                                <strong>📧 E-posta</strong>
+                                <span>${user.email}</span>
+                            </div>
+                            <div class="info-item">
+                                <strong>🎂 Doğum Tarihi</strong>
+                                <span>${new Date(user.dob.date).toLocaleDateString('tr-TR')}</span>
+                            </div>
+                            <div class="info-item">
+                                <strong>👤 Yaş</strong>
+                                <span>${user.dob.age}</span>
+                            </div>
+                            <div class="info-item">
+                                <strong>📍 Ülke</strong>
+                                <span>${user.location.country}</span>
+                            </div>
+                            <div class="info-item">
+                                <strong>🏙️ Şehir</strong>
+                                <span>${user.location.city}</span>
+                            </div>
+                            <div class="info-item">
+                                <strong>📮 Posta Kodu</strong>
+                                <span>${user.location.postcode}</span>
+                            </div>
+                            <div class="info-item">
+                                <strong>🏠 Adres</strong>
+                                <span>${user.location.street.number} ${user.location.street.name}</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                Fancybox.show([{
+                    src: modalContent,
+                    type: 'html'
+                }]);
+            }
+            
+            function updateSlider(users) {
+                const slider = $('#userSlider');
+                slider.empty();
+                
+                users.forEach(user => {
+                    const sliderCard = $(`
+                        <div class="slider-card">
+                            <img src="${user.picture.medium}" alt="${user.name.first} ${user.name.last}">
+                            <h4>${user.name.first} ${user.name.last}</h4>
+                            <p>${user.location.country}</p>
+                        </div>
+                    `);
+                    
+                    slider.append(sliderCard);
+                });
+                
+                // Slick slider'ı başlat
+                slider.slick({
+                    dots: true,
+                    infinite: true,
+                    speed: 300,
+                    slidesToShow: 4,
+                    slidesToScroll: 1,
+                    autoplay: true,
+                    autoplaySpeed: 3000,
+                    responsive: [
+                        {
+                            breakpoint: 1024,
+                            settings: {
+                                slidesToShow: 3,
+                                slidesToScroll: 1
+                            }
+                        },
+                        {
+                            breakpoint: 768,
+                            settings: {
+                                slidesToShow: 2,
+                                slidesToScroll: 1
+                            }
+                        },
+                        {
+                            breakpoint: 480,
+                            settings: {
+                                slidesToShow: 1,
+                                slidesToScroll: 1
+                            }
+                        }
+                    ]
+                });
+            }
+            
+            function clearUsers() {
+                $('#userGrid').empty();
+                $('#userSlider').slick('unslick').empty();
+                allUsers = [];
+            }
+            
+            // Fancybox ayarları
+            Fancybox.defaults = {
+                closeButton: true,
+                dragToClose: false,
+                Image: {
+                    zoom: true
+                }
+            };
+        });
+    </script>
+</body>
+</html>
