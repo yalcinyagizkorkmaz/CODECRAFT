@@ -185,6 +185,11 @@
             margin: 0 10px;
             text-align: center;
             box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            min-height: 150px;
         }
 
         .slider-card img {
@@ -193,6 +198,10 @@
             border-radius: 50%;
             margin-bottom: 10px;
             border: 3px solid #667eea;
+            object-fit: cover;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
         }
 
         .slider-card h4 {
@@ -395,7 +404,7 @@
                             margin-top: 15px;
                             transition: all 0.3s ease;
                             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-                        ">👆 Show Details</button>
+                        ">👆 Detayları Göster</button>
                     </div>
                 `);
                 
@@ -414,6 +423,7 @@
                         $(this).css('transform', 'scale(1)');
                         $(this).css('background', '#667eea');
                         console.log('Modal açılıyor...');
+                        console.log('Modal açıldı!!');
                         // Direkt basit modal'ı aç
                         showSimpleModal(user);
                     }, 150);
@@ -647,7 +657,7 @@
                     slidesToShow: 4,
                     slidesToScroll: 1,
                     autoplay: true,
-                    autoplaySpeed: 3000,
+                    autoplaySpeed: 1500,
                     responsive: [
                         {
                             breakpoint: 1024,
@@ -678,6 +688,24 @@
                 $('#userGrid').empty();
                 $('#userSlider').slick('unslick').empty();
                 allUsers = [];
+                
+                // Console'a mesaj yazdır
+                console.log('Kullanıcılar temizlendi');
+                
+                // Ekranda mesaj göster
+                $('#userGrid').html(`
+                    <div style="text-align: center; color: white; font-size: 18px; padding: 50px; grid-column: 1 / -1;">
+                        <p>✅ Kullanıcılar temizlendi!</p>
+                        <p style="font-size: 14px; margin-top: 10px;">👆 Yukarıdaki "Kullanıcıları Yükle" butonuna tıklayarak yeni kullanıcılar yükleyin.</p>
+                    </div>
+                `);
+                
+                // Slider bölümüne de mesaj ekle
+                $('#userSlider').html(`
+                    <div style="text-align: center; color: white; font-size: 16px; padding: 30px;">
+                        <p>🎠 Slider temizlendi</p>
+                    </div>
+                `);
             }
             
             // Fancybox ayarları
