@@ -8,9 +8,9 @@
    
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     
-   <!-- Modal için gerekli -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.css"/>
-    <script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.umd.js"></script>
+   <!-- Modal için gerekli olan fancybox-->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css"/>
+    <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
     
 
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css"/>
@@ -336,7 +336,14 @@
         $(document).ready(function() {
             let allUsers = [];
             
-           
+         
+            console.log('Fancybox başlatılıyor...');
+            if (typeof $.fancybox !== 'undefined') {
+                console.log('Fancybox başarıyla yüklendi!');
+            } else {
+                console.error('Fancybox yüklenemedi!');
+            }
+            
             loadUsers();
             
           
@@ -424,8 +431,8 @@
                         $(this).css('background', '#667eea');
                         console.log('Modal açılıyor...');
                         console.log('Modal açıldı!!');
-                        // Basit modalı direkt aç
-                        showSimpleModal(user);
+                        // showUserModal fonksiyonunu çağır
+                        showUserModal(user);
                     }, 150);
                 });
                 
@@ -457,78 +464,9 @@
             function showUserModal(user) {
                 console.log('showUserModal çağrıldı:', user.name.first);
                 
-                // Fancybox kontrolü hata mesajı ve alert ile gösterim
-                if (typeof Fancybox === 'undefined') {
-                    console.error('Fancybox yüklenmemiş!');
-                    alert('Modal kütüphanesi yüklenemedi. Lütfen sayfayı yenileyin.');
-                    return;
-                }
-                //Modal içerik
-                const modalContent = `
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <img src="${user.picture.large}" alt="${user.name.first} ${user.name.last}">
-                            <h2>${user.name.first} ${user.name.last}</h2>
-                            <p style="color: #667eea; font-weight: bold;">${user.email}</p>
-                        </div>
-                        
-                        <div class="modal-info">
-                            <div class="info-item">
-                                <strong>📱 Telefon</strong>
-                                <span>${user.phone}</span>
-                            </div>
-                            <div class="info-item">
-                                <strong>📧 E-posta</strong>
-                                <span>${user.email}</span>
-                            </div>
-                            <div class="info-item">
-                                <strong>🎂 Doğum Tarihi</strong>
-                                <span>${new Date(user.dob.date).toLocaleDateString('tr-TR')}</span>
-                            </div>
-                            <div class="info-item">
-                                <strong>👤 Yaş</strong>
-                                <span>${user.dob.age}</span>
-                            </div>
-                            <div class="info-item">
-                                <strong>📍 Ülke</strong>
-                                <span>${user.location.country}</span>
-                            </div>
-                            <div class="info-item">
-                                <strong>🏙️ Şehir</strong>
-                                <span>${user.location.city}</span>
-                            </div>
-                            <div class="info-item">
-                                <strong>📮 Posta Kodu</strong>
-                                <span>${user.location.postcode}</span>
-                            </div>
-                            <div class="info-item">
-                                <strong>🏠 Adres</strong>
-                                <span>${user.location.street.number} ${user.location.street.name}</span>
-                            </div>
-                        </div>
-                    </div>
-                `;
-                
-                try {
-                    console.log('Fancybox açılıyor...');
-                    Fancybox.show([{
-                        src: modalContent,
-                        type: 'html',
-                        closeButton: true,
-                        dragToClose: false
-                    }]);
-                    console.log('Fancybox açıldı!');
-                } catch (error) {
-                    console.error('Fancybox hatası:', error);
-                   
-                    showSimpleModal(user);
-                }
-            }
-            
-            // Basit modal fonksiyonu fancybox çalışmaması durumunda
-            function showSimpleModal(user) {
+                // Custom modal oluştur
                 const modalHtml = `
-                    <div id="simpleModal" style="
+                    <div id="customModal" style="
                         position: fixed;
                         top: 0;
                         left: 0;
@@ -539,6 +477,7 @@
                         display: flex;
                         justify-content: center;
                         align-items: center;
+                        animation: fadeIn 0.3s ease;
                     ">
                         <div style="
                             background: white;
@@ -548,90 +487,110 @@
                             max-height: 80vh;
                             overflow-y: auto;
                             position: relative;
+                            animation: slideIn 0.3s ease;
+                            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
                         ">
                             <button class="close-modal-btn" style="
                                 position: absolute;
-                                top: 10px;
-                                right: 15px;
+                                top: 15px;
+                                right: 20px;
                                 background: #ff6b6b;
                                 color: white;
                                 border: none;
                                 border-radius: 50%;
-                                width: 30px;
-                                height: 30px;
+                                width: 35px;
+                                height: 35px;
                                 cursor: pointer;
-                                font-size: 18px;
+                                font-size: 20px;
+                                font-weight: bold;
+                                transition: all 0.3s ease;
+                                z-index: 1000;
                             ">×</button>
                             
-                            <div style="text-align: center; margin-bottom: 20px;">
+                            <div style="text-align: center; margin-bottom: 25px;">
                                 <img src="${user.picture.large}" alt="${user.name.first} ${user.name.last}" style="
                                     width: 150px;
                                     height: 150px;
                                     border-radius: 50%;
                                     border: 5px solid #667eea;
                                     margin-bottom: 15px;
+                                    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
                                 ">
-                                <h2>${user.name.first} ${user.name.last}</h2>
-                                <p style="color: #667eea; font-weight: bold;">${user.email}</p>
+                                <h2 style="color: #333; margin-bottom: 8px;">${user.name.first} ${user.name.last}</h2>
+                                <p style="color: #667eea; font-weight: bold; font-size: 16px;">${user.email}</p>
                             </div>
                             
                             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-                                <div style="background: #f8f9fa; padding: 10px; border-radius: 8px; text-align: center;">
-                                    <strong style="color: #667eea;">📱 Telefon</strong><br>
-                                    <span>${user.phone}</span>
+                                <div style="background: #f8f9fa; padding: 15px; border-radius: 10px; text-align: center; border-left: 4px solid #667eea;">
+                                    <strong style="color: #667eea; display: block; margin-bottom: 8px;">📱 Telefon</strong>
+                                    <span style="color: #555;">${user.phone}</span>
                                 </div>
-                                <div style="background: #f8f9fa; padding: 10px; border-radius: 8px; text-align: center;">
-                                    <strong style="color: #667eea;">📧 E-posta</strong><br>
-                                    <span>${user.email}</span>
+                                <div style="background: #f8f9fa; padding: 15px; border-radius: 10px; text-align: center; border-left: 4px solid #667eea;">
+                                    <strong style="color: #667eea; display: block; margin-bottom: 8px;">📧 E-posta</strong>
+                                    <span style="color: #555;">${user.email}</span>
                                 </div>
-                                <div style="background: #f8f9fa; padding: 10px; border-radius: 8px; text-align: center;">
-                                    <strong style="color: #667eea;">🎂 Doğum Tarihi</strong><br>
-                                    <span>${new Date(user.dob.date).toLocaleDateString('tr-TR')}</span>
+                                <div style="background: #f8f9fa; padding: 15px; border-radius: 10px; text-align: center; border-left: 4px solid #667eea;">
+                                    <strong style="color: #667eea; display: block; margin-bottom: 8px;">🎂 Doğum Tarihi</strong>
+                                    <span style="color: #555;">${new Date(user.dob.date).toLocaleDateString('tr-TR')}</span>
                                 </div>
-                                <div style="background: #f8f9fa; padding: 10px; border-radius: 8px; text-align: center;">
-                                    <strong style="color: #667eea;">👤 Yaş</strong><br>
-                                    <span>${user.dob.age}</span>
+                                <div style="background: #f8f9fa; padding: 15px; border-radius: 10px; text-align: center; border-left: 4px solid #667eea;">
+                                    <strong style="color: #667eea; display: block; margin-bottom: 8px;">👤 Yaş</strong>
+                                    <span style="color: #555;">${user.dob.age}</span>
                                 </div>
-                                <div style="background: #f8f9fa; padding: 10px; border-radius: 8px; text-align: center;">
-                                    <strong style="color: #667eea;">📍 Ülke</strong><br>
-                                    <span>${user.location.country}</span>
+                                <div style="background: #f8f9fa; padding: 15px; border-radius: 10px; text-align: center; border-left: 4px solid #667eea;">
+                                    <strong style="color: #667eea; display: block; margin-bottom: 8px;">📍 Ülke</strong>
+                                    <span style="color: #555;">${user.location.country}</span>
                                 </div>
-                                <div style="background: #f8f9fa; padding: 10px; border-radius: 8px; text-align: center;">
-                                    <strong style="color: #667eea;">🏙️ Şehir</strong><br>
-                                    <span>${user.location.city}</span>
+                                <div style="background: #f8f9fa; padding: 15px; border-radius: 10px; text-align: center; border-left: 4px solid #667eea;">
+                                    <strong style="color: #667eea; display: block; margin-bottom: 8px;">🏙️ Şehir</strong>
+                                    <span style="color: #555;">${user.location.city}</span>
                                 </div>
-                                <div style="background: #f8f9fa; padding: 10px; border-radius: 8px; text-align: center;">
-                                    <strong style="color: #667eea;">📮 Posta Kodu</strong><br>
-                                    <span>${user.location.postcode}</span>
+                                <div style="background: #f8f9fa; padding: 15px; border-radius: 10px; text-align: center; border-left: 4px solid #667eea;">
+                                    <strong style="color: #667eea; display: block; margin-bottom: 8px;">📮 Posta Kodu</strong>
+                                    <span style="color: #555;">${user.location.postcode}</span>
                                 </div>
-                                <div style="background: #f8f9fa; padding: 10px; border-radius: 8px; text-align: center;">
-                                    <strong style="color: #667eea;">🏠 Adres</strong><br>
-                                    <span>${user.location.street.number} ${user.location.street.name}</span>
+                                <div style="background: #f8f9fa; padding: 15px; border-radius: 10px; text-align: center; border-left: 4px solid #667eea;">
+                                    <strong style="color: #667eea; display: block; margin-bottom: 8px;">🏠 Adres</strong>
+                                    <span style="color: #555;">${user.location.street.number} ${user.location.street.name}</span>
                                 </div>
                             </div>
                         </div>
                     </div>
                 `;
                 
+                // Modalı DOM'a ekle
                 $('body').append(modalHtml);
                 
-             
+            
                 $('.close-modal-btn').on('click', function() {
-                    $('#simpleModal').remove();
+                    $('#customModal').fadeOut(300, function() {
+                        $(this).remove();
+                    });
                 });
                 
-               
-                $('#simpleModal').on('click', function(e) {
+                // Modal dışına tıklayınca kapanması için 
+                $('#customModal').on('click', function(e) {
                     if (e.target === this) {
-                        $(this).remove();
+                        $(this).fadeOut(300, function() {
+                            $(this).remove();
+                        });
                     }
                 });
+                
+                // Esc tuşu ile kapatma için
+                $(document).on('keydown.modal', function(e) {
+                    if (e.key === 'Escape') {
+                        $('#customModal').fadeOut(300, function() {
+                            $(this).remove();
+                        });
+                        $(document).off('keydown.modal');
+                    }
+                });
+                
+                console.log('Custom modal açıldı!');
             }
             
-         
-            window.closeSimpleModal = function() {
-                $('#simpleModal').remove();
-            };
+
             
             function updateSlider(users) {
                 const slider = $('#userSlider');
@@ -709,11 +668,13 @@
             }
             
             // Fancybox ayarları boşluğa veya cardın dışına basılınca kapanıyor modal
-            Fancybox.defaults = {
-                closeButton: true,
-                dragToClose: false,
-                Image: {
-                    zoom: true
+            $.fancybox.defaults = {
+                closeBtn: true,
+                closeClickOutside: false,
+                helpers: {
+                    overlay: {
+                        locked: false
+                    }
                 }
             };
         });
