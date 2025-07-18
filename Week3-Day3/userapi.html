@@ -384,19 +384,52 @@
                     <div class="user-card" data-user-index="${index}">
                         <img src="${user.picture.large}" alt="${user.name.first} ${user.name.last}">
                         <h3>${user.name.first} ${user.name.last}</h3>
-                        <p class="email">${user.email}</p>
-                        <p>📍 ${user.location.country}</p>
-                        <p>📱 ${user.phone}</p>
-                        <p>🎂 ${new Date(user.dob.date).toLocaleDateString('tr-TR')}</p>
+                        <button class="detail-btn" style="
+                            background: #667eea;
+                            color: white;
+                            border: none;
+                            padding: 10px 20px;
+                            border-radius: 25px;
+                            cursor: pointer;
+                            font-size: 14px;
+                            margin-top: 15px;
+                            transition: all 0.3s ease;
+                            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+                        ">👆 Detayları Göster</button>
                     </div>
                 `);
                 
-                // Kart tıklama olayı
-                card.click(function() {
-                    $(this).addClass('bounce');
-                    setTimeout(() => $(this).removeClass('bounce'), 600);
-                    showUserModal(user);
+                // Butona tıklama olayı
+                card.find('.detail-btn').on('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    
+                    console.log('Detay butonu tıklandı:', user.name.first);
+                    
+                    // Buton animasyonu
+                    $(this).css('transform', 'scale(0.95)');
+                    $(this).css('background', '#ff6b6b');
+                    
+                    setTimeout(() => {
+                        $(this).css('transform', 'scale(1)');
+                        $(this).css('background', '#667eea');
+                        console.log('Modal açılıyor...');
+                        // Direkt basit modal'ı aç
+                        showSimpleModal(user);
+                    }, 150);
                 });
+                
+                // Buton hover efekti
+                card.find('.detail-btn').hover(
+                    function() {
+                        $(this).css('transform', 'translateY(-2px)');
+                        $(this).css('box-shadow', '0 4px 15px rgba(0,0,0,0.2)');
+                    },
+                    function() {
+                        $(this).css('transform', 'translateY(0)');
+                        $(this).css('box-shadow', '0 2px 10px rgba(0,0,0,0.1)');
+                    }
+                );
                 
                 // Hover efektleri
                 card.hover(
@@ -412,6 +445,15 @@
             }
             
             function showUserModal(user) {
+                console.log('showUserModal çağrıldı:', user.name.first);
+                
+                // Fancybox kontrolü
+                if (typeof Fancybox === 'undefined') {
+                    console.error('Fancybox yüklenmemiş!');
+                    alert('Modal kütüphanesi yüklenemedi. Lütfen sayfayı yenileyin.');
+                    return;
+                }
+                
                 const modalContent = `
                     <div class="modal-content">
                         <div class="modal-header">
@@ -457,11 +499,129 @@
                     </div>
                 `;
                 
-                Fancybox.show([{
-                    src: modalContent,
-                    type: 'html'
-                }]);
+                try {
+                    console.log('Fancybox açılıyor...');
+                    Fancybox.show([{
+                        src: modalContent,
+                        type: 'html',
+                        closeButton: true,
+                        dragToClose: false
+                    }]);
+                    console.log('Fancybox açıldı!');
+                } catch (error) {
+                    console.error('Fancybox hatası:', error);
+                    // Alternatif modal gösterimi
+                    showSimpleModal(user);
+                }
             }
+            
+            // Basit modal fonksiyonu (Fancybox çalışmazsa)
+            function showSimpleModal(user) {
+                const modalHtml = `
+                    <div id="simpleModal" style="
+                        position: fixed;
+                        top: 0;
+                        left: 0;
+                        width: 100%;
+                        height: 100%;
+                        background: rgba(0,0,0,0.8);
+                        z-index: 9999;
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                    ">
+                        <div style="
+                            background: white;
+                            padding: 30px;
+                            border-radius: 15px;
+                            max-width: 500px;
+                            max-height: 80vh;
+                            overflow-y: auto;
+                            position: relative;
+                        ">
+                            <button class="close-modal-btn" style="
+                                position: absolute;
+                                top: 10px;
+                                right: 15px;
+                                background: #ff6b6b;
+                                color: white;
+                                border: none;
+                                border-radius: 50%;
+                                width: 30px;
+                                height: 30px;
+                                cursor: pointer;
+                                font-size: 18px;
+                            ">×</button>
+                            
+                            <div style="text-align: center; margin-bottom: 20px;">
+                                <img src="${user.picture.large}" alt="${user.name.first} ${user.name.last}" style="
+                                    width: 150px;
+                                    height: 150px;
+                                    border-radius: 50%;
+                                    border: 5px solid #667eea;
+                                    margin-bottom: 15px;
+                                ">
+                                <h2>${user.name.first} ${user.name.last}</h2>
+                                <p style="color: #667eea; font-weight: bold;">${user.email}</p>
+                            </div>
+                            
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                                <div style="background: #f8f9fa; padding: 10px; border-radius: 8px; text-align: center;">
+                                    <strong style="color: #667eea;">📱 Telefon</strong><br>
+                                    <span>${user.phone}</span>
+                                </div>
+                                <div style="background: #f8f9fa; padding: 10px; border-radius: 8px; text-align: center;">
+                                    <strong style="color: #667eea;">📧 E-posta</strong><br>
+                                    <span>${user.email}</span>
+                                </div>
+                                <div style="background: #f8f9fa; padding: 10px; border-radius: 8px; text-align: center;">
+                                    <strong style="color: #667eea;">🎂 Doğum Tarihi</strong><br>
+                                    <span>${new Date(user.dob.date).toLocaleDateString('tr-TR')}</span>
+                                </div>
+                                <div style="background: #f8f9fa; padding: 10px; border-radius: 8px; text-align: center;">
+                                    <strong style="color: #667eea;">👤 Yaş</strong><br>
+                                    <span>${user.dob.age}</span>
+                                </div>
+                                <div style="background: #f8f9fa; padding: 10px; border-radius: 8px; text-align: center;">
+                                    <strong style="color: #667eea;">📍 Ülke</strong><br>
+                                    <span>${user.location.country}</span>
+                                </div>
+                                <div style="background: #f8f9fa; padding: 10px; border-radius: 8px; text-align: center;">
+                                    <strong style="color: #667eea;">🏙️ Şehir</strong><br>
+                                    <span>${user.location.city}</span>
+                                </div>
+                                <div style="background: #f8f9fa; padding: 10px; border-radius: 8px; text-align: center;">
+                                    <strong style="color: #667eea;">📮 Posta Kodu</strong><br>
+                                    <span>${user.location.postcode}</span>
+                                </div>
+                                <div style="background: #f8f9fa; padding: 10px; border-radius: 8px; text-align: center;">
+                                    <strong style="color: #667eea;">🏠 Adres</strong><br>
+                                    <span>${user.location.street.number} ${user.location.street.name}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                $('body').append(modalHtml);
+                
+                // Kapatma butonuna event handler ekle
+                $('.close-modal-btn').on('click', function() {
+                    $('#simpleModal').remove();
+                });
+                
+                // Modal dışına tıklayınca da kapat
+                $('#simpleModal').on('click', function(e) {
+                    if (e.target === this) {
+                        $(this).remove();
+                    }
+                });
+            }
+            
+            // Basit modal kapatma fonksiyonu - Global scope'a taşındı
+            window.closeSimpleModal = function() {
+                $('#simpleModal').remove();
+            };
             
             function updateSlider(users) {
                 const slider = $('#userSlider');
