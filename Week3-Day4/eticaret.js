@@ -1,72 +1,10 @@
+// Mini E-Ticaret / Ürün Kataloğu Uygulaması
+// Fake Store API: https://fakestoreapi.com/products
 
-// Kütüphaneleri yükle
-function loadLibraries() {
-    return new Promise((resolve) => {
-        // jQuery yükle
-        if (typeof jQuery === 'undefined') {
-            const jqueryScript = document.createElement('script');
-            jqueryScript.src = 'https://code.jquery.com/jquery-3.7.1.min.js';
-            jqueryScript.onload = () => {
-                console.log('jQuery yüklendi');
-                loadFancybox();
-            };
-            document.head.appendChild(jqueryScript);
-        } else {
-            console.log('jQuery zaten yüklü');
-            loadFancybox();
-        }
-        
-        function loadFancybox() {
-            // Fancybox CSS yükle
-            const fancyboxCSS = document.createElement('link');
-            fancyboxCSS.rel = 'stylesheet';
-            fancyboxCSS.href = 'https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css';
-            document.head.appendChild(fancyboxCSS);
-            
-            // Fancybox JS yükle
-            const fancyboxScript = document.createElement('script');
-            fancyboxScript.src = 'https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js';
-            fancyboxScript.onload = () => {
-                console.log('Fancybox yüklendi');
-                loadSlickSlider();
-            };
-            document.head.appendChild(fancyboxScript);
-        }
-        
-        function loadSlickSlider() {
-            // Slick CSS yükle
-            const slickCSS = document.createElement('link');
-            slickCSS.rel = 'stylesheet';
-            slickCSS.href = 'https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css';
-            document.head.appendChild(slickCSS);
-            
-            const slickThemeCSS = document.createElement('link');
-            slickThemeCSS.rel = 'stylesheet';
-            slickThemeCSS.href = 'https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick-theme.css';
-            document.head.appendChild(slickThemeCSS);
-            
-            // Slick JS yükle
-            const slickScript = document.createElement('script');
-            slickScript.src = 'https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js';
-            slickScript.onload = () => {
-                console.log('Slick Slider yüklendi');
-                resolve();
-            };
-            document.head.appendChild(slickScript);
-        }
-    });
-}
-
-// HTML yapısını oluştur
-document.body.innerHTML = `
-<!DOCTYPE html>
-<html lang="tr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mini E-Ticaret / Ürün Kataloğu</title>
-    
-    <style>
+// CSS stillerini ekle
+function addStyles() {
+    const style = document.createElement('style');
+    style.textContent = `
         * {
             margin: 0;
             padding: 0;
@@ -121,10 +59,6 @@ document.body.innerHTML = `
             box-shadow: 0 6px 20px rgba(0,0,0,0.3);
         }
 
-        .btn:active {
-            transform: translateY(0);
-        }
-
         .product-count {
             padding: 10px;
             border: none;
@@ -155,22 +89,6 @@ document.body.innerHTML = `
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        @keyframes slideIn {
-            from { 
-                opacity: 0; 
-                transform: translateY(-50px) scale(0.9);
-            }
-            to { 
-                opacity: 1; 
-                transform: translateY(0) scale(1);
-            }
         }
 
         .shake {
@@ -219,8 +137,6 @@ document.body.innerHTML = `
             box-shadow: 0 8px 25px rgba(0,0,0,0.1);
             transition: all 0.3s ease;
             cursor: pointer;
-            opacity: 0;
-            transform: translateY(20px);
         }
 
         .product-card:hover {
@@ -416,10 +332,18 @@ document.body.innerHTML = `
                 grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
             }
         }
-    </style>
-</head>
-<body>
-    <div class="container">
+    `;
+    document.head.appendChild(style);
+}
+
+// HTML yapısını oluştur
+function createHTMLStructure() {
+    document.body.innerHTML = '';
+    
+    const container = document.createElement('div');
+    container.className = 'container';
+    
+    container.innerHTML = `
         <div class="header">
             <h1>🛍️ Mini E-Ticaret / Ürün Kataloğu</h1>
             <p>Fake Store API ile gerçek ürün verileri</p>
@@ -468,130 +392,165 @@ document.body.innerHTML = `
                 </div>
             </div>
         </div>
-    </div>
-</body>
-</html>
-`;
-
-// Kütüphaneler yüklendikten sonra uygulamayı başlat
-loadLibraries().then(() => {
-    console.log('Tüm kütüphaneler yüklendi, uygulama başlatılıyor...');
+    `;
     
-    // jQuery ve diğer kütüphaneler yüklendikten sonra çalışacak kod
-    $(document).ready(function() {
+    document.body.appendChild(container);
+}
+
+// Kütüphaneleri yükle
+function loadLibraries() {
+    return new Promise((resolve) => {
+        // jQuery yükle
+        if (typeof jQuery === 'undefined') {
+            const jqueryScript = document.createElement('script');
+            jqueryScript.src = 'https://code.jquery.com/jquery-3.7.1.min.js';
+            jqueryScript.onload = () => {
+                console.log('jQuery yüklendi');
+                loadFancybox();
+            };
+            document.head.appendChild(jqueryScript);
+        } else {
+            console.log('jQuery zaten yüklü');
+            loadFancybox();
+        }
+        
+        function loadFancybox() {
+            // Fancybox CSS yükle
+            const fancyboxCSS = document.createElement('link');
+            fancyboxCSS.rel = 'stylesheet';
+            fancyboxCSS.href = 'https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css';
+            document.head.appendChild(fancyboxCSS);
+            
+            // Fancybox JS yükle
+            const fancyboxScript = document.createElement('script');
+            fancyboxScript.src = 'https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js';
+            fancyboxScript.onload = () => {
+                console.log('Fancybox yüklendi');
+                loadSlickSlider();
+            };
+            document.head.appendChild(fancyboxScript);
+        }
+        
+        function loadSlickSlider() {
+            // Slick CSS yükle
+            const slickCSS = document.createElement('link');
+            slickCSS.rel = 'stylesheet';
+            slickCSS.href = 'https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css';
+            document.head.appendChild(slickCSS);
+            
+            const slickThemeCSS = document.createElement('link');
+            slickThemeCSS.rel = 'stylesheet';
+            slickThemeCSS.href = 'https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick-theme.css';
+            document.head.appendChild(slickThemeCSS);
+            
+            // Slick JS yükle
+            const slickScript = document.createElement('script');
+            slickScript.src = 'https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js';
+            slickScript.onload = () => {
+                console.log('Slick Slider yüklendi');
+                resolve();
+            };
+            document.head.appendChild(slickScript);
+        }
+    });
+}
+
+// Uygulamayı başlat
+function startApp() {
     let allProducts = [];
     let cart = [];
     
-    // Fancybox başlatma
-    console.log('Fancybox başlatılıyor...');
-    if (typeof $.fancybox !== 'undefined') {
-        console.log('Fancybox başarıyla yüklendi!');
-    } else {
-        console.error('Fancybox yüklenemedi!');
-    }
-    
     // Ürünleri yükle butonu
-    $('#loadProducts').on('click', function() {
-        $(this).addClass('shake');
-        setTimeout(() => $(this).removeClass('shake'), 500);
+    document.getElementById('loadProducts').addEventListener('click', function() {
+        this.classList.add('shake');
+        setTimeout(() => this.classList.remove('shake'), 500);
         loadProducts();
     });
     
     // Sepeti temizle butonu
-    $('#clearCart').on('click', function() {
-        $(this).addClass('bounce');
-        setTimeout(() => $(this).removeClass('bounce'), 500);
+    document.getElementById('clearCart').addEventListener('click', function() {
+        this.classList.add('bounce');
+        setTimeout(() => this.classList.remove('bounce'), 500);
         clearCart();
     });
     
     // Ürünleri yükleme fonksiyonu
     function loadProducts() {
-        const productCount = $('#productCount').val() || 8;
+        const productCount = document.getElementById('productCount').value || 8;
         
-        $('#loading').show();
-        $('#productGrid').empty();
+        document.getElementById('loading').style.display = 'block';
+        document.getElementById('productGrid').innerHTML = '';
         
-        $.ajax({
-            url: 'https://fakestoreapi.com/products',
-            method: 'GET',
-            success: function(data) {
+        fetch('https://fakestoreapi.com/products')
+            .then(response => response.json())
+            .then(data => {
                 console.log('Ürünler yüklendi:', data.length);
                 
-                // Belirtilen sayıda ürün al
                 allProducts = data.slice(0, productCount);
-                
                 displayProducts(allProducts);
                 updateProductSlider(allProducts);
                 
-                $('#loading').hide();
-            },
-            error: function(xhr, status, error) {
+                document.getElementById('loading').style.display = 'none';
+            })
+            .catch(error => {
                 console.error('Ürün yükleme hatası:', error);
-                $('#loading').hide();
+                document.getElementById('loading').style.display = 'none';
                 alert('Ürünler yüklenirken hata oluştu. Lütfen tekrar deneyin.');
-            }
-        });
+            });
     }
     
     // Ürünleri görüntüleme
     function displayProducts(products) {
+        const productGrid = document.getElementById('productGrid');
+        
         products.forEach((product, index) => {
             const productCard = createProductCard(product, index);
-            $('#productGrid').append(productCard);
+            productGrid.appendChild(productCard);
         });
     }
     
     // Ürün kartı oluşturma
     function createProductCard(product, index) {
-        const card = $(`
-            <div class="product-card" data-product-index="${index}">
-                <img src="${product.image}" alt="${product.title}">
-                <h3>${product.title.substring(0, 50)}${product.title.length > 50 ? '...' : ''}</h3>
-                <div class="price">$${product.price}</div>
-                <div class="rating">⭐ ${product.rating.rate} (${product.rating.count})</div>
-                <button class="detail-btn">👆 Detayları Göster</button>
-                <button class="add-to-cart-btn">🛒 Sepete Ekle</button>
-            </div>
-        `);
+        const card = document.createElement('div');
+        card.className = 'product-card';
+        card.setAttribute('data-product-index', index);
         
-        // Detay butonu tıklama
-        card.find('.detail-btn').on('click', function(e) {
+        card.innerHTML = `
+            <img src="${product.image}" alt="${product.title}">
+            <h3>${product.title.substring(0, 50)}${product.title.length > 50 ? '...' : ''}</h3>
+            <div class="price">$${product.price}</div>
+            <div class="rating">⭐ ${product.rating.rate} (${product.rating.count})</div>
+            <button class="detail-btn">👆 Detayları Göster</button>
+            <button class="add-to-cart-btn">🛒 Sepete Ekle</button>
+        `;
+        
+        // Detay butonu
+        card.querySelector('.detail-btn').addEventListener('click', function(e) {
             e.preventDefault();
             e.stopPropagation();
             console.log('Detay butonu tıklandı:', product.title);
-            $(this).css('transform', 'scale(0.95)');
-            $(this).css('background', '#ff6b6b');
+            this.style.transform = 'scale(0.95)';
+            this.style.background = '#ff6b6b';
             setTimeout(() => {
-                $(this).css('transform', 'scale(1)');
-                $(this).css('background', '#667eea');
-                console.log('Modal açılıyor...');
+                this.style.transform = 'scale(1)';
+                this.style.background = '#667eea';
                 showProductModal(product);
             }, 150);
         });
         
         // Sepete ekle butonu
-        card.find('.add-to-cart-btn').on('click', function(e) {
+        card.querySelector('.add-to-cart-btn').addEventListener('click', function(e) {
             e.preventDefault();
             e.stopPropagation();
             console.log('Sepete ekleniyor:', product.title);
             addToCart(product);
-            $(this).text('✅ Eklendi!');
-            $(this).css('background', '#28a745');
+            this.textContent = '✅ Eklendi!';
+            this.style.background = '#28a745';
             setTimeout(() => {
-                $(this).text('🛒 Sepete Ekle');
-                $(this).css('background', '#ff6b6b');
+                this.textContent = '🛒 Sepete Ekle';
+                this.style.background = '#ff6b6b';
             }, 2000);
         });
-        
-        // Hover efektleri
-        card.hover(
-            function() {
-                $(this).find('img').fadeTo(300, 0.8);
-            },
-            function() {
-                $(this).find('img').fadeTo(300, 1);
-            }
-        );
         
         return card;
     }
@@ -600,14 +559,12 @@ loadLibraries().then(() => {
     function showProductModal(product) {
         console.log('showProductModal çağrıldı:', product.title);
         
-        // Fancybox kontrolü
         if (typeof $.fancybox === 'undefined') {
             console.error('Fancybox yüklenmemiş!');
             alert('Modal kütüphanesi yüklenemedi. Lütfen sayfayı yenileyin.');
             return;
         }
         
-        // Modal içeriği
         const modalContent = `
             <div class="modal-content" style="padding: 20px; max-width: 700px;">
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; align-items: start;">
@@ -665,11 +622,9 @@ loadLibraries().then(() => {
         try {
             console.log('Fancybox açılıyor...');
             
-            // Geçici div oluştur ve DOM'a ekle
             const tempDiv = $('<div>').html(modalContent).attr('id', 'temp-modal-content');
             $('body').append(tempDiv);
             
-            // Modal içindeki sepete ekle butonu
             $('#temp-modal-content .modal-add-to-cart').on('click', function() {
                 addToCart(product);
                 $(this).text('✅ Sepete Eklendi!');
@@ -679,7 +634,6 @@ loadLibraries().then(() => {
                 }, 1500);
             });
             
-            // Fancybox ile modal aç
             $.fancybox.open({
                 src: '#temp-modal-content',
                 type: 'inline',
@@ -692,7 +646,6 @@ loadLibraries().then(() => {
                         }
                     },
                     afterClose: function() {
-                        // Modal kapandıktan sonra geçici div'i temizle
                         $('#temp-modal-content').remove();
                     }
                 }
@@ -702,7 +655,6 @@ loadLibraries().then(() => {
             
         } catch (error) {
             console.error('Fancybox hatası:', error);
-            // Hata durumunda geçici div'i temizle
             $('#temp-modal-content').remove();
             alert('Modal açılırken hata oluştu. Lütfen tekrar deneyin.');
         }
@@ -730,28 +682,29 @@ loadLibraries().then(() => {
         const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
         const totalPrice = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
         
-        $('#cartCount').text(totalItems);
-        $('#cartTotal').text(`$${totalPrice.toFixed(2)}`);
+        document.getElementById('cartCount').textContent = totalItems;
+        document.getElementById('cartTotal').textContent = `$${totalPrice.toFixed(2)}`;
         
-        // Sepet içeriğini güncelle
-        $('#cartItems').empty();
+        const cartItems = document.getElementById('cartItems');
+        cartItems.innerHTML = '';
+        
         cart.forEach(item => {
-            const cartItem = $(`
-                <div class="cart-item">
-                    <img src="${item.image}" alt="${item.title}" style="width: 50px; height: 50px; object-fit: contain;">
-                    <div class="cart-item-details">
-                        <h4>${item.title.substring(0, 30)}...</h4>
-                        <p>$${item.price} x ${item.quantity}</p>
-                    </div>
-                    <button class="remove-item" data-id="${item.id}">❌</button>
+            const cartItem = document.createElement('div');
+            cartItem.className = 'cart-item';
+            cartItem.innerHTML = `
+                <img src="${item.image}" alt="${item.title}" style="width: 50px; height: 50px; object-fit: contain;">
+                <div class="cart-item-details">
+                    <h4>${item.title.substring(0, 30)}...</h4>
+                    <p>$${item.price} x ${item.quantity}</p>
                 </div>
-            `);
+                <button class="remove-item" data-id="${item.id}">❌</button>
+            `;
             
-            cartItem.find('.remove-item').on('click', function() {
+            cartItem.querySelector('.remove-item').addEventListener('click', function() {
                 removeFromCart(item.id);
             });
             
-            $('#cartItems').append(cartItem);
+            cartItems.appendChild(cartItem);
         });
     }
     
@@ -768,39 +721,38 @@ loadLibraries().then(() => {
         updateCartDisplay();
         console.log('Sepet temizlendi');
         
-        $('#cartItems').html(`
+        document.getElementById('cartItems').innerHTML = `
             <div style="text-align: center; color: #666; padding: 20px;">
                 <p>🛒 Sepet boş</p>
             </div>
-        `);
+        `;
     }
     
     // Ürün slider'ı güncelleme
     function updateProductSlider(products) {
-        const slider = $('#productSlider');
+        const slider = document.getElementById('productSlider');
         
-        if (slider.hasClass('slick-initialized')) {
-            slider.slick('unslick');
+        if (slider.classList.contains('slick-initialized')) {
+            $(slider).slick('unslick');
         }
         
-        slider.empty();
+        slider.innerHTML = '';
         
         if (products.length > 0) {
             products.forEach(product => {
-                const sliderCard = $(`
-                    <div class="slider-card">
-                        <img src="${product.image}" alt="${product.title}">
-                        <h4>${product.title.substring(0, 30)}...</h4>
-                        <p class="price">$${product.price}</p>
-                        <div class="rating">⭐ ${product.rating.rate}</div>
-                    </div>
-                `);
+                const sliderCard = document.createElement('div');
+                sliderCard.className = 'slider-card';
+                sliderCard.innerHTML = `
+                    <img src="${product.image}" alt="${product.title}">
+                    <h4>${product.title.substring(0, 30)}...</h4>
+                    <p class="price">$${product.price}</p>
+                    <div class="rating">⭐ ${product.rating.rate}</div>
+                `;
                 
-                slider.append(sliderCard);
+                slider.appendChild(sliderCard);
             });
             
-            // Slick slider'ı başlat
-            slider.slick({
+            $(slider).slick({
                 dots: true,
                 infinite: true,
                 speed: 300,
@@ -835,26 +787,71 @@ loadLibraries().then(() => {
                 ]
             });
             
-            slider.slick('slickPlay');
+            $(slider).slick('slickPlay');
         } else {
-            slider.html(`
+            slider.innerHTML = `
                 <div style="text-align: center; color: white; font-size: 16px; padding: 30px;">
                     <p>🎠 Slider temizlendi</p>
                 </div>
-            `);
+            `;
         }
     }
     
     // Fancybox ayarları
-    $.fancybox.defaults = {
-        closeBtn: true,
-        closeClickOutside: false,
-        helpers: {
-            overlay: {
-                locked: false
+    if (typeof $.fancybox !== 'undefined') {
+        $.fancybox.defaults = {
+            closeBtn: true,
+            closeClickOutside: false,
+            helpers: {
+                overlay: {
+                    locked: false
+                }
             }
-        }
-    };
+        };
+    }
+}
+
+// Tamamen bağımsız çalışan E-Ticaret uygulaması
+// HTML dosyası olmadan, sadece JavaScript ile çalışır
+
+// HTML yapısını oluştur
+document.documentElement.innerHTML = `
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mini E-Ticaret / Ürün Kataloğu</title>
+</head>
+<body>
+    <!-- JavaScript burada DOM'u manipüle edecek -->
+</body>
+</html>
+`;
+
+// Doğrudan çalıştırılabilir - HTML dosyası olmadan
+(function() {
+    'use strict';
     
+    console.log('E-Ticaret uygulaması başlatılıyor...');
+    
+    // CSS stillerini ekle
+    addStyles();
+    
+    // HTML yapısını oluştur
+    createHTMLStructure();
+    
+    // Kütüphaneleri yükle ve uygulamayı başlat
+    loadLibraries().then(() => {
+        console.log('Tüm kütüphaneler yüklendi, uygulama başlatılıyor...');
+        
+        // jQuery'nin yüklenmesini bekle
+        const checkJQuery = setInterval(() => {
+            if (typeof jQuery !== 'undefined') {
+                clearInterval(checkJQuery);
+                console.log('jQuery hazır, uygulama başlatılıyor...');
+                startApp();
+            }
+        }, 100);
     });
-});
+})();
