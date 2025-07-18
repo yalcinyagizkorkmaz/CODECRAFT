@@ -5,14 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Random User API - Kullanıcı Profilleri</title>
     
-    <!-- jQuery -->
+   
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     
-    <!-- Fancybox CSS ve JS -->
+   <!-- Modal için gerekli -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.css"/>
     <script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.umd.js"></script>
     
-    <!-- Slick Slider CSS ve JS -->
+
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css"/>
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick-theme.css"/>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script>
@@ -336,17 +336,17 @@
         $(document).ready(function() {
             let allUsers = [];
             
-            // Sayfa yüklendiğinde kullanıcıları yükle
+           
             loadUsers();
             
-            // Kullanıcıları yükle butonu
+          
             $('#loadUsers').click(function() {
                 $(this).addClass('shake');
                 setTimeout(() => $(this).removeClass('shake'), 500);
                 loadUsers();
             });
             
-            // Temizle butonu
+         
             $('#clearUsers').click(function() {
                 $(this).addClass('bounce');
                 setTimeout(() => $(this).removeClass('bounce'), 600);
@@ -381,7 +381,7 @@
                     const card = createUserCard(user, index);
                     userGrid.append(card);
                     
-                    // Animasyonlu görünüm
+                    // Animasyonlu gösterim olarak (fade-in) animasyonu
                     setTimeout(() => {
                         card.addClass('fade-in');
                     }, index * 100);
@@ -408,14 +408,14 @@
                     </div>
                 `);
                 
-                // Butona tıklama olayı
+                // Detay butonu
                 card.find('.detail-btn').on('click', function(e) {
                     e.preventDefault();
                     e.stopPropagation();
                     
                     console.log('Detay butonu tıklandı:', user.name.first);
                     
-                    // Buton animasyonu
+                    // Buton  animasyon transform ve bg
                     $(this).css('transform', 'scale(0.95)');
                     $(this).css('background', '#ff6b6b');
                     
@@ -424,12 +424,12 @@
                         $(this).css('background', '#667eea');
                         console.log('Modal açılıyor...');
                         console.log('Modal açıldı!!');
-                        // Direkt basit modal'ı aç
+                        // Basit modalı direkt aç
                         showSimpleModal(user);
                     }, 150);
                 });
                 
-                // Buton hover efekti
+               
                 card.find('.detail-btn').hover(
                     function() {
                         $(this).css('transform', 'translateY(-2px)');
@@ -441,7 +441,7 @@
                     }
                 );
                 
-                // Hover efektleri
+             //Hover effect
                 card.hover(
                     function() {
                         $(this).find('img').fadeTo(300, 0.8);
@@ -457,13 +457,13 @@
             function showUserModal(user) {
                 console.log('showUserModal çağrıldı:', user.name.first);
                 
-                // Fancybox kontrolü
+                // Fancybox kontrolü hata mesajı ve alert ile gösterim
                 if (typeof Fancybox === 'undefined') {
                     console.error('Fancybox yüklenmemiş!');
                     alert('Modal kütüphanesi yüklenemedi. Lütfen sayfayı yenileyin.');
                     return;
                 }
-                
+                //Modal içerik
                 const modalContent = `
                     <div class="modal-content">
                         <div class="modal-header">
@@ -520,12 +520,12 @@
                     console.log('Fancybox açıldı!');
                 } catch (error) {
                     console.error('Fancybox hatası:', error);
-                    // Alternatif modal gösterimi
+                   
                     showSimpleModal(user);
                 }
             }
             
-            // Basit modal fonksiyonu (Fancybox çalışmazsa)
+            // Basit modal fonksiyonu fancybox çalışmaması durumunda
             function showSimpleModal(user) {
                 const modalHtml = `
                     <div id="simpleModal" style="
@@ -615,12 +615,12 @@
                 
                 $('body').append(modalHtml);
                 
-                // Kapatma butonuna event handler ekle
+             
                 $('.close-modal-btn').on('click', function() {
                     $('#simpleModal').remove();
                 });
                 
-                // Modal dışına tıklayınca da kapat
+               
                 $('#simpleModal').on('click', function(e) {
                     if (e.target === this) {
                         $(this).remove();
@@ -628,7 +628,7 @@
                 });
             }
             
-            // Basit modal kapatma fonksiyonu - Global scope'a taşındı
+         
             window.closeSimpleModal = function() {
                 $('#simpleModal').remove();
             };
@@ -649,7 +649,7 @@
                     slider.append(sliderCard);
                 });
                 
-                // Slick slider'ı başlat
+                // Slick slider'ı başlat 1.5 sn aralıklarla otomatik geçiş sağlandı
                 slider.slick({
                     dots: true,
                     infinite: true,
@@ -700,7 +700,7 @@
                     </div>
                 `);
                 
-                // Slider bölümüne de mesaj ekle
+                // Slider bölümüne de mesaj eklendi
                 $('#userSlider').html(`
                     <div style="text-align: center; color: white; font-size: 16px; padding: 30px;">
                         <p>🎠 Slider temizlendi</p>
@@ -708,7 +708,7 @@
                 `);
             }
             
-            // Fancybox ayarları
+            // Fancybox ayarları boşluğa veya cardın dışına basılınca kapanıyor modal
             Fancybox.defaults = {
                 closeButton: true,
                 dragToClose: false,
