@@ -461,7 +461,7 @@ function createHTMLStructure() {
     container.innerHTML = `
         <div class="header">
             <h1>🛍️ Mini E-Ticaret / Ürün Kataloğu</h1>
-            <p>Fake Store API ile gerçek ürün verileri</p>
+         
         </div>
 
         <div class="controls">
@@ -904,7 +904,7 @@ function startApp() {
             cartItems.innerHTML = `
                 <div style="text-align: center; color: #666; padding: 20px;">
                     <p>🛒 Sepet boş</p>
-                    <small style="color: #999;">💾 Sepet verileri localStorage'da saklanıyor</small>
+                 
                 </div>
             `;
             return;
@@ -932,7 +932,7 @@ function startApp() {
         // LocalStorage bilgisi
         const storageInfo = document.createElement('div');
         storageInfo.style.cssText = 'text-align: center; color: #999; font-size: 12px; padding: 10px; border-top: 1px solid #ddd; margin-top: 10px;';
-        storageInfo.innerHTML = '💾 Sepet verileri localStorage\'da saklanıyor';
+      
         cartItems.appendChild(storageInfo);
     }
     
