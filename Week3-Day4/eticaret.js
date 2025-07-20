@@ -974,14 +974,14 @@ function initStartApp() {
                 const productCard = createProductCard(product, 0);
                 productGrid.appendChild(productCard);
                 
-                // Slider'ı güncelle
-                updateProductSlider([product]);
+                // Slider'ı etkileme - arama sonucunda slider normal akışında kalsın
+                // Slider'da mevcut ürünler gösterilmeye devam eder
                 
                 // Başarı mesajı
                 if (typeof $ !== 'undefined') {
                     $('<div>')
                         .addClass('success-message')
-                        .text(`✅ Ürün bulundu: ${product.title}`)
+                        .text(`✅ Ürün bulundu`)
                         .css({
                             position: 'fixed',
                             top: '20px',
@@ -999,6 +999,9 @@ function initStartApp() {
                             $(this).remove();
                         });
                 }
+                
+                // Arama input'unu temizle
+                document.getElementById('productSearch').value = '';
             })
             .catch(error => {
                 console.error('Arama hatası:', error);
@@ -1068,13 +1071,7 @@ function initStartApp() {
         }
     });
     
-    // Debounced input event
-    document.getElementById('productSearch').addEventListener('input', function() {
-        const productId = parseInt(this.value);
-        if (productId && productId >= 1 && productId <= 20) {
-            debouncedSearch(productId);
-        }
-    });
+    // Input event'i kaldırıldı - sadece buton ile arama yapılacak
     
     // Enter tuşu ile arama
     document.getElementById('productSearch').addEventListener('keypress', function(e) {
