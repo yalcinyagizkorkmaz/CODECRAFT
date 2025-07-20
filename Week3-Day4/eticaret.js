@@ -695,6 +695,19 @@ function loadLibraries() {
 
 // Uygulamayı başlat
 function startApp() {
+    // Document ready kontrolü
+    if (typeof $ !== 'undefined') {
+        $(document).ready(function() {
+            console.log('startApp - Document ready kontrolü geçildi');
+            initStartApp();
+        });
+    } else {
+        console.log('startApp - jQuery yok, doğrudan başlatılıyor');
+        initStartApp();
+    }
+}
+
+function initStartApp() {
     let allProducts = [];
     let cart = [];
     
@@ -1301,16 +1314,18 @@ function startApp() {
             }
         };
     }
+    
+    console.log('initStartApp tamamlandı - Uygulama hazır!');
 }
 
 // Tamamen bağımsız çalışan E-Ticaret uygulaması
 // HTML dosyası olmadan, sadece JavaScript ile çalışır
 
-// Doğrudan çalıştırılabilir - HTML dosyası olmadan
-(function() {
+// Document ready ile uygulama başlatma
+function initApp() {
     'use strict';
     
-    console.log('E-Ticaret uygulaması başlatılıyor...');
+    console.log('Document ready - E-Ticaret uygulaması başlatılıyor...');
     
     // CSS stillerini ekle
     addStyles();
@@ -1331,4 +1346,18 @@ function startApp() {
             }
         }, 100);
     });
-})();
+}
+
+// Document ready kontrolü
+if (typeof $ !== 'undefined') {
+    // jQuery zaten yüklü
+    $(document).ready(initApp);
+} else {
+    // jQuery henüz yüklenmemiş, DOMContentLoaded kullan
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initApp);
+    } else {
+        // DOM zaten yüklü
+        initApp();
+    }
+}
