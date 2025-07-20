@@ -255,7 +255,8 @@ function addStyles() {
             min-height: 350px;
         }
 
-        .product-card:hover {
+        /* Hover efektleri jQuery ile yönetilecek */
+        .product-card.hovered {
             transform: translateY(-5px);
             box-shadow: 0 15px 35px rgba(0,0,0,0.2);
             border: 2px solid #667eea;
@@ -273,7 +274,7 @@ function addStyles() {
             margin-right: auto;
         }
 
-        .product-card:hover img {
+        .product-card.hovered img {
             transform: scale(1.1);
         }
 
@@ -317,7 +318,7 @@ function addStyles() {
             max-width: 200px;
         }
 
-        .product-card button:hover {
+        .product-card button.hovered {
             background: #ff6b6b;
             transform: scale(1.05);
         }
@@ -494,6 +495,12 @@ function addStyles() {
             font-weight: bold;
             text-align: center;
             order: 2;
+        }
+
+        /* Slider kartı hover efekti */
+        .slider-card.hovered {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
         }
 
         .slider-card .price-info {
@@ -799,6 +806,29 @@ function startApp() {
             <button class="detail-btn">👆 Detayları Göster</button>
             <button class="add-to-cart-btn">🛒 Sepete Ekle</button>
         `;
+        
+        // jQuery hover efektleri ekle
+        if (typeof $ !== 'undefined') {
+            // Ürün kartı hover efekti
+            $(card).hover(
+                function() {
+                    $(this).addClass('hovered');
+                },
+                function() {
+                    $(this).removeClass('hovered');
+                }
+            );
+            
+            // Buton hover efektleri
+            $(card).find('button').hover(
+                function() {
+                    $(this).addClass('hovered');
+                },
+                function() {
+                    $(this).removeClass('hovered');
+                }
+            );
+        }
         
         // Detay butonu
         card.querySelector('.detail-btn').addEventListener('click', function(e) {
@@ -1184,6 +1214,18 @@ function startApp() {
                         <div class="rating">⭐ ${product.rating.rate}</div>
                     </div>
                 `;
+                
+                // Slider kartı hover efekti
+                if (typeof $ !== 'undefined') {
+                    $(sliderCard).hover(
+                        function() {
+                            $(this).addClass('hovered');
+                        },
+                        function() {
+                            $(this).removeClass('hovered');
+                        }
+                    );
+                }
                 
                 slider.appendChild(sliderCard);
             });
