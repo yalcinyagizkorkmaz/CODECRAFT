@@ -249,6 +249,10 @@ function addStyles() {
             box-shadow: 0 8px 25px rgba(0,0,0,0.1);
             transition: all 0.3s ease;
             cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 350px;
         }
 
         .product-card:hover {
@@ -264,6 +268,9 @@ function addStyles() {
             margin-bottom: 15px;
             border-radius: 10px;
             transition: all 0.3s ease;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
         }
 
         .product-card:hover img {
@@ -275,6 +282,10 @@ function addStyles() {
             margin-bottom: 10px;
             font-size: 1.1rem;
             line-height: 1.4;
+            flex-grow: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .product-card .price {
@@ -282,12 +293,14 @@ function addStyles() {
             font-weight: bold;
             font-size: 1.3rem;
             margin-bottom: 8px;
+            text-align: center;
         }
 
         .product-card .rating {
             color: #ffc107;
             margin-bottom: 15px;
             font-weight: bold;
+            text-align: center;
         }
 
         .product-card button {
@@ -301,6 +314,7 @@ function addStyles() {
             margin: 5px;
             transition: all 0.3s ease;
             width: 100%;
+            max-width: 200px;
         }
 
         .product-card button:hover {
@@ -442,6 +456,15 @@ function addStyles() {
             
             .product-grid {
                 grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            }
+            
+            .product-card img {
+                width: 120px;
+                height: 120px;
+            }
+            
+            .product-card {
+                min-height: 300px;
             }
         }
     `;
