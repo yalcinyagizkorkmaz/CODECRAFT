@@ -99,6 +99,17 @@ function addStyles() {
             width: 80px;
             flex-shrink: 0;
             height: 45px;
+            background: linear-gradient(45deg,rgb(31, 53, 154), #764ba2);
+            color: white;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .product-count:focus {
+            outline: none;
+            box-shadow: 0 0 15px rgba(102, 126, 234, 0.6);
+            background: linear-gradient(45deg, #764ba2, #667eea);
+            transform: scale(1.05);
         }
 
         .loading {
@@ -615,10 +626,10 @@ function createHTMLStructure() {
         </div>
 
         <div class="controls">
+         <input type="number" id="productCount" class="product-count" placeholder="8" min="1" max="20" value="8">
+            <button id="loadProducts" class="btn">📦 Ürünleri Yükle</button>
             <input type="number" id="productSearch" class="search-input" placeholder="Ürün ID'si girin (1-20)" min="1" max="20">
             <button id="searchProduct" class="btn">🔍 Ürün Ara</button>
-            <input type="number" id="productCount" class="product-count" placeholder="8" min="1" max="20" value="8">
-            <button id="loadProducts" class="btn">📦 Ürünleri Yükle</button>
             <button id="clearCart" class="btn">🗑️ Sepeti Temizle</button>
         </div>
 
@@ -1152,15 +1163,16 @@ function initStartApp() {
                 }
             );
             
-            // Buton hover efektleri - fadeTo ve toggleClass ile
-            $(card).find('button').hover(
+            // Detayları göster butonu hover efekti
+            $(card).find('.detail-btn').hover(
                 function() {
                     $(this)
-                        .fadeTo(200, 0.8)
+                        .fadeTo(200, 0.9)
                         .toggleClass('active', true)
                         .animate({
-                            transform: 'scale(1.05)',
-                            boxShadow: '0 8px 25px rgba(0,0,0,0.3)'
+                            transform: 'scale(1.08)',
+                            boxShadow: '0 10px 30px rgba(102, 126, 234, 0.4)',
+                            background: 'linear-gradient(45deg, #667eea, #764ba2)'
                         }, 200);
                 },
                 function() {
@@ -1169,7 +1181,32 @@ function initStartApp() {
                         .toggleClass('active', false)
                         .animate({
                             transform: 'scale(1)',
-                            boxShadow: '0 4px 15px rgba(0,0,0,0.2)'
+                            boxShadow: '0 4px 15px rgba(0,0,0,0.2)',
+                            background: 'linear-gradient(45deg, #667eea, #ee5a24)'
+                        }, 200);
+                }
+            );
+            
+            // Sepete ekle butonu hover efekti
+            $(card).find('.add-to-cart-btn').hover(
+                function() {
+                    $(this)
+                        .fadeTo(200, 0.9)
+                        .toggleClass('active', true)
+                        .animate({
+                            transform: 'scale(1.08)',
+                            boxShadow: '0 10px 30px rgba(255, 107, 107, 0.4)',
+                            background: 'linear-gradient(45deg, #ff6b6b, #ee5a24)'
+                        }, 200);
+                },
+                function() {
+                    $(this)
+                        .fadeTo(200, 1)
+                        .toggleClass('active', false)
+                        .animate({
+                            transform: 'scale(1)',
+                            boxShadow: '0 4px 15px rgba(0,0,0,0.2)',
+                            background: 'linear-gradient(45deg, #667eea, #ee5a24)'
                         }, 200);
                 }
             );
@@ -1218,14 +1255,14 @@ function initStartApp() {
                     .delay(1500)
                     .animate({ scale: 0.9 }, 100)
                     .text('🛒 Sepete Ekle')
-                    .css('background', '#ff6b6b')
+                    .css('background', '#667eea')
                     .animate({ scale: 1 }, 100);
             } else {
                 this.textContent = '✅ Eklendi!';
                 this.style.background = '#28a745';
                 setTimeout(() => {
                     this.textContent = '🛒 Sepete Ekle';
-                    this.style.background = '#ff6b6b';
+                    this.style.background = '#667eea';
                 }, 2000);
             }
         });
