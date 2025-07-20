@@ -36,8 +36,12 @@ function addStyles() {
         }
 
         .controls {
-            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
             margin-bottom: 30px;
+            flex-wrap: wrap;
         }
 
         .btn {
@@ -49,14 +53,40 @@ function addStyles() {
             cursor: pointer;
             font-size: 16px;
             font-weight: bold;
-            margin: 0 10px;
+            margin: 0 5px;
             transition: all 0.3s ease;
             box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            min-width: 120px;
+            height: 45px;
         }
 
         .btn:hover {
             transform: translateY(-2px);
             box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+
+        .search-section, .load-section {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .search-input {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 20px;
+            text-align: center;
+            font-size: 16px;
+            width: 180px;
+            background: rgba(255,255,255,0.9);
+            color: #333;
+            flex-shrink: 0;
+            height: 45px;
+        }
+
+        .search-input:focus {
+            outline: none;
+            box-shadow: 0 0 10px rgba(102, 126, 234, 0.5);
         }
 
         .product-count {
@@ -65,8 +95,10 @@ function addStyles() {
             border-radius: 20px;
             text-align: center;
             font-size: 16px;
-            margin: 0 10px;
+            margin: 0 5px;
             width: 80px;
+            flex-shrink: 0;
+            height: 45px;
         }
 
         .loading {
@@ -108,6 +140,17 @@ function addStyles() {
         @keyframes bounce {
             0%, 100% { transform: translateY(0); }
             50% { transform: translateY(-10px); }
+        }
+
+        @keyframes slideInRight {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
         }
 
         /* Modal CSS Stilleri */
@@ -262,6 +305,11 @@ function addStyles() {
             border: 2px solid #667eea;
         }
 
+        .product-card.active {
+            transform: scale(1.02);
+            box-shadow: 0 20px 40px rgba(102, 126, 234, 0.4);
+        }
+
         .product-card img {
             width: 150px;
             height: 150px;
@@ -369,6 +417,13 @@ function addStyles() {
         .cart-item.updated {
             background: rgba(40, 167, 69, 0.2);
             transform: scale(1.02);
+            animation: pulse 0.6s ease;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
         }
 
         .cart-item-actions {
@@ -560,6 +615,8 @@ function createHTMLStructure() {
         </div>
 
         <div class="controls">
+            <input type="number" id="productSearch" class="search-input" placeholder="Ürün ID'si girin (1-20)" min="1" max="20">
+            <button id="searchProduct" class="btn">🔍 Ürün Ara</button>
             <input type="number" id="productCount" class="product-count" placeholder="8" min="1" max="20" value="8">
             <button id="loadProducts" class="btn">📦 Ürünleri Yükle</button>
             <button id="clearCart" class="btn">🗑️ Sepeti Temizle</button>
@@ -753,21 +810,173 @@ function initStartApp() {
         }
     }
     
+    // Debounce fonksiyonu
+    function debounce(func, wait) {
+        let timeout;
+        return function executedFunction(...args) {
+            const later = () => {
+                clearTimeout(timeout);
+                func(...args);
+            };
+            clearTimeout(timeout);
+            timeout = setTimeout(later, wait);
+        };
+    }
+
+    // Throttle fonksiyonu
+    function throttle(func, limit) {
+        let inThrottle;
+        return function() {
+            const args = arguments;
+            const context = this;
+            if (!inThrottle) {
+                func.apply(context, args);
+                inThrottle = true;
+                setTimeout(() => inThrottle = false, limit);
+            }
+        };
+    }
+
+    // AJAX ile ürün arama fonksiyonu
+    function searchProductById(productId) {
+        if (!productId || productId < 1 || productId > 20) {
+            alert('Lütfen 1-20 arasında geçerli bir ürün ID\'si girin!');
+            return;
+        }
+
+        // Loading göster
+        const productGrid = document.getElementById('productGrid');
+        productGrid.innerHTML = `
+            <div style="text-align: center; color: white; font-size: 18px; padding: 50px; grid-column: 1 / -1;">
+                <div class="spinner"></div>
+                <p>Ürün aranıyor... ID: ${productId}</p>
+            </div>
+        `;
+
+        // AJAX isteği
+        fetch(`https://fakestoreapi.com/products/${productId}`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Ürün bulunamadı!');
+                }
+                return response.json();
+            })
+            .then(product => {
+                console.log('Aranan ürün:', product);
+                
+                // Ürünü göster
+                productGrid.innerHTML = '';
+                const productCard = createProductCard(product, 0);
+                productGrid.appendChild(productCard);
+                
+                // Slider'ı güncelle
+                updateProductSlider([product]);
+                
+                // Başarı mesajı
+                if (typeof $ !== 'undefined') {
+                    $('<div>')
+                        .addClass('success-message')
+                        .text(`✅ Ürün bulundu: ${product.title}`)
+                        .css({
+                            position: 'fixed',
+                            top: '20px',
+                            right: '20px',
+                            background: '#28a745',
+                            color: 'white',
+                            padding: '15px',
+                            borderRadius: '10px',
+                            zIndex: '10000',
+                            animation: 'slideInRight 0.5s ease'
+                        })
+                        .appendTo('body')
+                        .delay(3000)
+                        .fadeOut(500, function() {
+                            $(this).remove();
+                        });
+                }
+            })
+            .catch(error => {
+                console.error('Arama hatası:', error);
+                productGrid.innerHTML = `
+                    <div style="text-align: center; color: white; font-size: 18px; padding: 50px; grid-column: 1 / -1;">
+                        <p>❌ Hata: ${error.message}</p>
+                        <button class="btn" onclick="loadProducts()">📦 Tüm Ürünleri Yükle</button>
+                    </div>
+                `;
+            });
+    }
+
+    // Debounced arama fonksiyonu
+    const debouncedSearch = debounce(searchProductById, 500);
+
     // Uygulama başladığında sepeti yükle
     loadCartFromStorage();
     
     // Ürünleri yükle butonu
     document.getElementById('loadProducts').addEventListener('click', function() {
-        this.classList.add('shake');
-        setTimeout(() => this.classList.remove('shake'), 500);
-        loadProducts();
+        if (typeof $ !== 'undefined') {
+            $(this)
+                .animate({ scale: 0.95 }, 100)
+                .fadeTo(100, 0.8)
+                .animate({ scale: 1 }, 100)
+                .fadeTo(100, 1, function() {
+                    loadProducts();
+                });
+        } else {
+            this.classList.add('shake');
+            setTimeout(() => this.classList.remove('shake'), 500);
+            loadProducts();
+        }
     });
     
     // Sepeti temizle butonu
     document.getElementById('clearCart').addEventListener('click', function() {
-        this.classList.add('bounce');
-        setTimeout(() => this.classList.remove('bounce'), 500);
-        clearCart();
+        if (typeof $ !== 'undefined') {
+            $(this)
+                .animate({ scale: 0.95 }, 100)
+                .fadeTo(100, 0.7)
+                .animate({ scale: 1 }, 100)
+                .fadeTo(100, 1, function() {
+                    clearCart();
+                });
+        } else {
+            this.classList.add('bounce');
+            setTimeout(() => this.classList.remove('bounce'), 500);
+            clearCart();
+        }
+    });
+    
+    // Arama event listener'ları
+    document.getElementById('searchProduct').addEventListener('click', function() {
+        const productId = parseInt(document.getElementById('productSearch').value);
+        
+        if (typeof $ !== 'undefined') {
+            $(this)
+                .animate({ scale: 0.9 }, 150)
+                .fadeTo(150, 0.6)
+                .animate({ scale: 1 }, 150)
+                .fadeTo(150, 1, function() {
+                    searchProductById(productId);
+                });
+        } else {
+            searchProductById(productId);
+        }
+    });
+    
+    // Debounced input event
+    document.getElementById('productSearch').addEventListener('input', function() {
+        const productId = parseInt(this.value);
+        if (productId && productId >= 1 && productId <= 20) {
+            debouncedSearch(productId);
+        }
+    });
+    
+    // Enter tuşu ile arama
+    document.getElementById('productSearch').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            const productId = parseInt(this.value);
+            searchProductById(productId);
+        }
     });
     
     // Ürünleri yükleme fonksiyonu
@@ -802,6 +1011,15 @@ function initStartApp() {
         products.forEach((product, index) => {
             const productCard = createProductCard(product, index);
             productGrid.appendChild(productCard);
+            
+            // jQuery animasyonları ekle
+            if (typeof $ !== 'undefined') {
+                $(productCard)
+                    .hide()
+                    .delay(index * 100) // Staggered animation
+                    .fadeIn(800)
+                    .slideDown(600);
+            }
         });
     }
     
@@ -832,13 +1050,25 @@ function initStartApp() {
                 }
             );
             
-            // Buton hover efektleri
+            // Buton hover efektleri - fadeTo ve toggleClass ile
             $(card).find('button').hover(
                 function() {
-                    $(this).addClass('hovered');
+                    $(this)
+                        .fadeTo(200, 0.8)
+                        .toggleClass('active', true)
+                        .animate({
+                            transform: 'scale(1.05)',
+                            boxShadow: '0 8px 25px rgba(0,0,0,0.3)'
+                        }, 200);
                 },
                 function() {
-                    $(this).removeClass('hovered');
+                    $(this)
+                        .fadeTo(200, 1)
+                        .toggleClass('active', false)
+                        .animate({
+                            transform: 'scale(1)',
+                            boxShadow: '0 4px 15px rgba(0,0,0,0.2)'
+                        }, 200);
                 }
             );
         }
@@ -848,13 +1078,24 @@ function initStartApp() {
             e.preventDefault();
             e.stopPropagation();
             console.log('Detay butonu tıklandı:', product.title);
-            this.style.transform = 'scale(0.95)';
-            this.style.background = '#ff6b6b';
-            setTimeout(() => {
-                this.style.transform = 'scale(1)';
-                this.style.background = '#667eea';
-                showProductModal(product);
-            }, 150);
+            
+            if (typeof $ !== 'undefined') {
+                $(this)
+                    .animate({ scale: 0.95 }, 100)
+                    .fadeTo(100, 0.7)
+                    .animate({ scale: 1 }, 100)
+                    .fadeTo(100, 1, function() {
+                        showProductModal(product);
+                    });
+            } else {
+                this.style.transform = 'scale(0.95)';
+                this.style.background = '#ff6b6b';
+                setTimeout(() => {
+                    this.style.transform = 'scale(1)';
+                    this.style.background = '#667eea';
+                    showProductModal(product);
+                }, 150);
+            }
         });
         
         // Sepete ekle butonu
@@ -863,12 +1104,28 @@ function initStartApp() {
             e.stopPropagation();
             console.log('Sepete ekleniyor:', product.title);
             addToCart(product);
-            this.textContent = '✅ Eklendi!';
-            this.style.background = '#28a745';
-            setTimeout(() => {
-                this.textContent = '🛒 Sepete Ekle';
-                this.style.background = '#ff6b6b';
-            }, 2000);
+            
+            if (typeof $ !== 'undefined') {
+                $(this)
+                    .animate({ scale: 1.1 }, 200)
+                    .fadeTo(200, 0.8)
+                    .text('✅ Eklendi!')
+                    .css('background', '#28a745')
+                    .animate({ scale: 1 }, 200)
+                    .fadeTo(200, 1)
+                    .delay(1500)
+                    .animate({ scale: 0.9 }, 100)
+                    .text('🛒 Sepete Ekle')
+                    .css('background', '#ff6b6b')
+                    .animate({ scale: 1 }, 100);
+            } else {
+                this.textContent = '✅ Eklendi!';
+                this.style.background = '#28a745';
+                setTimeout(() => {
+                    this.textContent = '🛒 Sepete Ekle';
+                    this.style.background = '#ff6b6b';
+                }, 2000);
+            }
         });
         
         return card;
@@ -1038,6 +1295,11 @@ function initStartApp() {
         updateCartDisplay();
         saveCartToStorage(); // LocalStorage'a kaydet
         console.log('Sepete eklendi:', product.title);
+        
+        // Sepet animasyonu
+        if (typeof $ !== 'undefined') {
+            $('#cart').animate({ scale: 1.05 }, 200).animate({ scale: 1 }, 200);
+        }
     }
     
     // DOM'a ürün ekleme
@@ -1216,7 +1478,7 @@ function initStartApp() {
         slider.innerHTML = '';
         
         if (products.length > 0) {
-            products.forEach(product => {
+            products.forEach((product, index) => {
                 const sliderCard = document.createElement('div');
                 sliderCard.className = 'slider-card';
                 sliderCard.innerHTML = `
@@ -1228,19 +1490,40 @@ function initStartApp() {
                     </div>
                 `;
                 
-                // Slider kartı hover efekti
+                // Slider kartı hover efekti - fadeTo ve animate ile
                 if (typeof $ !== 'undefined') {
                     $(sliderCard).hover(
                         function() {
-                            $(this).addClass('hovered');
+                            $(this)
+                                .fadeTo(300, 0.9)
+                                .toggleClass('hovered', true)
+                                .animate({
+                                    transform: 'translateY(-10px)',
+                                    boxShadow: '0 15px 35px rgba(0,0,0,0.3)'
+                                }, 300);
                         },
                         function() {
-                            $(this).removeClass('hovered');
+                            $(this)
+                                .fadeTo(300, 1)
+                                .toggleClass('hovered', false)
+                                .animate({
+                                    transform: 'translateY(0)',
+                                    boxShadow: '0 5px 15px rgba(0,0,0,0.2)'
+                                }, 300);
                         }
                     );
                 }
                 
                 slider.appendChild(sliderCard);
+                
+                // Slider kartı fadeIn animasyonu
+                if (typeof $ !== 'undefined') {
+                    $(sliderCard)
+                        .hide()
+                        .delay(index * 150)
+                        .fadeIn(600)
+                        .slideDown(400);
+                }
             });
             
             $(slider).slick({
