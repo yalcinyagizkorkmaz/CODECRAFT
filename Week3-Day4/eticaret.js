@@ -110,6 +110,118 @@ function addStyles() {
             50% { transform: translateY(-10px); }
         }
 
+        /* Modal CSS Stilleri */
+        .modal-content {
+            padding: 20px;
+            max-width: 700px;
+            background: white;
+            border-radius: 15px;
+        }
+
+        .modal-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            align-items: start;
+        }
+
+        .modal-image {
+            text-align: center;
+        }
+
+        .modal-image img {
+            width: 300px;
+            height: 300px;
+            object-fit: contain;
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            background: white;
+            padding: 20px;
+        }
+
+        .modal-details h2 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 1.5rem;
+        }
+
+        .modal-details p {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+        }
+
+        .modal-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .price-box, .rating-box {
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            color: white;
+        }
+
+        .price-box {
+            background: #667eea;
+        }
+
+        .rating-box {
+            background: #28a745;
+        }
+
+        .price-box strong, .rating-box strong {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .price-box span {
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+
+        .category-box {
+            background: #ffc107;
+            color: #333;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .category-box strong {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .category-box span {
+            text-transform: capitalize;
+        }
+
+        .modal-add-to-cart {
+            width: 100%;
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .modal-add-to-cart:hover {
+            background: #ff5252;
+            transform: translateY(-2px);
+        }
+
         .main-content {
             display: grid;
             grid-template-columns: 1fr 300px;
@@ -338,6 +450,9 @@ function addStyles() {
 
 // HTML yapısını oluştur
 function createHTMLStructure() {
+    // Sayfa başlığını ayarla
+    document.title = 'Mini E-Ticaret / Ürün Kataloğu';
+    
     document.body.innerHTML = '';
     
     const container = document.createElement('div');
@@ -419,13 +534,41 @@ function loadLibraries() {
             const fancyboxCSS = document.createElement('link');
             fancyboxCSS.rel = 'stylesheet';
             fancyboxCSS.href = 'https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css';
+            fancyboxCSS.onload = () => console.log('Fancybox CSS yüklendi');
+            fancyboxCSS.onerror = () => console.error('Fancybox CSS yüklenemedi');
             document.head.appendChild(fancyboxCSS);
             
             // Fancybox JS yükle
             const fancyboxScript = document.createElement('script');
             fancyboxScript.src = 'https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js';
             fancyboxScript.onload = () => {
-                console.log('Fancybox yüklendi');
+                console.log('Fancybox JS yüklendi');
+                // Fancybox'ın tamamen yüklenmesini bekle
+                setTimeout(() => {
+                    if (typeof $.fancybox !== 'undefined') {
+                        console.log('Fancybox hazır ve kullanılabilir');
+                        // Fancybox ayarlarını yap
+                        $.fancybox.defaults = {
+                            closeClickOutside: false,
+                            closeBtn: true,
+                            touch: false,
+                            autoFocus: false,
+                            hideScrollbar: false,
+                            helpers: {
+                                overlay: {
+                                    locked: false
+                                }
+                            }
+                        };
+                        loadSlickSlider();
+                    } else {
+                        console.error('Fancybox yüklenemedi');
+                        loadSlickSlider();
+                    }
+                }, 1000); // Daha uzun bekleme süresi
+            };
+            fancyboxScript.onerror = () => {
+                console.error('Fancybox JS yüklenemedi');
                 loadSlickSlider();
             };
             document.head.appendChild(fancyboxScript);
@@ -459,6 +602,34 @@ function loadLibraries() {
 function startApp() {
     let allProducts = [];
     let cart = [];
+    
+    // LocalStorage'dan sepet verilerini yükle
+    function loadCartFromStorage() {
+        try {
+            const savedCart = localStorage.getItem('miniEticaretCart');
+            if (savedCart) {
+                cart = JSON.parse(savedCart);
+                console.log('Sepet localStorage\'dan yüklendi:', cart.length, 'ürün');
+                updateCartDisplay();
+            }
+        } catch (error) {
+            console.error('LocalStorage sepet yükleme hatası:', error);
+            cart = [];
+        }
+    }
+    
+    // Sepeti localStorage'a kaydet
+    function saveCartToStorage() {
+        try {
+            localStorage.setItem('miniEticaretCart', JSON.stringify(cart));
+            console.log('Sepet localStorage\'a kaydedildi:', cart.length, 'ürün');
+        } catch (error) {
+            console.error('LocalStorage sepet kaydetme hatası:', error);
+        }
+    }
+    
+    // Uygulama başladığında sepeti yükle
+    loadCartFromStorage();
     
     // Ürünleri yükle butonu
     document.getElementById('loadProducts').addEventListener('click', function() {
@@ -559,106 +730,146 @@ function startApp() {
     function showProductModal(product) {
         console.log('showProductModal çağrıldı:', product.title);
         
+        // jQuery ve Fancybox kontrolü
+        if (typeof jQuery === 'undefined') {
+            console.error('jQuery yüklenmemiş!');
+            alert('jQuery kütüphanesi yüklenemedi. Lütfen sayfayı yenileyin.');
+            return;
+        }
+        
         if (typeof $.fancybox === 'undefined') {
             console.error('Fancybox yüklenmemiş!');
             alert('Modal kütüphanesi yüklenemedi. Lütfen sayfayı yenileyin.');
             return;
         }
         
+        // Önceki modal'ı temizle
+        if ($('#temp-modal-content').length > 0) {
+            $('#temp-modal-content').remove();
+        }
+        
+        // HTML karakterlerini tamamen temizle ve güvenli hale getir
+        const cleanTitle = product.title
+            .replace(/[<>]/g, '')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;')
+            .replace(/&/g, '&amp;');
+            
+        const cleanDescription = product.description
+            .replace(/[<>]/g, '')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;')
+            .replace(/&/g, '&amp;');
+            
+        const cleanCategory = product.category
+            .replace(/[<>]/g, '')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;')
+            .replace(/&/g, '&amp;');
+        
+        // Basit ve temiz modal içeriği
         const modalContent = `
-            <div class="modal-content" style="padding: 20px; max-width: 700px;">
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; align-items: start;">
-                    <div style="text-align: center;">
-                        <img src="${product.image}" alt="${product.title}" style="
-                            width: 300px;
-                            height: 300px;
-                            object-fit: contain;
-                            border-radius: 15px;
-                            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
-                            background: white;
-                            padding: 20px;
-                        ">
+            <div class="modal-content">
+                <div class="modal-grid">
+                    <div class="modal-image">
+                        <img src="${product.image}" alt="${cleanTitle}">
                     </div>
-                    
-                    <div>
-                        <h2 style="color: #333; margin-bottom: 15px; font-size: 1.5rem;">${product.title}</h2>
-                        <div style="background: #f8f9fa; padding: 20px; border-radius: 10px; margin-bottom: 20px;">
-                            <p style="color: #666; line-height: 1.6; margin-bottom: 15px;">${product.description}</p>
-                        </div>
-                        
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">
-                            <div style="background: #667eea; color: white; padding: 15px; border-radius: 10px; text-align: center;">
-                                <strong style="display: block; margin-bottom: 5px;">💰 Fiyat</strong>
-                                <span style="font-size: 1.2rem; font-weight: bold;">$${product.price}</span>
+                    <div class="modal-details">
+                        <h2>${cleanTitle}</h2>
+                        <p>${cleanDescription}</p>
+                        <div class="modal-info">
+                            <div class="price-box">
+                                <strong>Fiyat</strong>
+                                <span>$${product.price}</span>
                             </div>
-                            <div style="background: #28a745; color: white; padding: 15px; border-radius: 10px; text-align: center;">
-                                <strong style="display: block; margin-bottom: 5px;">⭐ Değerlendirme</strong>
+                            <div class="rating-box">
+                                <strong>Değerlendirme</strong>
                                 <span>${product.rating.rate} (${product.rating.count})</span>
                             </div>
                         </div>
-                        
-                        <div style="background: #ffc107; color: #333; padding: 15px; border-radius: 10px; text-align: center; margin-bottom: 20px;">
-                            <strong style="display: block; margin-bottom: 5px;">🏷️ Kategori</strong>
-                            <span style="text-transform: capitalize;">${product.category}</span>
+                        <div class="category-box">
+                            <strong>Kategori</strong>
+                            <span>${cleanCategory}</span>
                         </div>
-                        
-                        <button class="modal-add-to-cart" style="
-                            width: 100%;
-                            background: #ff6b6b;
-                            color: white;
-                            border: none;
-                            padding: 15px;
-                            border-radius: 10px;
-                            font-size: 16px;
-                            font-weight: bold;
-                            cursor: pointer;
-                            transition: all 0.3s ease;
-                        ">🛒 Sepete Ekle - $${product.price}</button>
+                        <button class="modal-add-to-cart">Sepete Ekle - $${product.price}</button>
                     </div>
                 </div>
             </div>
         `;
         
         try {
-            console.log('Fancybox açılıyor...');
+            console.log('Fancybox modal açılıyor...');
             
-            const tempDiv = $('<div>').html(modalContent).attr('id', 'temp-modal-content');
-            $('body').append(tempDiv);
+            // Önceki modal'ı temizle
+            if ($('#temp-modal-content').length > 0) {
+                $('#temp-modal-content').remove();
+            }
             
+            // Modal içeriğini oluştur
+            const modalDiv = $('<div>').attr('id', 'temp-modal-content').html(modalContent);
+            $('body').append(modalDiv);
+            
+            // Event listener'ı ekle
             $('#temp-modal-content .modal-add-to-cart').on('click', function() {
+                console.log('Modal sepete ekle butonu tıklandı');
                 addToCart(product);
-                $(this).text('✅ Sepete Eklendi!');
-                $(this).css('background', '#28a745');
+                $(this).text('✅ Sepete Eklendi!').css('background', '#28a745').prop('disabled', true);
                 setTimeout(() => {
                     $.fancybox.close();
                 }, 1500);
             });
             
+            // Fancybox'ı aç
             $.fancybox.open({
                 src: '#temp-modal-content',
                 type: 'inline',
                 opts: {
                     closeClickOutside: false,
                     closeBtn: true,
+                    touch: false,
+                    autoFocus: false,
+                    hideScrollbar: false,
                     helpers: {
                         overlay: {
                             locked: false
                         }
                     },
                     afterClose: function() {
+                        console.log('Modal kapatıldı, temizleniyor...');
                         $('#temp-modal-content').remove();
                     }
                 }
             });
             
-            console.log('Fancybox modal açıldı!');
+            console.log('Fancybox modal başarıyla açıldı!');
             
         } catch (error) {
-            console.error('Fancybox hatası:', error);
+            console.error('Fancybox modal açma hatası:', error);
             $('#temp-modal-content').remove();
-            alert('Modal açılırken hata oluştu. Lütfen tekrar deneyin.');
+            
+            // Fancybox'ı tekrar deneyelim
+            setTimeout(() => {
+                try {
+                    console.log('Fancybox tekrar deneniyor...');
+                    $.fancybox.open({
+                        src: modalContent,
+                        type: 'html',
+                        opts: {
+                            closeClickOutside: false,
+                            closeBtn: true,
+                            touch: false,
+                            autoFocus: false
+                        }
+                    });
+                } catch (retryError) {
+                    console.error('Fancybox tekrar deneme hatası:', retryError);
+                    alert('Modal açılamadı. Lütfen sayfayı yenileyin.');
+                }
+            }, 100);
         }
     }
+    
+
     
     // Sepete ekleme
     function addToCart(product) {
@@ -674,6 +885,7 @@ function startApp() {
         }
         
         updateCartDisplay();
+        saveCartToStorage(); // LocalStorage'a kaydet
         console.log('Sepete eklendi:', product.title);
     }
     
@@ -687,6 +899,16 @@ function startApp() {
         
         const cartItems = document.getElementById('cartItems');
         cartItems.innerHTML = '';
+        
+        if (cart.length === 0) {
+            cartItems.innerHTML = `
+                <div style="text-align: center; color: #666; padding: 20px;">
+                    <p>🛒 Sepet boş</p>
+                    <small style="color: #999;">💾 Sepet verileri localStorage'da saklanıyor</small>
+                </div>
+            `;
+            return;
+        }
         
         cart.forEach(item => {
             const cartItem = document.createElement('div');
@@ -706,12 +928,19 @@ function startApp() {
             
             cartItems.appendChild(cartItem);
         });
+        
+        // LocalStorage bilgisi
+        const storageInfo = document.createElement('div');
+        storageInfo.style.cssText = 'text-align: center; color: #999; font-size: 12px; padding: 10px; border-top: 1px solid #ddd; margin-top: 10px;';
+        storageInfo.innerHTML = '💾 Sepet verileri localStorage\'da saklanıyor';
+        cartItems.appendChild(storageInfo);
     }
     
     // Sepetten çıkarma
     function removeFromCart(productId) {
         cart = cart.filter(item => item.id !== productId);
         updateCartDisplay();
+        saveCartToStorage(); // LocalStorage'a kaydet
         console.log('Sepetten çıkarıldı:', productId);
     }
     
@@ -719,6 +948,7 @@ function startApp() {
     function clearCart() {
         cart = [];
         updateCartDisplay();
+        saveCartToStorage(); // LocalStorage'a kaydet
         console.log('Sepet temizlendi');
         
         document.getElementById('cartItems').innerHTML = `
@@ -802,10 +1032,24 @@ function startApp() {
         $.fancybox.defaults = {
             closeBtn: true,
             closeClickOutside: false,
+            touch: false,
+            autoFocus: false,
             helpers: {
                 overlay: {
                     locked: false
                 }
+            },
+            beforeShow: function() {
+                console.log('Fancybox beforeShow');
+            },
+            afterShow: function() {
+                console.log('Fancybox afterShow');
+            },
+            beforeClose: function() {
+                console.log('Fancybox beforeClose');
+            },
+            afterClose: function() {
+                console.log('Fancybox afterClose');
             }
         };
     }
@@ -813,21 +1057,6 @@ function startApp() {
 
 // Tamamen bağımsız çalışan E-Ticaret uygulaması
 // HTML dosyası olmadan, sadece JavaScript ile çalışır
-
-// HTML yapısını oluştur
-document.documentElement.innerHTML = `
-<!DOCTYPE html>
-<html lang="tr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mini E-Ticaret / Ürün Kataloğu</title>
-</head>
-<body>
-    <!-- JavaScript burada DOM'u manipüle edecek -->
-</body>
-</html>
-`;
 
 // Doğrudan çalıştırılabilir - HTML dosyası olmadan
 (function() {
