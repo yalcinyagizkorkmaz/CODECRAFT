@@ -284,6 +284,35 @@ function addStyles() {
             max-width: 800px;
             margin: 20px auto;
             box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            position: relative;
+        }
+
+        .lightbox-modal-close {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 35px;
+            height: 35px;
+            font-size: 18px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            z-index: 10000;
+        }
+
+        .lightbox-modal-close:hover {
+            background: #c82333;
+            transform: scale(1.1);
+        }
+
+        .lightbox-modal-close:active {
+            transform: scale(0.95);
         }
 
         .lightbox-modal-grid {
@@ -2288,6 +2317,7 @@ function initStartApp() {
         // Lightbox2 için modal içeriği
         const modalContent = `
             <div class="lightbox-modal-content">
+                <button class="lightbox-modal-close" title="Kapat">✕</button>
                 <div class="lightbox-modal-grid">
                     <div class="lightbox-modal-image">
                         <img src="${String(product.image || '')}" alt="${cleanTitle}">
@@ -2327,7 +2357,7 @@ function initStartApp() {
             const modalDiv = $('<div>').attr('id', 'lightbox-modal-content').html(modalContent);
             $('body').append(modalDiv);
             
-            // Event listener'ı ekle
+            // Sepete ekle butonu event listener'ı
             $('#lightbox-modal-content .lightbox-modal-add-to-cart').on('click', function() {
                 console.log('Lightbox modal sepete ekle butonu tıklandı');
                 addToCart(product);
@@ -2338,6 +2368,14 @@ function initStartApp() {
                     $('.lightbox-overlay').remove();
                     $(document).off('keydown.lightbox');
                 }, 1500);
+            });
+            
+            // Çarpı butonu event listener'ı
+            $('#lightbox-modal-content .lightbox-modal-close').on('click', function() {
+                console.log('Lightbox modal çarpı butonu tıklandı');
+                $('#lightbox-modal-content').remove();
+                $('.lightbox-overlay').remove();
+                $(document).off('keydown.lightbox');
             });
             
             // Kendi modal sistemimizi kullan
