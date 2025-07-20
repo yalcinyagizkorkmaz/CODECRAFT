@@ -401,6 +401,22 @@ function addStyles() {
             grid-column: 1 / -1;
         }
 
+        /* Slick Slider Özel Stilleri */
+        .slick-slide {
+            display: flex !important;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .slick-track {
+            display: flex !important;
+            align-items: stretch;
+        }
+
+        .slick-list {
+            overflow: hidden;
+        }
+
         .slider-section h2 {
             color: white;
             text-align: center;
@@ -418,8 +434,9 @@ function addStyles() {
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: flex-start;
+            justify-content: space-between;
             min-height: 200px;
+            width: 100%;
         }
 
         .slider-card img {
@@ -428,6 +445,9 @@ function addStyles() {
             object-fit: contain;
             border-radius: 10px;
             margin-bottom: 10px;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
         }
 
         .slider-card h4 {
@@ -435,6 +455,11 @@ function addStyles() {
             margin-bottom: 8px;
             font-size: 1rem;
             line-height: 1.3;
+            text-align: center;
+            flex-grow: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .slider-card .price {
@@ -442,11 +467,13 @@ function addStyles() {
             font-weight: bold;
             font-size: 1.1rem;
             margin-bottom: 5px;
+            text-align: center;
         }
 
         .slider-card .rating {
             color: #ffc107;
             font-weight: bold;
+            text-align: center;
         }
 
         @media (max-width: 768px) {
@@ -465,6 +492,16 @@ function addStyles() {
             
             .product-card {
                 min-height: 300px;
+            }
+            
+            .slider-card img {
+                width: 80px;
+                height: 80px;
+            }
+            
+            .slider-card {
+                min-height: 180px;
+                padding: 10px;
             }
         }
     `;
