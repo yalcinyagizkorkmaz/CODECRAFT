@@ -837,6 +837,111 @@ function initStartApp() {
         };
     }
 
+    // Bildirim gösterme fonksiyonu
+    function showNotification(message, type = 'info') {
+        console.log('Bildirim gösteriliyor:', message);
+        
+        // Bildirim container'ı oluştur
+        const notification = document.createElement('div');
+        notification.className = `notification notification-${type}`;
+        notification.innerHTML = `
+            <div class="notification-content">
+                <span class="notification-message">${message}</span>
+                <button class="notification-close">×</button>
+            </div>
+        `;
+        
+        // CSS stilleri
+        notification.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: ${type === 'success' ? '#28a745' : type === 'error' ? '#dc3545' : '#17a2b8'};
+            color: white;
+            padding: 15px 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            z-index: 10000;
+            transform: translateX(100%);
+            opacity: 0;
+            transition: all 0.3s ease;
+            max-width: 300px;
+            font-size: 14px;
+            font-weight: 500;
+        `;
+        
+        // İçerik stilleri
+        const content = notification.querySelector('.notification-content');
+        content.style.cssText = `
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+        `;
+        
+        // Kapatma butonu stilleri
+        const closeBtn = notification.querySelector('.notification-close');
+        closeBtn.style.cssText = `
+            background: none;
+            border: none;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            padding: 0;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: background 0.2s ease;
+        `;
+        
+        // Kapatma butonu hover efekti
+        closeBtn.addEventListener('mouseenter', function() {
+            this.style.background = 'rgba(255,255,255,0.2)';
+        });
+        
+        closeBtn.addEventListener('mouseleave', function() {
+            this.style.background = 'none';
+        });
+        
+        // Kapatma butonu event listener
+        closeBtn.addEventListener('click', function() {
+            hideNotification(notification);
+        });
+        
+        // Body'ye ekle
+        document.body.appendChild(notification);
+        
+        // Animasyonla göster
+        setTimeout(() => {
+            notification.style.transform = 'translateX(0)';
+            notification.style.opacity = '1';
+        }, 100);
+        
+        // Otomatik kapatma (5 saniye)
+        setTimeout(() => {
+            hideNotification(notification);
+        }, 5000);
+        
+        return notification;
+    }
+    
+    // Bildirimi gizleme fonksiyonu
+    function hideNotification(notification) {
+        if (notification && notification.parentNode) {
+            notification.style.transform = 'translateX(100%)';
+            notification.style.opacity = '0';
+            
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.parentNode.removeChild(notification);
+                }
+            }, 300);
+        }
+    }
+
     // AJAX ile ürün arama fonksiyonu
     function searchProductById(productId) {
         if (!productId || productId < 1 || productId > 20) {
@@ -1296,6 +1401,9 @@ function initStartApp() {
         saveCartToStorage(); // LocalStorage'a kaydet
         console.log('Sepete eklendi:', product.title);
         
+        // Sağ üst köşede bildirim göster
+        showNotification(`✅ Ürün sepete eklendi!`, 'success');
+        
         // Sepet animasyonu
         if (typeof $ !== 'undefined') {
             $('#cart').animate({ scale: 1.05 }, 200).animate({ scale: 1 }, 200);
@@ -1405,6 +1513,9 @@ function initStartApp() {
     
     // Sepetten çıkarma
     function removeFromCart(productId) {
+        // Ürün bilgisini al
+        const removedProduct = cart.find(item => item.id === productId);
+        
         // Array'den çıkar
         cart = cart.filter(item => item.id !== productId);
         
@@ -1430,6 +1541,11 @@ function initStartApp() {
         updateCartDisplay();
         saveCartToStorage(); // LocalStorage'a kaydet
         console.log('Sepetten çıkarıldı:', productId);
+        
+        // Bildirim göster
+        if (removedProduct) {
+            showNotification(`🗑️ ${removedProduct.title} sepetten çıkarıldı!`, 'info');
+        }
     }
     
     // Sepeti temizleme
@@ -1465,6 +1581,9 @@ function initStartApp() {
         updateCartDisplay();
         
         console.log('Sepet temizlendi - .empty() kullanıldı');
+        
+        // Bildirim göster
+        showNotification('🗑️ Sepet tamamen temizlendi!', 'info');
     }
     
     // Ürün slider'ı güncelleme
