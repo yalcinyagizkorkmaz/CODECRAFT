@@ -276,6 +276,134 @@ function addStyles() {
             transform: translateY(-2px);
         }
 
+        /* Lightbox2 Modal Stilleri */
+        .lightbox-modal-content {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            max-width: 800px;
+            margin: 20px auto;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        .lightbox-modal-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            align-items: start;
+        }
+
+        .lightbox-modal-image img {
+            width: 100%;
+            height: auto;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .lightbox-modal-details h2 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 1.8rem;
+        }
+
+        .lightbox-modal-details p {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+        }
+
+        .lightbox-modal-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .lightbox-price-box, .lightbox-rating-box {
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            color: white;
+        }
+
+        .lightbox-price-box {
+            background: #667eea;
+        }
+
+        .lightbox-rating-box {
+            background: #28a745;
+        }
+
+        .lightbox-price-box strong, .lightbox-rating-box strong {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .lightbox-price-box span {
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+
+        .lightbox-category-box {
+            background: #ffc107;
+            color: #333;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .lightbox-category-box strong {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .lightbox-category-box span {
+            text-transform: capitalize;
+        }
+
+        .lightbox-modal-add-to-cart {
+            width: 100%;
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .lightbox-modal-add-to-cart:hover {
+            background: #ff5252;
+            transform: translateY(-2px);
+        }
+
+        .lightbox-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 9998;
+            cursor: pointer;
+        }
+
+        #lightbox-modal-content {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 9999;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
         .main-content {
             display: grid;
             grid-template-columns: 1fr 300px;
@@ -698,57 +826,56 @@ function loadLibraries() {
             jqueryScript.src = 'https://code.jquery.com/jquery-3.7.1.min.js';
             jqueryScript.onload = () => {
                 console.log('jQuery yüklendi');
-                loadFancybox();
+                loadLightbox2();
             };
             document.head.appendChild(jqueryScript);
         } else {
             console.log('jQuery zaten yüklü');
-            loadFancybox();
+            loadLightbox2();
         }
         
-        function loadFancybox() {
-            // Fancybox CSS yükle
-            const fancyboxCSS = document.createElement('link');
-            fancyboxCSS.rel = 'stylesheet';
-            fancyboxCSS.href = 'https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css';
-            fancyboxCSS.onload = () => console.log('Fancybox CSS yüklendi');
-            fancyboxCSS.onerror = () => console.error('Fancybox CSS yüklenemedi');
-            document.head.appendChild(fancyboxCSS);
+        function loadLightbox2() {
+            // Lightbox2 CSS yükle
+            const lightboxCSS = document.createElement('link');
+            lightboxCSS.rel = 'stylesheet';
+            lightboxCSS.href = 'https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.4/css/lightbox.min.css';
+            lightboxCSS.onload = () => console.log('Lightbox2 CSS yüklendi');
+            lightboxCSS.onerror = () => console.error('Lightbox2 CSS yüklenemedi');
+            document.head.appendChild(lightboxCSS);
             
-            // Fancybox JS yükle
-            const fancyboxScript = document.createElement('script');
-            fancyboxScript.src = 'https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js';
-            fancyboxScript.onload = () => {
-                console.log('Fancybox JS yüklendi');
-                // Fancybox'ın tamamen yüklenmesini bekle
+            // Lightbox2 JS yükle (jQuery bağımlılığı ile)
+            const lightboxScript = document.createElement('script');
+            lightboxScript.src = 'https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.4/js/lightbox.min.js';
+            lightboxScript.onload = () => {
+                console.log('Lightbox2 JS yüklendi');
+                // Lightbox2'nin tamamen yüklenmesini bekle
                 setTimeout(() => {
-                    if (typeof $.fancybox !== 'undefined') {
-                        console.log('Fancybox hazır ve kullanılabilir');
-                        // Fancybox ayarlarını yap
-                        $.fancybox.defaults = {
-                            closeClickOutside: false,
-                            closeBtn: true,
-                            touch: false,
-                            autoFocus: false,
-                            hideScrollbar: false,
-                            helpers: {
-                                overlay: {
-                                    locked: false
-                                }
-                            }
-                        };
+                    if (typeof lightbox !== 'undefined' && typeof $ !== 'undefined') {
+                        console.log('Lightbox2 hazır ve kullanılabilir');
+                        // Lightbox2 ayarlarını yap
+                        try {
+                            lightbox.option({
+                                'resizeDuration': 200,
+                                'wrapAround': true,
+                                'albumLabel': 'Resim %1 / %2',
+                                'fadeDuration': 300,
+                                'imageFadeDuration': 300
+                            });
+                        } catch (optionError) {
+                            console.warn('Lightbox2 ayarları yapılamadı:', optionError);
+                        }
                         loadSlickSlider();
                     } else {
-                        console.error('Fancybox yüklenemedi');
+                        console.warn('Lightbox2 veya jQuery yüklenemedi, basit modal kullanılacak');
                         loadSlickSlider();
                     }
-                }, 1000); // Daha uzun bekleme süresi
+                }, 1000);
             };
-            fancyboxScript.onerror = () => {
-                console.error('Fancybox JS yüklenemedi');
+            lightboxScript.onerror = () => {
+                console.error('Lightbox2 JS yüklenemedi');
                 loadSlickSlider();
             };
-            document.head.appendChild(fancyboxScript);
+            document.head.appendChild(lightboxScript);
         }
         
         function loadSlickSlider() {
@@ -1328,142 +1455,140 @@ function initStartApp() {
     function showProductModal(product) {
         console.log('showProductModal çağrıldı:', product.title);
         
-        // jQuery ve Fancybox kontrolü
+        // jQuery kontrolü
         if (typeof jQuery === 'undefined') {
             console.error('jQuery yüklenmemiş!');
             alert('jQuery kütüphanesi yüklenemedi. Lütfen sayfayı yenileyin.');
             return;
         }
         
-        if (typeof $.fancybox === 'undefined') {
-            console.error('Fancybox yüklenmemiş!');
-            alert('Modal kütüphanesi yüklenemedi. Lütfen sayfayı yenileyin.');
+        // jQuery kontrolü (Lightbox2 yerine kendi modal sistemimizi kullanacağız)
+        if (typeof $ === 'undefined') {
+            console.error('jQuery yüklenmemiş!');
+            alert('jQuery kütüphanesi yüklenemedi. Lütfen sayfayı yenileyin.');
             return;
         }
         
         // Önceki modal'ı temizle
-        if ($('#temp-modal-content').length > 0) {
-            $('#temp-modal-content').remove();
+        if ($('#lightbox-modal-content').length > 0) {
+            $('#lightbox-modal-content').remove();
         }
         
         // HTML karakterlerini tamamen temizle ve güvenli hale getir
-        const cleanTitle = product.title
+        const cleanTitle = String(product.title || 'Ürün')
             .replace(/[<>]/g, '')
             .replace(/"/g, '&quot;')
             .replace(/'/g, '&#39;')
-            .replace(/&/g, '&amp;');
+            .replace(/&/g, '&amp;')
+            .substring(0, 100);
             
-        const cleanDescription = product.description
+        const cleanDescription = String(product.description || 'Açıklama bulunmuyor.')
             .replace(/[<>]/g, '')
             .replace(/"/g, '&quot;')
             .replace(/'/g, '&#39;')
-            .replace(/&/g, '&amp;');
+            .replace(/&/g, '&amp;')
+            .substring(0, 200);
             
-        const cleanCategory = product.category
+        const cleanCategory = String(product.category || 'Genel')
             .replace(/[<>]/g, '')
             .replace(/"/g, '&quot;')
             .replace(/'/g, '&#39;')
-            .replace(/&/g, '&amp;');
+            .replace(/&/g, '&amp;')
+            .substring(0, 50);
         
-        // Basit ve temiz modal içeriği
+        // Lightbox2 için modal içeriği
         const modalContent = `
-            <div class="modal-content">
-                <div class="modal-grid">
-                    <div class="modal-image">
-                        <img src="${product.image}" alt="${cleanTitle}">
+            <div class="lightbox-modal-content">
+                <div class="lightbox-modal-grid">
+                    <div class="lightbox-modal-image">
+                        <img src="${String(product.image || '')}" alt="${cleanTitle}">
                     </div>
-                    <div class="modal-details">
+                    <div class="lightbox-modal-details">
                         <h2>${cleanTitle}</h2>
                         <p>${cleanDescription}</p>
-                        <div class="modal-info">
-                            <div class="price-box">
+                        <div class="lightbox-modal-info">
+                            <div class="lightbox-price-box">
                                 <strong>Fiyat</strong>
-                                <span>$${product.price}</span>
+                                <span>$${Number(product.price || 0).toFixed(2)}</span>
                             </div>
-                            <div class="rating-box">
+                            <div class="lightbox-rating-box">
                                 <strong>Değerlendirme</strong>
-                                <span>${product.rating.rate} (${product.rating.count})</span>
+                                <span>${Number(product.rating?.rate || 0).toFixed(1)} (${Number(product.rating?.count || 0)})</span>
                             </div>
                         </div>
-                        <div class="category-box">
+                        <div class="lightbox-category-box">
                             <strong>Kategori</strong>
                             <span>${cleanCategory}</span>
                         </div>
-                        <button class="modal-add-to-cart">Sepete Ekle - $${product.price}</button>
+                        <button class="lightbox-modal-add-to-cart">Sepete Ekle - $${Number(product.price || 0).toFixed(2)}</button>
                     </div>
                 </div>
             </div>
         `;
         
         try {
-            console.log('Fancybox modal açılıyor...');
+            console.log('Lightbox2 modal açılıyor...');
             
             // Önceki modal'ı temizle
-            if ($('#temp-modal-content').length > 0) {
-                $('#temp-modal-content').remove();
+            if ($('#lightbox-modal-content').length > 0) {
+                $('#lightbox-modal-content').remove();
             }
             
             // Modal içeriğini oluştur
-            const modalDiv = $('<div>').attr('id', 'temp-modal-content').html(modalContent);
+            const modalDiv = $('<div>').attr('id', 'lightbox-modal-content').html(modalContent);
             $('body').append(modalDiv);
             
             // Event listener'ı ekle
-            $('#temp-modal-content .modal-add-to-cart').on('click', function() {
-                console.log('Modal sepete ekle butonu tıklandı');
+            $('#lightbox-modal-content .lightbox-modal-add-to-cart').on('click', function() {
+                console.log('Lightbox modal sepete ekle butonu tıklandı');
                 addToCart(product);
                 $(this).text('✅ Sepete Eklendi!').css('background', '#28a745').prop('disabled', true);
                 setTimeout(() => {
-                    $.fancybox.close();
+                    // Modal'ı kapat
+                    $('#lightbox-modal-content').remove();
+                    $('.lightbox-overlay').remove();
+                    $(document).off('keydown.lightbox');
                 }, 1500);
             });
             
-            // Fancybox'ı aç
-            $.fancybox.open({
-                src: '#temp-modal-content',
-                type: 'inline',
-                opts: {
-                    closeClickOutside: false,
-                    closeBtn: true,
-                    touch: false,
-                    autoFocus: false,
-                    hideScrollbar: false,
-                    helpers: {
-                        overlay: {
-                            locked: false
-                        }
-                    },
-                    afterClose: function() {
-                        console.log('Modal kapatıldı, temizleniyor...');
-                        $('#temp-modal-content').remove();
-                    }
+            // Kendi modal sistemimizi kullan
+            $('#lightbox-modal-content').show();
+            $('body').append('<div class="lightbox-overlay"></div>');
+            
+            // Overlay'e tıklayınca kapat
+            $('.lightbox-overlay').on('click', function() {
+                $('#lightbox-modal-content').remove();
+                $('.lightbox-overlay').remove();
+                $(document).off('keydown.lightbox');
+            });
+            
+            // ESC tuşu ile kapat
+            $(document).on('keydown.lightbox', function(e) {
+                if (e.key === 'Escape') {
+                    $('#lightbox-modal-content').remove();
+                    $('.lightbox-overlay').remove();
+                    $(document).off('keydown.lightbox');
                 }
             });
             
-            console.log('Fancybox modal başarıyla açıldı!');
+            console.log('Modal başarıyla açıldı!');
             
         } catch (error) {
-            console.error('Fancybox modal açma hatası:', error);
-            $('#temp-modal-content').remove();
+            console.error('Modal açma hatası:', error);
+            $('#lightbox-modal-content').remove();
+            $('.lightbox-overlay').remove();
             
-            // Fancybox'ı tekrar deneyelim
-            setTimeout(() => {
-                try {
-                    console.log('Fancybox tekrar deneniyor...');
-                    $.fancybox.open({
-                        src: modalContent,
-                        type: 'html',
-                        opts: {
-                            closeClickOutside: false,
-                            closeBtn: true,
-                            touch: false,
-                            autoFocus: false
-                        }
-                    });
-                } catch (retryError) {
-                    console.error('Fancybox tekrar deneme hatası:', retryError);
-                    alert('Modal açılamadı. Lütfen sayfayı yenileyin.');
-                }
-            }, 100);
+            // Basit alert ile fallback
+            const fallbackMessage = `
+                Ürün Detayları:
+                
+                ${cleanTitle}
+                Fiyat: $${Number(product.price || 0).toFixed(2)}
+                Kategori: ${cleanCategory}
+                
+                ${cleanDescription}
+            `;
+            alert(fallbackMessage);
         }
     }
     
@@ -1664,7 +1789,7 @@ function initStartApp() {
         
         // Bildirim göster
         if (removedProduct) {
-            showNotification(`🗑️ ${removedProduct.title} sepetten çıkarıldı!`, 'info');
+            showNotification(`🗑️ Ürün sepetten çıkarıldı!`, 'info');
         }
     }
     
