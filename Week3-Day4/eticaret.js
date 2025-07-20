@@ -598,6 +598,129 @@ function addStyles() {
         }
 
         .cart-item-details p {
+            margin: 5px 0 0 0;
+            font-size: 12px;
+            color: #666;
+        }
+
+        /* Favoriler Bölümü */
+        .favorites-section {
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .favorites-section h2 {
+            color: white;
+            margin-bottom: 15px;
+            text-align: center;
+            font-size: 1.5rem;
+        }
+
+        .favorites-summary {
+            text-align: center;
+            color: white;
+            margin-bottom: 15px;
+        }
+
+        .favorites-summary p {
+            margin: 5px 0;
+            font-size: 16px;
+        }
+
+        .favorites-items {
+            max-height: 300px;
+            overflow-y: auto;
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+            padding: 10px;
+            margin-top: 10px;
+        }
+
+        .favorite-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px;
+            background: rgba(255,255,255,0.9);
+            border-radius: 8px;
+            margin-bottom: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .favorite-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .favorite-item img {
+            width: 50px;
+            height: 50px;
+            object-fit: contain;
+            border-radius: 5px;
+        }
+
+        .favorite-item-details h4 {
+            margin: 0;
+            font-size: 14px;
+            color: #333;
+        }
+
+        .favorite-item-details p {
+            margin: 5px 0 0 0;
+            font-size: 12px;
+            color: #666;
+        }
+
+        .favorite-item-actions {
+            margin-left: auto;
+        }
+
+        .remove-favorite {
+            background: #e91e63;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .remove-favorite:hover {
+            background: #c2185b;
+            transform: scale(1.1);
+        }
+
+        /* Ürün Aksiyonları */
+        .product-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .product-actions button {
+            flex: 1;
+            padding: 8px 12px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .add-to-favorites-btn {
+            background: linear-gradient(45deg, #667eea, #ee5a24);
+            color: white;
+            font-weight: bold;
+            min-width: 40px;
+            flex: 0 0 auto;
+        }
+
+        .cart-item-details p {
             font-size: 0.8rem;
             color: #ddd;
         }
@@ -772,7 +895,7 @@ function createHTMLStructure() {
             <button id="loadProducts" class="btn">📦 Ürünleri Yükle</button>
             <input type="number" id="productSearch" class="search-input" placeholder="Ürün ID'si girin (1-20)" min="1" max="20">
             <button id="searchProduct" class="btn">🔍 Ürün Ara</button>
-            <button id="clearCart" class="btn">🗑️ Sepeti Temizle</button>
+            
         </div>
 
         <div id="loading" class="loading" style="display: none;">
@@ -795,10 +918,25 @@ function createHTMLStructure() {
                 <div class="cart-summary">
                     <p>Toplam Ürün: <span id="cartCount">0</span></p>
                     <p>Toplam Tutar: <span id="cartTotal">$0.00</span></p>
+                    <button id="clearCartBtn" style="background: #dc3545; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; margin-top: 10px; width: 100%;">🗑️ Sepeti Temizle</button>
                 </div>
                 <div id="cartItems" class="cart-items">
                     <div style="text-align: center; color: #ddd; padding: 20px;">
                         <p>🛒 Sepet boş</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="favorites-section">
+                <h2>❤️ Favorilerim</h2>
+                <div class="favorites-summary">
+                    <p>Toplam Favori: <span id="favoritesCount">0</span></p>
+                </div>
+                <div id="favoritesContainer" class="favorites-container">
+                    <div id="favoritesItems" class="favorites-items">
+                        <div style="text-align: center; color: #ddd; padding: 20px;">
+                            <p>❤️ Favori ürün yok</p>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -902,6 +1040,475 @@ function loadLibraries() {
     });
 }
 
+// jQuery Plugin Fonksiyonları - $.each() ve $.extend() kullanarak
+function initCustomPlugins() {
+    'use strict';
+    
+    console.log('Özel jQuery plugin\'leri tanımlanıyor...');
+    
+    // 1. Sepet İşlemleri Plugin'i
+    $.fn.cartManager = function(options = {}) {
+        const defaults = {
+            storageKey: 'ecommerce_cart',
+            animationDuration: 300,
+            showNotifications: true
+        };
+        
+        const settings = $.extend({}, defaults, options);
+        
+        // Plugin instance'ını oluştur
+        const plugin = {
+            addToCart: function(product) {
+                const cart = JSON.parse(localStorage.getItem(settings.storageKey) || '[]');
+                const existingItem = cart.find(item => item.id === product.id);
+                
+                if (existingItem) {
+                    existingItem.quantity += 1;
+                } else {
+                    cart.push({
+                        ...product,
+                        quantity: 1,
+                        addedAt: new Date().toISOString()
+                    });
+                }
+                
+                localStorage.setItem(settings.storageKey, JSON.stringify(cart));
+                
+                // Animasyon efekti
+                this.addClass('cart-added').delay(settings.animationDuration).queue(function() {
+                    $(this).removeClass('cart-added').dequeue();
+                });
+                
+                if (settings.showNotifications && typeof window.showNotification === 'function') {
+                    window.showNotification(`🛒 ${product.title} sepete eklendi!`, 'success');
+                }
+                
+                console.log('Plugin: Sepete eklendi', product.title);
+                return this;
+            },
+            
+            removeFromCart: function(productId) {
+                const cart = JSON.parse(localStorage.getItem(settings.storageKey) || '[]');
+                const updatedCart = cart.filter(item => item.id !== productId);
+                localStorage.setItem(settings.storageKey, JSON.stringify(updatedCart));
+                
+                // Animasyon efekti
+                this.addClass('cart-removed').delay(settings.animationDuration).queue(function() {
+                    $(this).removeClass('cart-removed').dequeue();
+                });
+                
+                if (settings.showNotifications && typeof window.showNotification === 'function') {
+                    window.showNotification('🗑️ Ürün sepetten çıkarıldı!', 'info');
+                }
+                
+                console.log('Plugin: Sepetten çıkarıldı', productId);
+                return this;
+            },
+            
+            clearCart: function() {
+                localStorage.removeItem(settings.storageKey);
+                
+                // Animasyon efekti
+                this.addClass('cart-cleared').delay(settings.animationDuration).queue(function() {
+                    $(this).removeClass('cart-cleared').dequeue();
+                });
+                
+                if (settings.showNotifications && typeof window.showNotification === 'function') {
+                    window.showNotification('🗑️ Sepet tamamen temizlendi!', 'warning');
+                }
+                
+                console.log('Plugin: Sepet temizlendi');
+                return this;
+            },
+            
+            getCart: function() {
+                return JSON.parse(localStorage.getItem(settings.storageKey) || '[]');
+            },
+            
+            getCartCount: function() {
+                const cart = this.getCart();
+                return cart.reduce((total, item) => total + item.quantity, 0);
+            },
+            
+            updateCartDisplay: function() {
+                const cart = this.getCart();
+                const totalItems = this.getCartCount();
+                const totalPrice = cart.reduce((total, item) => total + (item.price * item.quantity), 0);
+                
+                // Sepet sayısını güncelle
+                $('#cartCount').text(totalItems);
+                $('#cartTotal').text(`$${totalPrice.toFixed(2)}`);
+                
+                // Sepet içeriğini güncelle
+                const cartItems = $('#cartItems');
+                cartItems.empty();
+                
+                if (cart.length === 0) {
+                    cartItems.html(`
+                        <div style="text-align: center; color: #666; padding: 20px;">
+                            <p>🛒 Sepet boş</p>
+                        </div>
+                    `);
+                } else {
+                    $.each(cart, function(index, item) {
+                        const cartItem = $(`
+                            <div class="cart-item" data-id="${item.id}">
+                                <img src="${item.image}" alt="${item.title}" style="width: 40px; height: 40px; object-fit: contain;">
+                                <div class="cart-item-details">
+                                    <h4>${item.title.substring(0, 25)}...</h4>
+                                    <p>$${item.price} x ${item.quantity}</p>
+                                </div>
+                                <button class="remove-cart-item" data-id="${item.id}">🗑️</button>
+                            </div>
+                        `);
+                        
+                        cartItems.append(cartItem);
+                    });
+                }
+                
+                // Remove butonu event listener'ını ekle
+                $('#cartItems').off('click', '.remove-cart-item').on('click', '.remove-cart-item', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    
+                    const productId = $(this).data('id');
+                    console.log('Plugin: Sepetten çıkarılıyor:', productId);
+                    
+                    // Plugin kullanarak sepetten çıkar
+                    $('#cartContainer').cartManager().removeFromCart(productId);
+                    
+                    // Display'i güncelle
+                    $('#cartContainer').cartManager().updateCartDisplay();
+                });
+                
+                return this;
+            }
+        };
+        
+        // Plugin method'larını jQuery objesine ekle
+        $.extend(this, plugin);
+        
+        return this;
+    };
+    
+    // 2. Favoriler İşlemleri Plugin'i
+    $.fn.favoritesManager = function(options = {}) {
+        const defaults = {
+            storageKey: 'ecommerce_favorites',
+            animationDuration: 300,
+            showNotifications: true
+        };
+        
+        const settings = $.extend({}, defaults, options);
+        
+        // Plugin instance'ını oluştur
+        const plugin = {
+            addToFavorites: function(product) {
+                const favorites = JSON.parse(localStorage.getItem(settings.storageKey) || '[]');
+                const exists = favorites.some(item => item.id === product.id);
+                
+                if (!exists) {
+                    favorites.push({
+                        ...product,
+                        addedAt: new Date().toISOString()
+                    });
+                    localStorage.setItem(settings.storageKey, JSON.stringify(favorites));
+                    
+                    // Animasyon efekti
+                    this.addClass('favorite-added').delay(settings.animationDuration).queue(function() {
+                        $(this).removeClass('favorite-added').dequeue();
+                    });
+                    
+                    if (settings.showNotifications && typeof window.showNotification === 'function') {
+                        window.showNotification(`❤️ ${product.title} favorilere eklendi!`, 'success');
+                    }
+                    
+                    console.log('Plugin: Favorilere eklendi', product.title);
+                } else {
+                    if (settings.showNotifications && typeof window.showNotification === 'function') {
+                        window.showNotification('⚠️ Bu ürün zaten favorilerde!', 'warning');
+                    }
+                }
+                
+                return this;
+            },
+            
+            removeFromFavorites: function(productId) {
+                const favorites = JSON.parse(localStorage.getItem(settings.storageKey) || '[]');
+                const updatedFavorites = favorites.filter(item => item.id !== productId);
+                localStorage.setItem(settings.storageKey, JSON.stringify(updatedFavorites));
+                
+                // Animasyon efekti
+                this.addClass('favorite-removed').delay(settings.animationDuration).queue(function() {
+                    $(this).removeClass('favorite-removed').dequeue();
+                });
+                
+                if (settings.showNotifications && typeof window.showNotification === 'function') {
+                    window.showNotification('💔 Ürün favorilerden çıkarıldı!', 'info');
+                }
+                
+                console.log('Plugin: Favorilerden çıkarıldı', productId);
+                return this;
+            },
+            
+            clearFavorites: function() {
+                localStorage.removeItem(settings.storageKey);
+                
+                // Animasyon efekti
+                this.addClass('favorites-cleared').delay(settings.animationDuration).queue(function() {
+                    $(this).removeClass('favorites-cleared').dequeue();
+                });
+                
+                if (settings.showNotifications && typeof window.showNotification === 'function') {
+                    window.showNotification('💔 Tüm favoriler temizlendi!', 'warning');
+                }
+                
+                console.log('Plugin: Favoriler temizlendi');
+                return this;
+            },
+            
+            getFavorites: function() {
+                return JSON.parse(localStorage.getItem(settings.storageKey) || '[]');
+            },
+            
+            isFavorite: function(productId) {
+                const favorites = this.getFavorites();
+                return favorites.some(item => item.id === productId);
+            },
+            
+            updateFavoritesDisplay: function() {
+                const favorites = this.getFavorites();
+                const totalFavorites = favorites.length;
+                
+                // Favori sayısını güncelle
+                $('#favoritesCount').text(totalFavorites);
+                
+                // Favori içeriğini güncelle
+                const favoritesItems = $('#favoritesItems');
+                favoritesItems.empty();
+                
+                if (favorites.length === 0) {
+                    favoritesItems.html(`
+                        <div style="text-align: center; color: #666; padding: 20px;">
+                            <p>❤️ Favori ürün yok</p>
+                        </div>
+                    `);
+                } else {
+                    $.each(favorites, function(index, item) {
+                        const favoriteItem = $(`
+                            <div class="favorite-item" data-id="${item.id}">
+                                <img src="${item.image}" alt="${item.title}" style="width: 50px; height: 50px; object-fit: contain;">
+                                <div class="favorite-item-details">
+                                    <h4>${item.title.substring(0, 30)}...</h4>
+                                    <p>$${item.price}</p>
+                                </div>
+                                <button class="remove-favorite" data-id="${item.id}">💔</button>
+                            </div>
+                        `);
+                        
+                        favoritesItems.append(favoriteItem);
+                    });
+                }
+                
+                return this;
+            }
+        };
+        
+        // Plugin method'larını jQuery objesine ekle
+        $.extend(this, plugin);
+        
+        return this;
+    };
+    
+    // 3. Ürün İşlemleri Plugin'i
+    $.fn.productManager = function(options = {}) {
+        const defaults = {
+            animationDuration: 300,
+            showNotifications: true
+        };
+        
+        const settings = $.extend({}, defaults, options);
+        
+        // Plugin instance'ını oluştur
+        const plugin = {
+            showProductDetails: function(product) {
+                // Modal açma animasyonu
+                this.fadeIn(settings.animationDuration);
+                
+                if (settings.showNotifications && typeof window.showNotification === 'function') {
+                    window.showNotification(`📋 ${product.title} detayları gösteriliyor...`, 'info');
+                }
+                
+                console.log('Plugin: Ürün detayları gösteriliyor', product.title);
+                return this;
+            },
+            
+            searchProducts: function(query, products) {
+                const filtered = products.filter(product => 
+                    product.title.toLowerCase().includes(query.toLowerCase()) ||
+                    product.description.toLowerCase().includes(query.toLowerCase()) ||
+                    product.category.toLowerCase().includes(query.toLowerCase())
+                );
+                
+                if (settings.showNotifications && typeof window.showNotification === 'function') {
+                    window.showNotification(`🔍 ${filtered.length} ürün bulundu`, 'info');
+                }
+                
+                console.log('Plugin: Ürün arama yapıldı', query, filtered.length);
+                return filtered;
+            },
+            
+            sortProducts: function(products, sortBy = 'name', order = 'asc') {
+                const sorted = [...products].sort((a, b) => {
+                    let aVal, bVal;
+                    
+                    switch(sortBy) {
+                        case 'price':
+                            aVal = a.price;
+                            bVal = b.price;
+                            break;
+                        case 'rating':
+                            aVal = a.rating.rate;
+                            bVal = b.rating.rate;
+                            break;
+                        case 'name':
+                        default:
+                            aVal = a.title.toLowerCase();
+                            bVal = b.title.toLowerCase();
+                            break;
+                    }
+                    
+                    if (order === 'desc') {
+                        return aVal < bVal ? 1 : -1;
+                    }
+                    return aVal > bVal ? 1 : -1;
+                });
+                
+                if (settings.showNotifications && typeof window.showNotification === 'function') {
+                    window.showNotification(`📊 Ürünler ${sortBy} göre sıralandı`, 'info');
+                }
+                
+                console.log('Plugin: Ürünler sıralandı', sortBy, order);
+                return sorted;
+            }
+        };
+        
+        // Plugin method'larını jQuery objesine ekle
+        $.extend(this, plugin);
+        
+        return this;
+    };
+    
+    // 4. Animasyon Plugin'i
+    $.fn.animationManager = function(options = {}) {
+        const defaults = {
+            duration: 300,
+            easing: 'swing'
+        };
+        
+        const settings = $.extend({}, defaults, options);
+        
+        // Plugin instance'ını oluştur
+        const plugin = {
+            bounce: function() {
+                this.animate({
+                    transform: 'translateY(-20px)'
+                }, settings.duration / 2, settings.easing).animate({
+                    transform: 'translateY(0)'
+                }, settings.duration / 2, settings.easing);
+                return this;
+            },
+            
+            shake: function() {
+                const originalPosition = this.position();
+                this.animate({
+                    left: originalPosition.left - 10
+                }, 100).animate({
+                    left: originalPosition.left + 20
+                }, 100).animate({
+                    left: originalPosition.left - 10
+                }, 100).animate({
+                    left: originalPosition.left
+                }, 100);
+                return this;
+            },
+            
+            pulse: function() {
+                this.animate({
+                    transform: 'scale(1.1)'
+                }, settings.duration / 2, settings.easing).animate({
+                    transform: 'scale(1)'
+                }, settings.duration / 2, settings.easing);
+                return this;
+            },
+            
+            fadeInCustom: function() {
+                this.hide().fadeIn(settings.duration, settings.easing);
+                return this;
+            },
+            
+            fadeOutCustom: function() {
+                this.fadeOut(settings.duration, settings.easing);
+                return this;
+            }
+        };
+        
+        // Plugin method'larını jQuery objesine ekle
+        $.extend(this, plugin);
+        
+        return this;
+    };
+    
+    // 5. Bildirim Plugin'i
+    $.fn.notificationManager = function(options = {}) {
+        const defaults = {
+            duration: 3000,
+            position: 'top-right',
+            animationDuration: 300
+        };
+        
+        const settings = $.extend({}, defaults, options);
+        
+        // Plugin instance'ını oluştur
+        const plugin = {
+            showSuccess: function(message) {
+                if (typeof window.showNotification === 'function') {
+                    window.showNotification(message, 'success');
+                }
+                return this;
+            },
+            
+            showError: function(message) {
+                if (typeof window.showNotification === 'function') {
+                    window.showNotification(message, 'error');
+                }
+                return this;
+            },
+            
+            showWarning: function(message) {
+                if (typeof window.showNotification === 'function') {
+                    window.showNotification(message, 'warning');
+                }
+                return this;
+            },
+            
+            showInfo: function(message) {
+                if (typeof window.showNotification === 'function') {
+                    window.showNotification(message, 'info');
+                }
+                return this;
+            }
+        };
+        
+        // Plugin method'larını jQuery objesine ekle
+        $.extend(this, plugin);
+        
+        return this;
+    };
+    
+    console.log('Özel jQuery plugin\'leri başarıyla tanımlandı!');
+}
+
 // Uygulamayı başlat
 function startApp() {
     // Document ready kontrolü
@@ -920,47 +1527,7 @@ function initStartApp() {
     let allProducts = [];
     let cart = [];
     
-    // LocalStorage'dan sepet verilerini yükle
-    function loadCartFromStorage() {
-        try {
-            const savedCart = localStorage.getItem('miniEticaretCart');
-            if (savedCart) {
-                cart = JSON.parse(savedCart);
-                console.log('Sepet localStorage\'dan yüklendi:', cart.length, 'ürün');
-                
-                // DOM'u güncelle
-                const cartItems = document.getElementById('cartItems');
-                cartItems.innerHTML = '';
-                
-                if (cart.length > 0) {
-                    cart.forEach(item => {
-                        addProductToCartDOM(item);
-                    });
-                } else {
-                    cartItems.innerHTML = `
-                        <div style="text-align: center; color: #666; padding: 20px;">
-                            <p>🛒 Sepet boş</p>
-                        </div>
-                    `;
-                }
-                
-                updateCartDisplay();
-            }
-        } catch (error) {
-            console.error('LocalStorage sepet yükleme hatası:', error);
-            cart = [];
-        }
-    }
-    
-    // Sepeti localStorage'a kaydet
-    function saveCartToStorage() {
-        try {
-            localStorage.setItem('miniEticaretCart', JSON.stringify(cart));
-            console.log('Sepet localStorage\'a kaydedildi:', cart.length, 'ürün');
-        } catch (error) {
-            console.error('LocalStorage sepet kaydetme hatası:', error);
-        }
-    }
+   
     
     // Debounce fonksiyonu
     function debounce(func, wait) {
@@ -989,7 +1556,7 @@ function initStartApp() {
         };
     }
 
-    // Bildirim gösterme fonksiyonu
+    // Bildirim gösterme fonksiyonu (Global scope'a ekle)
     function showNotification(message, type = 'info') {
         console.log('Bildirim gösteriliyor:', message);
         
@@ -1080,7 +1647,10 @@ function initStartApp() {
         return notification;
     }
     
-    // Bildirimi gizleme fonksiyonu
+    // Global scope'a ekle
+    window.showNotification = showNotification;
+    
+    // Bildirimi gizleme fonksiyonu (Global scope'a ekle)
     function hideNotification(notification) {
         if (notification && notification.parentNode) {
             notification.style.transform = 'translateX(100%)';
@@ -1092,8 +1662,14 @@ function initStartApp() {
                 }
             }, 300);
         }
-    }
+        }
+    
+    // Global scope'a ekle
+    window.hideNotification = hideNotification;
 
+    // Plugin'leri başlat (showNotification fonksiyonundan sonra)
+    initCustomPlugins();
+    
     // AJAX ile ürün arama fonksiyonu
     function searchProductById(productId) {
         if (!productId || productId < 1 || productId > 20) {
@@ -1169,76 +1745,164 @@ function initStartApp() {
     // Debounced arama fonksiyonu
     const debouncedSearch = debounce(searchProductById, 500);
 
-    // Uygulama başladığında sepeti yükle
-    loadCartFromStorage();
-    
-    // Ürünleri yükle butonu
-    document.getElementById('loadProducts').addEventListener('click', function() {
-        if (typeof $ !== 'undefined') {
-            $(this)
-                .animate({ scale: 0.95 }, 100)
-                .fadeTo(100, 0.8)
-                .animate({ scale: 1 }, 100)
-                .fadeTo(100, 1, function() {
-                    loadProducts();
-                });
-        } else {
-            this.classList.add('shake');
-            setTimeout(() => this.classList.remove('shake'), 500);
-            loadProducts();
+    // Eski LocalStorage key'lerini temizle
+    function cleanupOldStorageKeys() {
+        try {
+            // Eski miniEticaretCart key'ini temizle
+            if (localStorage.getItem('miniEticaretCart')) {
+                localStorage.removeItem('miniEticaretCart');
+                console.log('✅ Eski miniEticaretCart key\'i temizlendi');
+            }
+            
+            // Diğer eski key'leri de kontrol et ve temizle
+            const oldKeys = [
+                'miniEticaretCart',
+                'cart',
+                'favorites',
+                'old_cart_data'
+            ];
+            
+            oldKeys.forEach(key => {
+                if (localStorage.getItem(key)) {
+                    localStorage.removeItem(key);
+                    console.log(`✅ Eski ${key} key\'i temizlendi`);
+                }
+            });
+            
+            console.log('🧹 LocalStorage temizleme işlemi tamamlandı');
+        } catch (error) {
+            console.error('LocalStorage temizleme hatası:', error);
         }
-    });
+    }
     
-    // Sepeti temizle butonu
-    document.getElementById('clearCart').addEventListener('click', function() {
-        if (typeof $ !== 'undefined') {
-            $(this)
-                .animate({ scale: 0.95 }, 100)
-                .fadeTo(100, 0.7)
-                .animate({ scale: 1 }, 100)
-                .fadeTo(100, 1, function() {
-                    clearCart();
-                });
-        } else {
-            this.classList.add('bounce');
-            setTimeout(() => this.classList.remove('bounce'), 500);
-            clearCart();
+    // LocalStorage durumunu göster (Debug için)
+    function showStorageStatus() {
+        console.log('📊 Mevcut LocalStorage Durumu:');
+        console.log('🛒 Sepet (ecommerce_cart):', localStorage.getItem('ecommerce_cart') ? '✅ Mevcut' : '❌ Yok');
+        console.log('❤️ Favoriler (ecommerce_favorites):', localStorage.getItem('ecommerce_favorites') ? '✅ Mevcut' : '❌ Yok');
+        console.log('🗑️ Eski miniEticaretCart:', localStorage.getItem('miniEticaretCart') ? '⚠️ Hala mevcut' : '✅ Temizlendi');
+    }
+    
+    // LocalStorage temizleme işlemini çalıştır
+    cleanupOldStorageKeys();
+    
+    // Temizleme sonrası durumu göster
+    setTimeout(() => {
+        showStorageStatus();
+    }, 100);
+    
+    // Uygulama başladığında sepet ve favoriler display'ini güncelle
+    // Plugin'ler yüklendikten sonra display'leri güncelle
+    setTimeout(() => {
+        if (typeof $ !== 'undefined' && $.fn.cartManager) {
+            updateCartDisplay();
         }
-    });
+        if (typeof $ !== 'undefined' && $.fn.favoritesManager) {
+            updateFavoritesDisplay();
+        }
+    }, 200);
     
-    // Arama event listener'ları
-    document.getElementById('searchProduct').addEventListener('click', function() {
-        const productId = parseInt(document.getElementById('productSearch').value);
+    // Favorilerden çıkarma event delegation
+    if (typeof $ !== 'undefined') {
+        $('#favoritesItems').off('click', '.remove-favorite').on('click', '.remove-favorite', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            const productId = $(this).data('id');
+            console.log('Favorilerden çıkarılıyor:', productId);
+            
+            // Plugin kullanarak favorilerden çıkar
+            $('#favoritesContainer').favoritesManager().removeFromFavorites(productId);
+            
+            // Display'i hemen güncelle
+            updateFavoritesDisplay();
+            
+            // Animasyon efekti
+            $(this).closest('.favorite-item').fadeOut(300, function() {
+                $(this).remove();
+            });
+        });
         
-        if (typeof $ !== 'undefined') {
-            $(this)
-                .animate({ scale: 0.9 }, 150)
-                .fadeTo(150, 0.6)
-                .animate({ scale: 1 }, 150)
-                .fadeTo(150, 1, function() {
-                    searchProductById(productId);
-                });
-        } else {
-            searchProductById(productId);
-        }
-    });
+        // Sepet temizleme butonu event delegation
+        $('#clearCartBtn').off('click').on('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            console.log('Sepet temizleme butonu tıklandı');
+            
+            // Plugin kullanarak sepeti temizle
+            $('#cartContainer').cartManager().clearCart();
+            
+            // Display'i güncelle
+            updateCartDisplay();
+        });
+    }
     
-    // Input event'i kaldırıldı - sadece buton ile arama yapılacak
+    // Ürünleri yükle butonu - Güvenli element kontrolü
+    const loadProductsBtn = document.getElementById('loadProducts');
+    if (loadProductsBtn) {
+        loadProductsBtn.addEventListener('click', function() {
+            if (typeof $ !== 'undefined') {
+                $(this)
+                    .animate({ scale: 0.95 }, 100)
+                    .fadeTo(100, 0.8)
+                    .animate({ scale: 1 }, 100)
+                    .fadeTo(100, 1, function() {
+                        loadProducts();
+                    });
+            } else {
+                this.classList.add('shake');
+                setTimeout(() => this.classList.remove('shake'), 500);
+                loadProducts();
+            }
+        });
+    }
     
-    // Enter tuşu ile arama
-    document.getElementById('productSearch').addEventListener('keypress', function(e) {
-        if (e.key === 'Enter') {
-            const productId = parseInt(this.value);
-            searchProductById(productId);
-        }
-    });
+    // Sepeti temizle butonu artık HTML'de yok, bu event listener kaldırıldı
+    // Sepet temizleme işlemi artık plugin ile yönetiliyor
     
-    // Ürünleri yükleme fonksiyonu
+    // Arama event listener'ları - Güvenli element kontrolü
+    const searchProductBtn = document.getElementById('searchProduct');
+    const productSearchInput = document.getElementById('productSearch');
+    
+    if (searchProductBtn) {
+        searchProductBtn.addEventListener('click', function() {
+            const productId = parseInt(productSearchInput ? productSearchInput.value : 0);
+            
+            if (typeof $ !== 'undefined') {
+                $(this)
+                    .animate({ scale: 0.9 }, 150)
+                    .fadeTo(150, 0.6)
+                    .animate({ scale: 1 }, 150)
+                    .fadeTo(150, 1, function() {
+                        searchProductById(productId);
+                    });
+            } else {
+                searchProductById(productId);
+            }
+        });
+    }
+    
+    // Enter tuşu ile arama - Güvenli element kontrolü
+    if (productSearchInput) {
+        productSearchInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                const productId = parseInt(this.value);
+                searchProductById(productId);
+            }
+        });
+    }
+    
+    // Ürünleri yükleme fonksiyonu - Güvenli element kontrolü
     function loadProducts() {
-        const productCount = document.getElementById('productCount').value || 8;
+        const productCountElement = document.getElementById('productCount');
+        const loadingElement = document.getElementById('loading');
+        const productGridElement = document.getElementById('productGrid');
         
-        document.getElementById('loading').style.display = 'block';
-        document.getElementById('productGrid').innerHTML = '';
+        const productCount = productCountElement ? productCountElement.value || 8 : 8;
+        
+        if (loadingElement) loadingElement.style.display = 'block';
+        if (productGridElement) productGridElement.innerHTML = '';
         
         fetch('https://fakestoreapi.com/products')
             .then(response => response.json())
@@ -1249,18 +1913,23 @@ function initStartApp() {
                 displayProducts(allProducts);
                 updateProductSlider(allProducts);
                 
-                document.getElementById('loading').style.display = 'none';
+                if (loadingElement) loadingElement.style.display = 'none';
             })
             .catch(error => {
                 console.error('Ürün yükleme hatası:', error);
-                document.getElementById('loading').style.display = 'none';
+                if (loadingElement) loadingElement.style.display = 'none';
                 alert('Ürünler yüklenirken hata oluştu. Lütfen tekrar deneyin.');
             });
     }
     
-    // Ürünleri görüntüleme
+    // Ürünleri görüntüleme - Güvenli element kontrolü
     function displayProducts(products) {
         const productGrid = document.getElementById('productGrid');
+        
+        if (!productGrid) {
+            console.warn('productGrid elementi bulunamadı');
+            return;
+        }
         
         products.forEach((product, index) => {
             const productCard = createProductCard(product, index);
@@ -1288,8 +1957,11 @@ function initStartApp() {
                 <h3></h3>
                 <div class="price"></div>
                 <div class="rating"></div>
-                <button class="detail-btn">👆 Detayları Göster</button>
-                <button class="add-to-cart-btn">🛒 Sepete Ekle</button>
+                <div class="product-actions">
+                    <button class="detail-btn">👆 Detayları Göster</button>
+                    <button class="add-to-cart-btn">🛒 Sepete Ekle</button>
+                    <button class="add-to-favorites-btn" title="Favorilere Ekle">❤️</button>
+                </div>
              
             </div>
         `;
@@ -1316,6 +1988,22 @@ function initStartApp() {
         card.querySelector('h3').textContent = product.title.substring(0, 50) + (product.title.length > 50 ? '...' : '');
         card.querySelector('.price').textContent = `$${product.price}`;
         card.querySelector('.rating').textContent = `⭐ ${product.rating.rate} (${product.rating.count})`;
+        
+        // Favori butonunun durumunu kontrol et ve güncelle
+        if (typeof $ !== 'undefined' && $.fn.favoritesManager) {
+            const isFavorite = $('#favoritesContainer').favoritesManager().isFavorite(product.id);
+            const favoriteBtn = card.querySelector('.add-to-favorites-btn');
+            
+            if (isFavorite) {
+                favoriteBtn.textContent = '💖';
+                favoriteBtn.style.background = '#e91e63';
+                favoriteBtn.title = 'Favorilerden Çıkar';
+            } else {
+                favoriteBtn.textContent = '❤️';
+                favoriteBtn.style.background = 'linear-gradient(45deg, #667eea, #ee5a24)';
+                favoriteBtn.title = 'Favorilere Ekle';
+            }
+        }
         
         // After/Before kullanımı: Yüksek fiyatlı ürünlere "Öne Çıkan" etiketi ekle
         if (product.price > 50) {
@@ -1388,6 +2076,30 @@ function initStartApp() {
                         }, 200);
                 }
             );
+            
+            // Favorilere ekle butonu hover efekti
+            $(card).find('.add-to-favorites-btn').hover(
+                function() {
+                    $(this)
+                        .fadeTo(200, 0.9)
+                        .toggleClass('active', true)
+                        .animate({
+                            transform: 'scale(1.08)',
+                            boxShadow: '0 10px 30px rgba(233, 30, 99, 0.4)',
+                            background: 'linear-gradient(45deg, #e91e63, #9c27b0)'
+                        }, 200);
+                },
+                function() {
+                    $(this)
+                        .fadeTo(200, 1)
+                        .toggleClass('active', false)
+                        .animate({
+                            transform: 'scale(1)',
+                            boxShadow: '0 4px 15px rgba(0,0,0,0.2)',
+                            background: 'linear-gradient(45deg, #667eea, #ee5a24)'
+                        }, 200);
+                }
+            );
         }
         
         // Event delegation için product grid'e event listener ekle
@@ -1445,6 +2157,60 @@ function initStartApp() {
                 }
             });
             
+            // Favorilere ekle butonu event delegation
+            $('#productGrid').off('click', '.add-to-favorites-btn').on('click', '.add-to-favorites-btn', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                
+                // Traversing: Butondan ürün kartına ulaş
+                const productCard = $(this).closest('.product-card');
+                const productId = productCard.data('product-id');
+                const product = allProducts.find(p => p.id === productId);
+                
+                console.log('Favorilere ekleniyor (Event Delegation):', product?.title);
+                
+                if (product) {
+                    // Ürünün favorilerde olup olmadığını kontrol et
+                    const isFavorite = $('#favoritesContainer').favoritesManager().isFavorite(product.id);
+                    
+                    if (!isFavorite) {
+                        // Plugin kullanarak favorilere ekle
+                        $('#favoritesContainer').favoritesManager().addToFavorites(product);
+                        
+                        // Favoriler display'ini hemen güncelle
+                        updateFavoritesDisplay();
+                        
+                        $(this)
+                            .animate({ scale: 1.2 }, 200)
+                            .fadeTo(200, 0.8)
+                            .text('💖')
+                            .css('background', '#e91e63')
+                            .attr('title', 'Favorilerden Çıkar')
+                            .animate({ scale: 1 }, 200)
+                            .fadeTo(200, 1);
+                    } else {
+                        // Zaten favorilerde, favorilerden çıkar
+                        $('#favoritesContainer').favoritesManager().removeFromFavorites(product.id);
+                        
+                        // Favoriler display'ini hemen güncelle
+                        updateFavoritesDisplay();
+                        
+                        $(this)
+                            .animate({ scale: 0.8 }, 200)
+                            .fadeTo(200, 0.6)
+                            .text('💔')
+                            .css('background', '#666')
+                            .attr('title', 'Favorilere Ekle')
+                            .animate({ scale: 1 }, 200)
+                            .fadeTo(200, 1)
+                            .delay(1000)
+                            .animate({ scale: 0.9 }, 100)
+                            .text('❤️')
+                            .css('background', 'linear-gradient(45deg, #667eea, #ee5a24)')
+                            .animate({ scale: 1 }, 100);
+                    }
+                }
+            });
         
         }
         
@@ -1594,33 +2360,31 @@ function initStartApp() {
     
 
     
-    // Sepete ekleme
+    // Sepete ekleme (Plugin kullanarak)
     function addToCart(product) {
-        const existingItem = cart.find(item => item.id === product.id);
+        console.log('Sepete ekleme işlemi başlatıldı:', product.title);
         
-        if (existingItem) {
-            existingItem.quantity += 1;
-        } else {
-            cart.push({
-                ...product,
-                quantity: 1
-            });
-        }
+        // Plugin kullanarak sepete ekle
+        $('#cartContainer').cartManager().addToCart(product);
         
-        // DOM'a ürün ekleme
+        // Mevcut cart array'ini güncelle
+        cart = $('#cartContainer').cartManager().getCart();
+        
+        // DOM'a ekle
         addProductToCartDOM(product);
         
+        // Sepet sayısını güncelle
         updateCartDisplay();
-        saveCartToStorage(); // LocalStorage'a kaydet
-        console.log('Sepete eklendi:', product.title);
         
-        // Sağ üst köşede bildirim göster
-        showNotification(`✅ Ürün sepete eklendi!`, 'success');
+        // Favoriler sayısını güncelle
+        updateFavoritesDisplay();
         
         // Sepet animasyonu
         if (typeof $ !== 'undefined') {
             $('#cart').animate({ scale: 1.05 }, 200).animate({ scale: 1 }, 200);
         }
+        
+        console.log('Sepete ekleme işlemi tamamlandı (Plugin ile)');
     }
     
     // DOM'a ürün ekleme (Clone ve Append/Prepend kullanarak)
@@ -1654,7 +2418,7 @@ function initStartApp() {
                         <p>$<span class="price">0</span> x <span class="quantity">1</span></p>
                     </div>
                     <div class="cart-item-actions">
-                        <button class="remove-item" data-id="">❌</button>
+                        <button class="remove-cart-item" data-id="">🗑️</button>
                     </div>
                 </div>
             `;
@@ -1668,7 +2432,7 @@ function initStartApp() {
             cartItem.querySelector('img').alt = product.title;
             cartItem.querySelector('h4').textContent = product.title.substring(0, 25) + (product.title.length > 25 ? '...' : '');
             cartItem.querySelector('.price').textContent = product.price;
-            cartItem.querySelector('.remove-item').setAttribute('data-id', product.id);
+            cartItem.querySelector('.remove-cart-item').setAttribute('data-id', product.id);
             
             // Clone'lanan elementi DOM'a ekle (prepend kullanarak - en üste ekle)
             if (typeof $ !== 'undefined') {
@@ -1693,76 +2457,36 @@ function initStartApp() {
             }
         }
         
-        // Remove butonu event listener (Event delegation ile)
-        if (typeof $ !== 'undefined') {
-            $('#cartItems').off('click', '.remove-item').on('click', '.remove-item', function(e) {
-                e.preventDefault();
-                e.stopPropagation();
-                
-                // Traversing: Butondan cart item'a ulaş
-                const cartItem = $(this).closest('.cart-item');
-                const productId = cartItem.data('product-id');
-                
-                console.log('Sepetten çıkarılıyor (Event Delegation):', productId);
-                removeFromCart(productId);
-            });
-        }
+        // Remove butonu event listener artık plugin içinde yönetiliyor
+        // Plugin'in updateCartDisplay fonksiyonunda .remove-cart-item için event delegation var
     }
     
     // Sepet görüntüleme güncelleme
     function updateCartDisplay() {
-        const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
-        const totalPrice = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-        
-        document.getElementById('cartCount').textContent = totalItems;
-        document.getElementById('cartTotal').textContent = `$${totalPrice.toFixed(2)}`;
-        
-        const cartItems = document.getElementById('cartItems');
-        cartItems.innerHTML = '';
-        
-        if (cart.length === 0) {
-            cartItems.innerHTML = `
-                <div style="text-align: center; color: #666; padding: 20px;">
-                    <p>🛒 Sepet boş</p>
-                 
-                </div>
-            `;
-            return;
+        try {
+            // Plugin'in yüklenip yüklenmediğini kontrol et
+            if (typeof $ === 'undefined' || !$.fn.cartManager) {
+                console.warn('CartManager plugin henüz yüklenmemiş');
+                return;
+            }
+            
+            // Plugin kullanarak sepet display'ini güncelle
+            $('#cartContainer').cartManager().updateCartDisplay();
+            
+        } catch (error) {
+            console.error('Sepet display güncelleme hatası:', error);
         }
-        
-        cart.forEach(item => {
-            const cartItem = document.createElement('div');
-            cartItem.className = 'cart-item';
-            cartItem.innerHTML = `
-                <img src="${item.image}" alt="${item.title}" style="width: 50px; height: 50px; object-fit: contain;">
-                <div class="cart-item-details">
-                    <h4>${item.title.substring(0, 30)}...</h4>
-                    <p>$${item.price} x ${item.quantity}</p>
-                </div>
-                <button class="remove-item" data-id="${item.id}">❌</button>
-            `;
-            
-            cartItem.querySelector('.remove-item').addEventListener('click', function() {
-                removeFromCart(item.id);
-            });
-            
-            cartItems.appendChild(cartItem);
-        });
-        
-        // LocalStorage bilgisi
-        const storageInfo = document.createElement('div');
-        storageInfo.style.cssText = 'text-align: center; color: #999; font-size: 12px; padding: 10px; border-top: 1px solid #ddd; margin-top: 10px;';
-      
-        cartItems.appendChild(storageInfo);
     }
     
-    // Sepetten çıkarma
+    // Sepetten çıkarma (Plugin kullanarak)
     function removeFromCart(productId) {
-        // Ürün bilgisini al
-        const removedProduct = cart.find(item => item.id === productId);
+        console.log('Sepetten çıkarma işlemi başlatıldı:', productId);
         
-        // Array'den çıkar
-        cart = cart.filter(item => item.id !== productId);
+        // Plugin kullanarak sepetten çıkar
+        $('#cartContainer').cartManager().removeFromCart(productId);
+        
+        // Mevcut cart array'ini güncelle
+        cart = $('#cartContainer').cartManager().getCart();
         
         // DOM'dan çıkar
         const cartItem = document.querySelector(`[data-product-id="${productId}"]`);
@@ -1784,17 +2508,19 @@ function initStartApp() {
         }
         
         updateCartDisplay();
-        saveCartToStorage(); // LocalStorage'a kaydet
-        console.log('Sepetten çıkarıldı:', productId);
-        
-        // Bildirim göster
-        if (removedProduct) {
-            showNotification(`🗑️ Ürün sepetten çıkarıldı!`, 'info');
-        }
+        console.log('Sepetten çıkarma işlemi tamamlandı (Plugin ile)');
     }
     
-    // Sepeti temizleme
+    // Sepeti temizleme (Plugin kullanarak)
     function clearCart() {
+        console.log('Sepet temizleme işlemi başlatıldı');
+        
+        // Plugin kullanarak sepeti temizle
+        $('#cartContainer').cartManager().clearCart();
+        
+        // Mevcut cart array'ini güncelle
+        cart = $('#cartContainer').cartManager().getCart();
+        
         // DOM'dan tüm ürünleri sil - .empty() kullanarak
         const cartItems = document.getElementById('cartItems');
         
@@ -1816,24 +2542,37 @@ function initStartApp() {
             `;
         }
         
-        // Array'i temizle
-        cart = [];
-        
-        // LocalStorage'dan temizle
-        saveCartToStorage();
-        
         // Sepet sayısını güncelle
         updateCartDisplay();
         
-        console.log('Sepet temizlendi - .empty() kullanıldı');
-        
-        // Bildirim göster
-        showNotification('🗑️ Sepet tamamen temizlendi!', 'info');
+        console.log('Sepet temizlendi (Plugin ile)');
     }
     
-    // Ürün slider'ı güncelleme
+    // Favoriler görüntüleme güncelleme
+    function updateFavoritesDisplay() {
+        try {
+            // Plugin'in yüklenip yüklenmediğini kontrol et
+            if (typeof $ === 'undefined' || !$.fn.favoritesManager) {
+                console.warn('FavoritesManager plugin henüz yüklenmemiş');
+                return;
+            }
+            
+            // Plugin kullanarak favoriler display'ini güncelle
+            $('#favoritesContainer').favoritesManager().updateFavoritesDisplay();
+            
+        } catch (error) {
+            console.error('Favoriler display güncelleme hatası:', error);
+        }
+    }
+    
+    // Ürün slider'ı güncelleme - Güvenli element kontrolü
     function updateProductSlider(products) {
         const slider = document.getElementById('productSlider');
+        
+        if (!slider) {
+            console.warn('productSlider elementi bulunamadı');
+            return;
+        }
         
         if (slider.classList.contains('slick-initialized')) {
             $(slider).slick('unslick');
