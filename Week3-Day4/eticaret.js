@@ -405,7 +405,8 @@ function addStyles() {
         .slick-slide {
             display: flex !important;
             justify-content: center;
-            align-items: center;
+            align-items: stretch;
+            height: auto;
         }
 
         .slick-track {
@@ -415,6 +416,11 @@ function addStyles() {
 
         .slick-list {
             overflow: hidden;
+        }
+
+        .slick-slide > div {
+            height: 100%;
+            display: flex;
         }
 
         .slider-section h2 {
@@ -435,7 +441,7 @@ function addStyles() {
             flex-direction: column;
             align-items: center;
             justify-content: space-between;
-            min-height: 200px;
+            height: 250px;
             width: 100%;
         }
 
@@ -460,20 +466,31 @@ function addStyles() {
             display: flex;
             align-items: center;
             justify-content: center;
+            min-height: 40px;
         }
 
         .slider-card .price {
             color: #667eea;
             font-weight: bold;
             font-size: 1.1rem;
-            margin-bottom: 5px;
+            margin-bottom: 8px;
             text-align: center;
+            order: 1;
         }
 
         .slider-card .rating {
             color: #ffc107;
             font-weight: bold;
             text-align: center;
+            order: 2;
+        }
+
+        .slider-card .price-info {
+            margin-top: auto;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
 
         @media (max-width: 768px) {
@@ -500,7 +517,7 @@ function addStyles() {
             }
             
             .slider-card {
-                min-height: 180px;
+                height: 200px;
                 padding: 10px;
             }
         }
@@ -1035,8 +1052,10 @@ function startApp() {
                 sliderCard.innerHTML = `
                     <img src="${product.image}" alt="${product.title}">
                     <h4>${product.title.substring(0, 30)}...</h4>
-                    <p class="price">$${product.price}</p>
-                    <div class="rating">⭐ ${product.rating.rate}</div>
+                    <div class="price-info">
+                        <p class="price">$${product.price}</p>
+                        <div class="rating">⭐ ${product.rating.rate}</div>
+                    </div>
                 `;
                 
                 slider.appendChild(sliderCard);
