@@ -321,6 +321,20 @@ function addStyles() {
             box-shadow: 0 20px 40px rgba(102, 126, 234, 0.4);
         }
 
+        .featured-badge {
+            background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: bold;
+            text-align: center;
+            margin: 5px auto;
+            width: fit-content;
+            box-shadow: 0 2px 10px rgba(255, 107, 107, 0.3);
+            animation: pulse 2s infinite;
+        }
+
         .product-card img {
             width: 150px;
             height: 150px;
@@ -1136,20 +1150,57 @@ function initStartApp() {
         });
     }
     
-    // Ürün kartı oluşturma
-    function createProductCard(product, index) {
-        const card = document.createElement('div');
-        card.className = 'product-card';
-        card.setAttribute('data-product-index', index);
-        
-        card.innerHTML = `
-            <img src="${product.image}" alt="${product.title}">
-            <h3>${product.title.substring(0, 50)}${product.title.length > 50 ? '...' : ''}</h3>
-            <div class="price">$${product.price}</div>
-            <div class="rating">⭐ ${product.rating.rate} (${product.rating.count})</div>
-            <button class="detail-btn">👆 Detayları Göster</button>
-            <button class="add-to-cart-btn">🛒 Sepete Ekle</button>
+    // Ürün kartı template'i oluşturma
+    function createProductCardTemplate() {
+        const template = document.createElement('div');
+        template.className = 'product-card-template';
+        template.style.display = 'none';
+        template.innerHTML = `
+            <div class="product-card" data-product-id="">
+                <img src="" alt="">
+                <h3></h3>
+                <div class="price"></div>
+                <div class="rating"></div>
+                <button class="detail-btn">👆 Detayları Göster</button>
+                <button class="add-to-cart-btn">🛒 Sepete Ekle</button>
+             
+            </div>
         `;
+        document.body.appendChild(template);
+        return template;
+    }
+
+    // Template'den ürün kartı oluşturma (Cloning)
+    function createProductCard(product, index) {
+        // Template'i oluştur (eğer yoksa)
+        let template = document.querySelector('.product-card-template');
+        if (!template) {
+            template = createProductCardTemplate();
+        }
+        
+        // Template'i clone'la
+        const card = template.querySelector('.product-card').cloneNode(true);
+        card.setAttribute('data-product-index', index);
+        card.setAttribute('data-product-id', product.id);
+        
+        // Template verilerini doldur
+        card.querySelector('img').src = product.image;
+        card.querySelector('img').alt = product.title;
+        card.querySelector('h3').textContent = product.title.substring(0, 50) + (product.title.length > 50 ? '...' : '');
+        card.querySelector('.price').textContent = `$${product.price}`;
+        card.querySelector('.rating').textContent = `⭐ ${product.rating.rate} (${product.rating.count})`;
+        
+        // After/Before kullanımı: Yüksek fiyatlı ürünlere "Öne Çıkan" etiketi ekle
+        if (product.price > 50) {
+            if (typeof $ !== 'undefined') {
+                $(card).after('<div class="featured-badge">🔥 Öne Çıkan</div>');
+            } else {
+                const featuredBadge = document.createElement('div');
+                featuredBadge.className = 'featured-badge';
+                featuredBadge.textContent = '🔥 Öne Çıkan';
+                card.parentNode.insertBefore(featuredBadge, card.nextSibling);
+            }
+        }
         
         // jQuery hover efektleri ekle
         if (typeof $ !== 'undefined') {
@@ -1212,60 +1263,63 @@ function initStartApp() {
             );
         }
         
-        // Detay butonu
-        card.querySelector('.detail-btn').addEventListener('click', function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            console.log('Detay butonu tıklandı:', product.title);
+        // Event delegation için product grid'e event listener ekle
+        if (typeof $ !== 'undefined') {
+            // Detay butonu event delegation
+            $('#productGrid').off('click', '.detail-btn').on('click', '.detail-btn', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                
+                // Traversing: Butondan ürün kartına ulaş
+                const productCard = $(this).closest('.product-card');
+                const productId = productCard.data('product-id');
+                const product = allProducts.find(p => p.id === productId);
+                
+                console.log('Detay butonu tıklandı (Event Delegation):', product?.title);
+                
+                if (product) {
+                    $(this)
+                        .animate({ scale: 0.95 }, 100)
+                        .fadeTo(100, 0.7)
+                        .animate({ scale: 1 }, 100)
+                        .fadeTo(100, 1, function() {
+                            showProductModal(product);
+                        });
+                }
+            });
             
-            if (typeof $ !== 'undefined') {
-                $(this)
-                    .animate({ scale: 0.95 }, 100)
-                    .fadeTo(100, 0.7)
-                    .animate({ scale: 1 }, 100)
-                    .fadeTo(100, 1, function() {
-                        showProductModal(product);
-                    });
-            } else {
-                this.style.transform = 'scale(0.95)';
-                this.style.background = '#ff6b6b';
-                setTimeout(() => {
-                    this.style.transform = 'scale(1)';
-                    this.style.background = '#667eea';
-                    showProductModal(product);
-                }, 150);
-            }
-        });
+            // Sepete ekle butonu event delegation
+            $('#productGrid').off('click', '.add-to-cart-btn').on('click', '.add-to-cart-btn', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                
+                // Traversing: Butondan ürün kartına ulaş
+                const productCard = $(this).closest('.product-card');
+                const productId = productCard.data('product-id');
+                const product = allProducts.find(p => p.id === productId);
+                
+                console.log('Sepete ekleniyor (Event Delegation):', product?.title);
+                
+                if (product) {
+                    addToCart(product);
+                    
+                    $(this)
+                        .animate({ scale: 1.1 }, 200)
+                        .fadeTo(200, 0.8)
+                        .text('✅ Eklendi!')
+                        .css('background', '#28a745')
+                        .animate({ scale: 1 }, 200)
+                        .fadeTo(200, 1)
+                        .delay(1500)
+                        .animate({ scale: 0.9 }, 100)
+                        .text('🛒 Sepete Ekle')
+                        .css('background', '#667eea')
+                        .animate({ scale: 1 }, 100);
+                }
+            });
+            
         
-        // Sepete ekle butonu
-        card.querySelector('.add-to-cart-btn').addEventListener('click', function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            console.log('Sepete ekleniyor:', product.title);
-            addToCart(product);
-            
-            if (typeof $ !== 'undefined') {
-                $(this)
-                    .animate({ scale: 1.1 }, 200)
-                    .fadeTo(200, 0.8)
-                    .text('✅ Eklendi!')
-                    .css('background', '#28a745')
-                    .animate({ scale: 1 }, 200)
-                    .fadeTo(200, 1)
-                    .delay(1500)
-                    .animate({ scale: 0.9 }, 100)
-                    .text('🛒 Sepete Ekle')
-                    .css('background', '#667eea')
-                    .animate({ scale: 1 }, 100);
-            } else {
-                this.textContent = '✅ Eklendi!';
-                this.style.background = '#28a745';
-                setTimeout(() => {
-                    this.textContent = '🛒 Sepete Ekle';
-                    this.style.background = '#667eea';
-                }, 2000);
-            }
-        });
+        }
         
         return card;
     }
@@ -1444,25 +1498,9 @@ function initStartApp() {
         }
     }
     
-    // DOM'a ürün ekleme
+    // DOM'a ürün ekleme (Clone ve Append/Prepend kullanarak)
     function addProductToCartDOM(product) {
         const cartItems = document.getElementById('cartItems');
-        
-        // Ürünün küçük kopyasını oluştur
-        const cartItem = document.createElement('div');
-        cartItem.className = 'cart-item';
-        cartItem.setAttribute('data-product-id', product.id);
-        
-        cartItem.innerHTML = `
-            <img src="${product.image}" alt="${product.title}" style="width: 50px; height: 50px; object-fit: contain; border-radius: 5px;">
-            <div class="cart-item-details">
-                <h4>${product.title.substring(0, 25)}${product.title.length > 25 ? '...' : ''}</h4>
-                <p>$${product.price} x <span class="quantity">1</span></p>
-            </div>
-            <div class="cart-item-actions">
-                <button class="remove-item" data-id="${product.id}">❌</button>
-            </div>
-        `;
         
         // Mevcut ürün varsa quantity'yi güncelle
         const existingCartItem = cartItems.querySelector(`[data-product-id="${product.id}"]`);
@@ -1479,23 +1517,71 @@ function initStartApp() {
                 });
             }
         } else {
-            // Yeni ürün ekleme animasyonu
-            cartItem.style.opacity = '0';
-            cartItem.style.transform = 'translateX(-20px)';
-            cartItems.appendChild(cartItem);
+            // Yeni ürün için template oluştur ve clone'la
+            const cartItemTemplate = document.createElement('div');
+            cartItemTemplate.className = 'cart-item-template';
+            cartItemTemplate.style.display = 'none';
+            cartItemTemplate.innerHTML = `
+                <div class="cart-item" data-product-id="">
+                    <img src="" alt="" style="width: 50px; height: 50px; object-fit: contain; border-radius: 5px;">
+                    <div class="cart-item-details">
+                        <h4></h4>
+                        <p>$<span class="price">0</span> x <span class="quantity">1</span></p>
+                    </div>
+                    <div class="cart-item-actions">
+                        <button class="remove-item" data-id="">❌</button>
+                    </div>
+                </div>
+            `;
             
-            // Fade-in animasyonu
-            setTimeout(() => {
-                cartItem.style.transition = 'all 0.3s ease';
-                cartItem.style.opacity = '1';
-                cartItem.style.transform = 'translateX(0)';
-            }, 10);
+            // Template'i clone'la
+            const cartItem = cartItemTemplate.querySelector('.cart-item').cloneNode(true);
+            cartItem.setAttribute('data-product-id', product.id);
+            
+            // Template verilerini doldur
+            cartItem.querySelector('img').src = product.image;
+            cartItem.querySelector('img').alt = product.title;
+            cartItem.querySelector('h4').textContent = product.title.substring(0, 25) + (product.title.length > 25 ? '...' : '');
+            cartItem.querySelector('.price').textContent = product.price;
+            cartItem.querySelector('.remove-item').setAttribute('data-id', product.id);
+            
+            // Clone'lanan elementi DOM'a ekle (prepend kullanarak - en üste ekle)
+            if (typeof $ !== 'undefined') {
+                // jQuery ile prepend kullanarak en üste ekle
+                $(cartItems).prepend(cartItem);
+                
+                // Fade-in animasyonu
+                $(cartItem).hide().fadeIn(300);
+            } else {
+                // Vanilla JS ile insertBefore kullanarak en üste ekle
+                const firstChild = cartItems.firstChild;
+                cartItems.insertBefore(cartItem, firstChild);
+                
+                // Fade-in animasyonu
+                cartItem.style.opacity = '0';
+                cartItem.style.transform = 'translateX(-20px)';
+                setTimeout(() => {
+                    cartItem.style.transition = 'all 0.3s ease';
+                    cartItem.style.opacity = '1';
+                    cartItem.style.transform = 'translateX(0)';
+                }, 10);
+            }
         }
         
-        // Remove butonu event listener
-        cartItem.querySelector('.remove-item').addEventListener('click', function() {
-            removeFromCart(product.id);
-        });
+        // Remove butonu event listener (Event delegation ile)
+        if (typeof $ !== 'undefined') {
+            $('#cartItems').off('click', '.remove-item').on('click', '.remove-item', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                
+                // Traversing: Butondan cart item'a ulaş
+                const cartItem = $(this).closest('.cart-item');
+                const productId = cartItem.data('product-id');
+                
+                console.log('Sepetten çıkarılıyor (Event Delegation):', productId);
+                removeFromCart(productId);
+            });
+        }
     }
     
     // Sepet görüntüleme güncelleme
