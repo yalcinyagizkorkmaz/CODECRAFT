@@ -406,8 +406,14 @@ function addStyles() {
 
         .main-content {
             display: grid;
-            grid-template-columns: 1fr 300px;
+            grid-template-columns: 1fr 350px;
             gap: 30px;
+        }
+
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
         }
 
         .product-section {
@@ -530,6 +536,7 @@ function addStyles() {
             padding: 20px;
             color: white;
             height: fit-content;
+            margin-bottom: 0;
         }
 
         .cart-section h2 {
@@ -608,7 +615,7 @@ function addStyles() {
             background: rgba(255,255,255,0.1);
             border-radius: 15px;
             padding: 20px;
-            margin: 20px 0;
+            margin: 0;
             backdrop-filter: blur(10px);
             border: 1px solid rgba(255,255,255,0.2);
         }
@@ -649,6 +656,7 @@ function addStyles() {
             border-radius: 8px;
             margin-bottom: 8px;
             transition: all 0.3s ease;
+            position: relative;
         }
 
         .favorite-item:hover {
@@ -663,10 +671,17 @@ function addStyles() {
             border-radius: 5px;
         }
 
+        .favorite-item-details {
+            flex: 1;
+            margin-right: 50px; /* Remove butonu için yer bırak */
+        }
+
         .favorite-item-details h4 {
             margin: 0;
             font-size: 14px;
             color: #333;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
         }
 
         .favorite-item-details p {
@@ -677,6 +692,7 @@ function addStyles() {
 
         .favorite-item-actions {
             margin-left: auto;
+            flex-shrink: 0;
         }
 
         .remove-favorite {
@@ -688,6 +704,11 @@ function addStyles() {
             cursor: pointer;
             font-size: 12px;
             transition: all 0.3s ease;
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 10;
         }
 
         .remove-favorite:hover {
@@ -913,29 +934,31 @@ function createHTMLStructure() {
                 </div>
             </div>
 
-            <div class="cart-section">
-                <h2>🛒 Sepetim</h2>
-                <div class="cart-summary">
-                    <p>Toplam Ürün: <span id="cartCount">0</span></p>
-                    <p>Toplam Tutar: <span id="cartTotal">$0.00</span></p>
-                    <button id="clearCartBtn" style="background: #dc3545; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; margin-top: 10px; width: 100%;">🗑️ Sepeti Temizle</button>
-                </div>
-                <div id="cartItems" class="cart-items">
-                    <div style="text-align: center; color: #ddd; padding: 20px;">
-                        <p>🛒 Sepet boş</p>
+            <div class="sidebar">
+                <div class="cart-section">
+                    <h2>🛒 Sepetim</h2>
+                    <div class="cart-summary">
+                        <p>Toplam Ürün: <span id="cartCount">0</span></p>
+                        <p>Toplam Tutar: <span id="cartTotal">$0.00</span></p>
+                        <button id="clearCartBtn" style="background: #dc3545; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; margin-top: 10px; width: 100%;">🗑️ Sepeti Temizle</button>
+                    </div>
+                    <div id="cartItems" class="cart-items">
+                        <div style="text-align: center; color: #ddd; padding: 20px;">
+                            <p>🛒 Sepet boş</p>
+                        </div>
                     </div>
                 </div>
-            </div>
-            
-            <div class="favorites-section">
-                <h2>❤️ Favorilerim</h2>
-                <div class="favorites-summary">
-                    <p>Toplam Favori: <span id="favoritesCount">0</span></p>
-                </div>
-                <div id="favoritesContainer" class="favorites-container">
-                    <div id="favoritesItems" class="favorites-items">
-                        <div style="text-align: center; color: #ddd; padding: 20px;">
-                            <p>❤️ Favori ürün yok</p>
+                
+                <div class="favorites-section">
+                    <h2>❤️ Favorilerim</h2>
+                    <div class="favorites-summary">
+                        <p>Toplam Favori: <span id="favoritesCount">0</span></p>
+                    </div>
+                    <div id="favoritesContainer" class="favorites-container">
+                        <div id="favoritesItems" class="favorites-items">
+                            <div style="text-align: center; color: #ddd; padding: 20px;">
+                                <p>❤️ Favori ürün yok</p>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -1080,7 +1103,7 @@ function initCustomPlugins() {
                 });
                 
                 if (settings.showNotifications && typeof window.showNotification === 'function') {
-                    window.showNotification(`🛒 ${product.title} sepete eklendi!`, 'success');
+                    window.showNotification(`🛒 Ürün sepete eklendi!`, 'success');
                 }
                 
                 console.log('Plugin: Sepete eklendi', product.title);
@@ -1220,7 +1243,7 @@ function initCustomPlugins() {
                     });
                     
                     if (settings.showNotifications && typeof window.showNotification === 'function') {
-                        window.showNotification(`❤️ ${product.title} favorilere eklendi!`, 'success');
+                        window.showNotification(`❤️ Ürün favorilere eklendi!`, 'success');
                     }
                     
                     console.log('Plugin: Favorilere eklendi', product.title);
@@ -1302,7 +1325,7 @@ function initCustomPlugins() {
                                     <h4>${item.title.substring(0, 30)}...</h4>
                                     <p>$${item.price}</p>
                                 </div>
-                                <button class="remove-favorite" data-id="${item.id}">💔</button>
+                                <button class="remove-favorite" data-id="${item.id}" title="Favorilerden Çıkar">💔</button>
                             </div>
                         `);
                         
