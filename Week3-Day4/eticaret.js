@@ -362,6 +362,17 @@ function addStyles() {
             display: flex;
             align-items: center;
             gap: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .cart-item.updated {
+            background: rgba(40, 167, 69, 0.2);
+            transform: scale(1.02);
+        }
+
+        .cart-item-actions {
+            display: flex;
+            align-items: center;
         }
 
         .cart-item img {
@@ -687,6 +698,23 @@ function startApp() {
             if (savedCart) {
                 cart = JSON.parse(savedCart);
                 console.log('Sepet localStorage\'dan yüklendi:', cart.length, 'ürün');
+                
+                // DOM'u güncelle
+                const cartItems = document.getElementById('cartItems');
+                cartItems.innerHTML = '';
+                
+                if (cart.length > 0) {
+                    cart.forEach(item => {
+                        addProductToCartDOM(item);
+                    });
+                } else {
+                    cartItems.innerHTML = `
+                        <div style="text-align: center; color: #666; padding: 20px;">
+                            <p>🛒 Sepet boş</p>
+                        </div>
+                    `;
+                }
+                
                 updateCartDisplay();
             }
         } catch (error) {
@@ -961,9 +989,66 @@ function startApp() {
             });
         }
         
+        // DOM'a ürün ekleme
+        addProductToCartDOM(product);
+        
         updateCartDisplay();
         saveCartToStorage(); // LocalStorage'a kaydet
         console.log('Sepete eklendi:', product.title);
+    }
+    
+    // DOM'a ürün ekleme
+    function addProductToCartDOM(product) {
+        const cartItems = document.getElementById('cartItems');
+        
+        // Ürünün küçük kopyasını oluştur
+        const cartItem = document.createElement('div');
+        cartItem.className = 'cart-item';
+        cartItem.setAttribute('data-product-id', product.id);
+        
+        cartItem.innerHTML = `
+            <img src="${product.image}" alt="${product.title}" style="width: 50px; height: 50px; object-fit: contain; border-radius: 5px;">
+            <div class="cart-item-details">
+                <h4>${product.title.substring(0, 25)}${product.title.length > 25 ? '...' : ''}</h4>
+                <p>$${product.price} x <span class="quantity">1</span></p>
+            </div>
+            <div class="cart-item-actions">
+                <button class="remove-item" data-id="${product.id}">❌</button>
+            </div>
+        `;
+        
+        // Mevcut ürün varsa quantity'yi güncelle
+        const existingCartItem = cartItems.querySelector(`[data-product-id="${product.id}"]`);
+        if (existingCartItem) {
+            const quantitySpan = existingCartItem.querySelector('.quantity');
+            const currentQuantity = parseInt(quantitySpan.textContent);
+            quantitySpan.textContent = currentQuantity + 1;
+            
+            // Animasyon efekti
+            if (typeof $ !== 'undefined') {
+                $(existingCartItem).addClass('updated').delay(300).queue(function() {
+                    $(this).removeClass('updated');
+                    $(this).dequeue();
+                });
+            }
+        } else {
+            // Yeni ürün ekleme animasyonu
+            cartItem.style.opacity = '0';
+            cartItem.style.transform = 'translateX(-20px)';
+            cartItems.appendChild(cartItem);
+            
+            // Fade-in animasyonu
+            setTimeout(() => {
+                cartItem.style.transition = 'all 0.3s ease';
+                cartItem.style.opacity = '1';
+                cartItem.style.transform = 'translateX(0)';
+            }, 10);
+        }
+        
+        // Remove butonu event listener
+        cartItem.querySelector('.remove-item').addEventListener('click', function() {
+            removeFromCart(product.id);
+        });
     }
     
     // Sepet görüntüleme güncelleme
@@ -1015,7 +1100,28 @@ function startApp() {
     
     // Sepetten çıkarma
     function removeFromCart(productId) {
+        // Array'den çıkar
         cart = cart.filter(item => item.id !== productId);
+        
+        // DOM'dan çıkar
+        const cartItem = document.querySelector(`[data-product-id="${productId}"]`);
+        if (cartItem) {
+            if (typeof $ !== 'undefined') {
+                // jQuery ile animasyonlu silme
+                $(cartItem).slideUp(300, function() {
+                    $(this).remove();
+                });
+            } else {
+                // Vanilla JS ile silme
+                cartItem.style.transition = 'all 0.3s ease';
+                cartItem.style.opacity = '0';
+                cartItem.style.transform = 'translateX(-20px)';
+                setTimeout(() => {
+                    cartItem.remove();
+                }, 300);
+            }
+        }
+        
         updateCartDisplay();
         saveCartToStorage(); // LocalStorage'a kaydet
         console.log('Sepetten çıkarıldı:', productId);
@@ -1023,16 +1129,37 @@ function startApp() {
     
     // Sepeti temizleme
     function clearCart() {
-        cart = [];
-        updateCartDisplay();
-        saveCartToStorage(); // LocalStorage'a kaydet
-        console.log('Sepet temizlendi');
+        // DOM'dan tüm ürünleri sil - .empty() kullanarak
+        const cartItems = document.getElementById('cartItems');
         
-        document.getElementById('cartItems').innerHTML = `
-            <div style="text-align: center; color: #666; padding: 20px;">
-                <p>🛒 Sepet boş</p>
-            </div>
-        `;
+        if (typeof $ !== 'undefined') {
+            // jQuery ile .empty() kullanarak temizleme
+            $('#cartItems').fadeOut(300, function() {
+                $(this).empty().html(`
+                    <div style="text-align: center; color: #666; padding: 20px;">
+                        <p>🛒 Sepet boş</p>
+                    </div>
+                `).fadeIn(300);
+            });
+        } else {
+            // Vanilla JS ile temizleme
+            cartItems.innerHTML = `
+                <div style="text-align: center; color: #666; padding: 20px;">
+                    <p>🛒 Sepet boş</p>
+                </div>
+            `;
+        }
+        
+        // Array'i temizle
+        cart = [];
+        
+        // LocalStorage'dan temizle
+        saveCartToStorage();
+        
+        // Sepet sayısını güncelle
+        updateCartDisplay();
+        
+        console.log('Sepet temizlendi - .empty() kullanıldı');
     }
     
     // Ürün slider'ı güncelleme
