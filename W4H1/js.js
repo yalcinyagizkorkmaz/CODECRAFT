@@ -425,9 +425,14 @@ class UserManager{
         `;
     }
 
- 
+    // gelen veriyi güvenli bir şekilde gsötermek için
+    sanitizeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
 
-    // Silme butonlarına event listener ekleme
+  
     addDeleteListeners() {
         const deleteButtons = document.querySelectorAll('.delete-btn');
         deleteButtons.forEach(button => {
@@ -439,16 +444,16 @@ class UserManager{
         });
     }
 
-    // Kullanıcı silme
+  
     deleteUser(userId) {
         if (confirm('Bu kullanıcıyı silmek istediğinizden emin misiniz?')) {
-          
+            // Array den kaldırma
             this.users = this.users.filter(user => user.id !== userId);
             
-          
+           
             this.saveToLocalStorage(this.users);
             
-         
+           
             this.renderUsers();
             
         
@@ -456,14 +461,14 @@ class UserManager{
         }
     }
 
-    // Verileri yenileme fonk
+ 
     async refreshData() {
         try {
-            // localStorage'ı temizle
+         
             localStorage.removeItem(this.storageKey);
             localStorage.removeItem(this.storageExpiryKey);
             
-            // Yeni veri çek
+          
             await this.loadUsers();
             
             this.showNotification('Veriler başarıyla yenilendi!', 'success');
@@ -491,7 +496,7 @@ class UserManager{
         
         document.body.appendChild(notification);
         
-        // 4 sn sonra kaldırılacak
+        // 4 ssn sonra kaldırmak 
         setTimeout(() => {
             notification.style.animation = 'slideOut 0.4s ease';
             setTimeout(() => {
@@ -503,7 +508,7 @@ class UserManager{
     }
 }
 
-// Animasyon css
+// animasyon css
 const animationStyle = document.createElement('style');
 animationStyle.textContent = `
     @keyframes slideIn {
@@ -530,5 +535,5 @@ animationStyle.textContent = `
 `;
 document.head.appendChild(animationStyle);
 
-// Sistem başlatma (kullanıcı yönetimi)
+// Sistem başlatma (kullanıcı yönetimi sistemi)
 const userManager = new UserManager();
