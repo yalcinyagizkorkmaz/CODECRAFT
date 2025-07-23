@@ -255,7 +255,7 @@ class UserManager{
         }
     }
 
-    
+    //Hata yönetimi
     fetchUsers() {
         return new Promise((resolve, reject) => {
             fetch(this.apiUrl)
