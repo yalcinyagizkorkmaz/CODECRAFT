@@ -444,21 +444,100 @@ class UserManager{
         });
     }
 
-  
+  //Özel alet kullanıcı silme onayı için 
     deleteUser(userId) {
-        if (confirm('Bu kullanıcıyı silmek istediğinizden emin misiniz?')) {
-            // Array den kaldırma
-            this.users = this.users.filter(user => user.id !== userId);
-            
-           
-            this.saveToLocalStorage(this.users);
-            
-           
-            this.renderUsers();
-            
+      
+        const alertOverlay = document.createElement('div');
+        alertOverlay.className = 'alert-overlay';
+        alertOverlay.innerHTML = `
+            <div class="alert-box">
+                <div class="alert-icon">
+                    <div class="icon-container">
+                        <span class="warning-icon">⚠️</span>
+                    </div>
+                </div>
+                <div class="alert-header">
+                    <h3>Kullanıcı Silme Onayı</h3>
+                    <p class="alert-subtitle">Bu işlem geri alınamaz!</p>
+                </div>
+                <div class="alert-content">
+                    <p>Bu kullanıcıyı kalıcı olarak silmek istediğinizden emin misiniz?</p>
+                    <div class="warning-details">
+                        <div class="warning-item">
+                            <span class="warning-dot">•</span>
+                            <span>Kullanıcı verileri tamamen silinecek</span>
+                        </div>
+                        <div class="warning-item">
+                            <span class="warning-dot">•</span>
+                            <span>Bu işlem geri alınamaz</span>
+                        </div>
+                        <div class="warning-item">
+                            <span class="warning-dot">•</span>
+                            <span>Yerel depolama güncellenecek</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="alert-buttons">
+                    <button class="alert-btn cancel-btn" onclick="this.closest('.alert-overlay').remove()">
+                        <span class="btn-icon">✋</span>
+                        <span class="btn-text">İptal Et</span>
+                    </button>
+                    <button class="alert-btn confirm-btn" onclick="userManager.confirmDeleteUser(${userId})">
+                        <span class="btn-icon">🗑️</span>
+                        <span class="btn-text">Sil</span>
+                    </button>
+                </div>
+            </div>
+        `;
         
-            this.showNotification('Kullanıcı başarıyla silindi!', 'success');
+        document.body.appendChild(alertOverlay);
+        
+        // ESC tuşu ile kapatma
+        const handleEsc = (e) => {
+            if (e.key === 'Escape') {
+                alertOverlay.remove();
+                document.removeEventListener('keydown', handleEsc);
+            }
+        };
+        document.addEventListener('keydown', handleEsc);
+        
+        // Overlay'e tıklayarak kapatma
+        alertOverlay.addEventListener('click', (e) => {
+            if (e.target === alertOverlay) {
+                alertOverlay.remove();
+                document.removeEventListener('keydown', handleEsc);
+            }
+        });
+        
+        // Enter tuşu ile onaylama
+        const handleEnter = (e) => {
+            if (e.key === 'Enter') {
+                userManager.confirmDeleteUser(userId);
+                document.removeEventListener('keydown', handleEnter);
+            }
+        };
+        document.addEventListener('keydown', handleEnter);
+    }
+    
+    // Silme işlemini onaylama
+    confirmDeleteUser(userId) {
+        // Array den kaldırma
+        this.users = this.users.filter(user => user.id !== userId);
+        
+        // localStorage'ı güncelle
+        this.saveToLocalStorage(this.users);
+        
+        // UI'ı güncelle
+        this.renderUsers();
+        
+        // Alert'i kapat
+        const alertOverlay = document.querySelector('.alert-overlay');
+        if (alertOverlay) {
+            alertOverlay.remove();
         }
+        
+        // Başarı mesajı
+        this.showNotification('Kullanıcı başarıyla silindi!', 'success');
     }
 
  
@@ -531,6 +610,209 @@ animationStyle.textContent = `
             transform: translateX(100%);
             opacity: 0;
         }
+    }
+    
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+    
+    @keyframes scaleIn {
+        from { transform: scale(0.8); opacity: 0; }
+        to { transform: scale(1); opacity: 1; }
+    }
+    
+    /* Alert Styles */
+    .alert-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.8);
+        backdrop-filter: blur(5px);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 9999;
+        animation: fadeIn 0.3s ease;
+    }
+    
+    .alert-box {
+        background: white;
+        border-radius: 20px;
+        padding: 0;
+        max-width: 450px;
+        width: 90%;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+        animation: scaleIn 0.3s ease;
+        overflow: hidden;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    
+    .alert-icon {
+        background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+        padding: 30px 20px 20px;
+        text-align: center;
+    }
+    
+    .icon-container {
+        display: inline-block;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 50%;
+        width: 60px;
+        height: 60px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 10px;
+    }
+    
+    .warning-icon {
+        font-size: 30px;
+        animation: pulse 2s infinite;
+    }
+    
+    @keyframes pulse {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.1); }
+    }
+    
+    .alert-header {
+        background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+        color: white;
+        padding: 0 30px 30px;
+        text-align: center;
+        margin: 0;
+    }
+    
+    .alert-header h3 {
+        margin: 0 0 10px 0;
+        font-size: 24px;
+        font-weight: bold;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    }
+    
+    .alert-subtitle {
+        margin: 0;
+        font-size: 14px;
+        opacity: 0.9;
+        font-weight: 500;
+    }
+    
+    .alert-content {
+        padding: 30px;
+        text-align: left;
+        background: white;
+    }
+    
+    .alert-content p {
+        margin: 0 0 20px 0;
+        font-size: 16px;
+        line-height: 1.6;
+        color: #333;
+        text-align: center;
+    }
+    
+    .warning-details {
+        background: #fff5f5;
+        border: 1px solid #fed7d7;
+        border-radius: 12px;
+        padding: 20px;
+        margin-top: 20px;
+    }
+    
+    .warning-item {
+        display: flex;
+        align-items: center;
+        margin-bottom: 12px;
+        font-size: 14px;
+        color: #c53030;
+    }
+    
+    .warning-item:last-child {
+        margin-bottom: 0;
+    }
+    
+    .warning-dot {
+        color: #e53e3e;
+        font-weight: bold;
+        margin-right: 10px;
+        font-size: 16px;
+    }
+    
+    .alert-buttons {
+        display: flex;
+        gap: 15px;
+        padding: 0 30px 30px;
+        background: white;
+    }
+    
+    .alert-btn {
+        flex: 1;
+        padding: 15px 20px;
+        border: none;
+        border-radius: 12px;
+        font-size: 14px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .alert-btn::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+        transition: left 0.5s;
+    }
+    
+    .alert-btn:hover::before {
+        left: 100%;
+    }
+    
+    .cancel-btn {
+        background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+        color: #6c757d;
+        border: 2px solid #dee2e6;
+    }
+    
+    .cancel-btn:hover {
+        background: linear-gradient(135deg, #e9ecef, #dee2e6);
+        border-color: #adb5bd;
+        transform: translateY(-3px);
+        box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+    }
+    
+    .confirm-btn {
+        background: linear-gradient(135deg, #dc3545, #c82333);
+        color: white;
+        border: 2px solid #dc3545;
+    }
+    
+    .confirm-btn:hover {
+        background: linear-gradient(135deg, #c82333, #bd2130);
+        transform: translateY(-3px);
+        box-shadow: 0 8px 20px rgba(220, 53, 69, 0.4);
+    }
+    
+    .btn-icon {
+        font-size: 16px;
+    }
+    
+    .btn-text {
+        font-weight: 600;
     }
 `;
 document.head.appendChild(animationStyle);
