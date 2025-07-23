@@ -1,4 +1,4 @@
-// Kullanıcı Yönetimi Sistemi
+
 class UserManager{
     constructor() {
         this.apiUrl = 'https://jsonplaceholder.typicode.com/users';
@@ -10,13 +10,13 @@ class UserManager{
         this.init();
     }
 
-    // Sistem başlatma
+    // Sistem start 
     init() {
         this.createStyles();
         this.loadUsers();
     }
 
-    // CSS stilleri oluşturma
+    // css 
     createStyles() {
         const style = document.createElement('style');
         style.textContent = `
@@ -224,10 +224,10 @@ class UserManager{
         document.head.appendChild(style);
     }
 
-    // Kullanıcıları yükleme
+   
     async loadUsers() {
         try {
-            // Önce localStorage'dan kontrol et
+            // local storage veri kontrolü
             const cachedData = this.getCachedData();
             
             if (cachedData) {
@@ -236,25 +236,26 @@ class UserManager{
                 return;
             }
 
-            // Loading göster
+   
             this.showLoading();
 
-            // API'den veri çek
+            // api veri çekme
             const users = await this.fetchUsers();
             this.users = users;
             
-            // localStorage'a kaydet
+        
             this.saveToLocalStorage(users);
             
-            // Kullanıcıları render et
+        
             this.renderUsers();
 
         } catch (error) {
             this.showError('Kullanıcı verileri yüklenirken hata oluştu: ' + error.message);
+            console.log("Kullanıcı verileri yüklenirken hata oluştu: " + error.message);
         }
     }
 
-    // Fetch API ile kullanıcıları çekme
+    
     fetchUsers() {
         return new Promise((resolve, reject) => {
             fetch(this.apiUrl)
@@ -273,7 +274,6 @@ class UserManager{
         });
     }
 
-    // localStorage'dan veri alma
     getCachedData() {
         try {
             const data = localStorage.getItem(this.storageKey);
@@ -283,12 +283,12 @@ class UserManager{
                 return null;
             }
 
-            // Süre kontrolü (1 gün = 24 saat)
+            // süre kontrolu 1 gün 
             const now = new Date().getTime();
             const expiryTime = parseInt(expiry);
             
             if (now > expiryTime) {
-                // Süresi dolmuş, temizle
+               
                 localStorage.removeItem(this.storageKey);
                 localStorage.removeItem(this.storageExpiryKey);
                 return null;
@@ -301,10 +301,11 @@ class UserManager{
         }
     }
 
-    // localStorage'a veri kaydetme
+
     saveToLocalStorage(data) {
         try {
-            const expiry = new Date().getTime() + (24 * 60 * 60 * 1000); // 1 gün
+            //süre bir gün
+            const expiry = new Date().getTime() + (24 * 60 * 60 * 1000); 
             
             localStorage.setItem(this.storageKey, JSON.stringify(data));
             localStorage.setItem(this.storageExpiryKey, expiry.toString());
@@ -313,30 +314,31 @@ class UserManager{
         }
     }
 
-    // Loading göster
+    // Loading gösterimi
     showLoading() {
         this.container.innerHTML = `
             <div class="loading">
-                <h2>Kullanıcılar yükleniyor...</h2>
-                <p>Lütfen bekleyiniz...</p>
+                <h2><strong>Kullanıcılar yükleniyor...</strong></h2>
+                <p><strong>Lütfen bekleyiniz...</strong></p>
             </div>
         `;
     }
 
-    // Hata mesajı göster
+    // Hata mesajı
     showError(message) {
         this.container.innerHTML = `
             <div class="error-message">
-                <h3>Hata!</h3>
-                <p>${message}</p>
-                <button class="refresh-btn" onclick="userManager.loadUsers()">Tekrar Dene</button>
+                <h3><strong>Hata!</strong></h3>
+                <p><strong>${message}</strong></p>
+                <button class="refresh-btn" onclick="userManager.loadUsers()"><strong>Tekrar Dene</strong></button>
             </div>
         `;
     }
 
-    // Kullanıcıları render etme
+    // Kullanıcı render edilmesi (gösterilmesi arayüzde)
     renderUsers() {
         if (!this.users || this.users.length === 0) {
+            console.log("Kullanıcı bulunamadı");
             this.container.innerHTML = `
                 <div class="empty-state">
                     <h3>Kullanıcı bulunamadı</h3>
@@ -379,7 +381,7 @@ class UserManager{
             </div>
         `;
 
-        // Silme butonlarına event listener ekle
+        
         this.addDeleteListeners();
     }
 
@@ -395,7 +397,7 @@ class UserManager{
         };
     }
 
-    // Kullanıcı kartı oluşturma
+    // Kullanıcı kart yapısı oluşturma
     createUserCard(user) {
         return `
             <div class="user-card" data-user-id="${user.id}">
@@ -423,12 +425,7 @@ class UserManager{
         `;
     }
 
-    // HTML sanitization (XSS koruması)
-    sanitizeHtml(text) {
-        const div = document.createElement('div');
-        div.textContent = text;
-        return div.innerHTML;
-    }
+ 
 
     // Silme butonlarına event listener ekleme
     addDeleteListeners() {
@@ -445,21 +442,21 @@ class UserManager{
     // Kullanıcı silme
     deleteUser(userId) {
         if (confirm('Bu kullanıcıyı silmek istediğinizden emin misiniz?')) {
-            // Array'den kaldır
+          
             this.users = this.users.filter(user => user.id !== userId);
             
-            // localStorage'ı güncelle
+          
             this.saveToLocalStorage(this.users);
             
-            // UI'ı güncelle
+         
             this.renderUsers();
             
-            // Başarı mesajı
+        
             this.showNotification('Kullanıcı başarıyla silindi!', 'success');
         }
     }
 
-    // Verileri yenileme
+    // Verileri yenileme fonk
     async refreshData() {
         try {
             // localStorage'ı temizle
@@ -494,19 +491,19 @@ class UserManager{
         
         document.body.appendChild(notification);
         
-        // 3 saniye sonra kaldır
+        // 4 sn sonra kaldırılacak
         setTimeout(() => {
-            notification.style.animation = 'slideOut 0.3s ease';
+            notification.style.animation = 'slideOut 0.4s ease';
             setTimeout(() => {
                 if (notification.parentNode) {
                     notification.parentNode.removeChild(notification);
                 }
             }, 300);
-        }, 3000);
+        }, 4000);
     }
 }
 
-// Animasyon CSS'i ekle
+// Animasyon css
 const animationStyle = document.createElement('style');
 animationStyle.textContent = `
     @keyframes slideIn {
@@ -533,5 +530,5 @@ animationStyle.textContent = `
 `;
 document.head.appendChild(animationStyle);
 
-// Sistem başlatma
+// Sistem başlatma (kullanıcı yönetimi)
 const userManager = new UserManager();
