@@ -42,7 +42,7 @@
             try {
                 console.log('📦 Ürünler yükleniyor...');
                 
-                // Önce localStorage'dan kontrol et
+                
                 const cachedData = this.getCachedProducts();
                 if (cachedData && cachedData.length > 0) {
                     console.log('💾 Cache\'den ürünler yüklendi');
@@ -67,9 +67,9 @@
                 const products = await response.json();
                 console.log('📋 Ham ürün verisi:', products);
                 
-                // Ürün verilerini temizle ve eksik alanları doldur
+             
                 this.products = products.map((product, index) => {
-                    // Fiyatı Türkçe formatla
+                    
                     let formattedPrice = product.price;
                     if (typeof formattedPrice === 'number') {
                         formattedPrice = formattedPrice.toFixed(2).replace('.', ',');
@@ -82,7 +82,7 @@
                         name: product.name,
                         price: formattedPrice,
                         oldPrice: product.oldPrice || null,
-                        image: product.img, // img alanı doğrudan kullanılıyor
+                        image: product.img,
                         url: product.url
                     };
                 });
@@ -93,7 +93,7 @@
                     console.log('📦 İlk ürün örneği:', this.products[0]);
                 }
                 
-                // localStorage'a kaydet (1 gün süreyle)
+             
                 this.saveProductsToCache();
                 
                 this.buildHTML();
@@ -103,7 +103,7 @@
                 console.error('❌ Ürünler yüklenirken hata:', error);
                 console.error('❌ Hata detayı:', error.message);
                 
-                // Test için örnek ürünler oluştur
+             
                 console.log('🔄 Test ürünleri oluşturuluyor...');
           
                 
@@ -124,7 +124,7 @@
                 const data = JSON.parse(cached);
                 const now = new Date().getTime();
                 
-                // 1 gün = 24 * 60 * 60 * 1000 = 86400000 ms
+               
                 if (now - data.timestamp > 86400000) {
                     console.log('⏰ Cache süresi dolmuş, siliniyor');
                     localStorage.removeItem(this.storageKey);
@@ -214,17 +214,17 @@
             console.log('📊 Mevcut favoriler:', this.favorites);
             console.log('📊 Favori tipi:', typeof this.favorites[0]);
             
-            // Favori olan ürünleri göster
+           
             const favoriteProducts = this.products.filter(p => this.favorites.includes(String(p.id)));
             console.log('❤️ Favori olan ürünler:', favoriteProducts.map(p => ({id: p.id, name: p.name})));
             
-            // Her ürün için favori durumunu kontrol et
+           
             this.products.forEach(product => {
                 const isFavorite = this.favorites.includes(String(product.id));
                 console.log(`🔍 Ürün ${product.id} (${typeof product.id}): Favori mi? ${isFavorite}`);
             });
 
-            // .product-detail elementinden sonra ekle
+           
             const productDetail = document.querySelector('.product-detail');
             if (productDetail) {
                 console.log('✅ .product-detail bulundu, sonrasına ekleniyor');
@@ -523,8 +523,8 @@
             console.log('📊 Mevcut slide:', this.currentSlide);
             
             const totalProducts = this.products.length;
-            const visibleProducts = 8; // Ekranda görünen ürün sayısı
-            const maxSlides = Math.max(0, totalProducts - visibleProducts + 1); // +1 ekledik
+            const visibleProducts = 8;
+            const maxSlides = Math.max(0, totalProducts - visibleProducts + 1);
             
             console.log('📊 Toplam ürün sayısı:', totalProducts);
             console.log('📊 Görünen ürün sayısı:', visibleProducts);
@@ -538,7 +538,7 @@
                 console.log('➡️ Sonraki slide\'a geçildi:', this.currentSlide);
             }
 
-            const slideWidth = 100 / 10; // Her slide %12.5 genişliğinde
+            const slideWidth = 100 / 10;
             const translateX = -(this.currentSlide * slideWidth);
             console.log('🎯 Transform değeri:', translateX + '%');
             
@@ -557,7 +557,7 @@
             const nextBtn = document.querySelector('.lcw-carousel-btn-next');
             const totalProducts = this.products.length;
             const visibleProducts = 8;
-            const maxSlides = Math.max(0, totalProducts - visibleProducts + 1); // +1 ekledik
+            const maxSlides = Math.max(0, totalProducts - visibleProducts + 1);
 
             console.log('🔍 Navigation butonları güncelleniyor...');
             console.log('📊 Mevcut slide:', this.currentSlide);
@@ -585,24 +585,20 @@
             const index = this.favorites.indexOf(productIdStr);
             
             if (index > -1) {
-                // Favorilerden çıkar
                 this.favorites.splice(index, 1);
                 button.classList.remove('active');
                 button.querySelector('svg').setAttribute('fill', 'none');
                 console.log(`💔 ${productIdStr} favorilerden çıkarıldı`);
             } else {
-                // Favorilere ekle
                 this.favorites.push(productIdStr);
                 button.classList.add('active');
                 button.querySelector('svg').setAttribute('fill', 'currentColor');
                 console.log(`❤️ ${productIdStr} favorilere eklendi`);
             }
 
-            // localStorage'a kaydet
             this.saveFavorites();
             console.log('💾 Favoriler kaydedildi:', this.favorites);
             
-            // Debug: localStorage'ı kontrol et
             this.debugFavorites();
         },
         
@@ -618,16 +614,13 @@
                 console.log('📋 Parse edilmiş favoriler:', parsed);
             }
             
-            // Favori butonları kontrol et
             const activeButtons = document.querySelectorAll('.lcw-favorite-btn.active');
             console.log('❤️ Aktif favori buton sayısı:', activeButtons.length);
         }
     };
 
-    // Başlat
     self.init();
     
-    // Global debug fonksiyonları
     window.lcwDebug = {
         checkFavorites: function() {
             console.log('🔍 Favori durumu kontrol ediliyor...');
@@ -678,7 +671,7 @@
                 console.log('📊 Slider transform:', slider.style.transform);
             }
             
-            // Manuel test
+         
             if (window.self && window.self.navigateCarousel) {
                 console.log('✅ navigateCarousel fonksiyonu mevcut');
                 console.log('📊 Mevcut slide:', window.self.currentSlide);
