@@ -177,9 +177,8 @@
                 .lcw-carousel-container {
                     margin: 40px 0;
                     padding: 20px;
-                    background-color: #f8f9fa;
+                    background-color: white;
                     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-                    border: 2px solid red;
                 }
 
                 .lcw-carousel-header {
@@ -187,10 +186,10 @@
                 }
 
                 .lcw-carousel-title {
-                    font-size: 24px;
-                    font-weight: 600;
+                    font-size: 20px;
+                    font-weight: 500;
                     color: #333;
-                    margin: 0;
+                    margin: 0 0 20px 0;
                     text-align: left;
                 }
 
@@ -198,9 +197,10 @@
                     position: relative;
                     display: flex;
                     align-items: center;
-                    gap: 15px;
-                    max-width: 1200px;
+                    gap: 10px;
+                    
                     margin: 0 auto;
+                    width: 90%;
                 }
 
                 .lcw-carousel-slider {
@@ -212,7 +212,7 @@
                 .lcw-carousel-track {
                     display: flex;
                     transition: transform 0.3s ease;
-                    gap: 15px;
+                    gap: 12px;
                 }
 
                 .lcw-carousel-slide {
@@ -222,25 +222,25 @@
 
                 .lcw-product-card {
                     background: white;
-                    border-radius: 8px;
+                    border-radius: 6px;
                     overflow: hidden;
-                    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+                    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
                     transition: transform 0.2s ease, box-shadow 0.2s ease;
                     cursor: pointer;
                     position: relative;
-                    border: 1px solid #f0f0f0;
+                    border: none;
                 }
 
                 .lcw-product-card:hover {
-                    transform: translateY(-2px);
-                    box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+                    transform: translateY(-1px);
+                    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
                 }
 
                 .lcw-product-image {
                     position: relative;
                     aspect-ratio: 1;
                     overflow: hidden;
-                    background: #fafafa;
+                    background: #f8f9fa;
                 }
 
                 .lcw-product-image img {
@@ -256,20 +256,20 @@
 
                 .lcw-favorite-btn {
                     position: absolute;
-                    top: 8px;
-                    right: 8px;
+                    top: 6px;
+                    right: 6px;
                     background: white;
                     border: none;
                     border-radius: 50%;
-                    width: 28px;
-                    height: 28px;
+                    width: 24px;
+                    height: 24px;
                     display: flex;
                     align-items: center;
                     justify-content: center;
                     cursor: pointer;
                     transition: all 0.2s ease;
                     color: #ccc;
-                    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
                 }
 
                 .lcw-favorite-btn:hover {
@@ -283,14 +283,14 @@
                 }
 
                 .lcw-product-info {
-                    padding: 12px;
+                    padding: 10px;
                 }
 
                 .lcw-product-name {
-                    font-size: 13px;
+                    font-size: 12px;
                     font-weight: 400;
                     color: #333;
-                    margin: 0 0 8px 0;
+                    margin: 0 0 6px 0;
                     line-height: 1.3;
                     display: -webkit-box;
                     -webkit-line-clamp: 2;
@@ -305,7 +305,7 @@
                 }
 
                 .lcw-price-current {
-                    font-size: 15px;
+                    font-size: 14px;
                     font-weight: 600;
                     color: #333;
                 }
@@ -320,8 +320,8 @@
                     background: white;
                     border: none;
                     border-radius: 50%;
-                    width: 40px;
-                    height: 40px;
+                    width: 36px;
+                    height: 36px;
                     display: flex;
                     align-items: center;
                     justify-content: center;
@@ -329,14 +329,14 @@
                     transition: all 0.2s ease;
                     color: #333;
                     flex-shrink: 0;
-                    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+                    box-shadow: 0 1px 4px rgba(0,0,0,0.1);
                     position: relative;
                 }
 
                 .lcw-carousel-btn:hover {
                     background: #f8f9fa;
-                    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-                    transform: scale(1.05);
+                    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+                    transform: scale(1.02);
                 }
 
                 .lcw-carousel-btn:disabled {
