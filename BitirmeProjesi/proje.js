@@ -12,6 +12,7 @@
         
         init: function() {
             console.log('🚀 LC Waikiki Karusel başlatılıyor...');
+            console.log('📍 .product-detail elementi:', document.querySelector('.product-detail'));
             this.loadFavorites();
             this.loadProducts();
         },
@@ -20,6 +21,9 @@
             const favorites = localStorage.getItem(this.favoritesKey);
             if (favorites) {
                 this.favorites = JSON.parse(favorites);
+                console.log('❤️ Favoriler yüklendi:', this.favorites);
+            } else {
+                console.log('❤️ Favori yok');
             }
         },
         
@@ -30,23 +34,69 @@
         loadProducts: async function() {
             try {
                 console.log('📦 Ürünler yükleniyor...');
-                const response = await fetch(this.apiUrl);
-                const products = await response.json();
+                console.log('🌐 API URL:', this.apiUrl);
                 
-                this.products = products;
-                console.log(`✅ ${products.length} ürün yüklendi`);
+                const response = await fetch(this.apiUrl);
+                console.log('📡 Response status:', response.status);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const products = await response.json();
+                console.log('📋 Ham ürün verisi:', products);
+                
+            
+                
+                // Ürün verilerini temizle ve eksik alanları doldur
+                this.products = products.map((product, index) => {
+                    // Fiyatı Türkçe formatla
+                    let formattedPrice = product.price;
+                    if (typeof formattedPrice === 'number') {
+                        formattedPrice = formattedPrice.toFixed(2).replace('.', ',');
+                    } else if (typeof formattedPrice === 'string') {
+                        formattedPrice = formattedPrice.replace('.', ',');
+                    }
+
+                    return {
+                        id: product.id,
+                        name: product.name,
+                        price: formattedPrice,
+                        oldPrice: product.oldPrice || null,
+                        image: product.img, // img alanı doğrudan kullanılıyor
+                        url: product.url
+                    };
+                });
+                
+                console.log(`✅ ${this.products.length} ürün yüklendi`);
+                
+                if (this.products.length > 0) {
+                    console.log('📦 İlk ürün örneği:', this.products[0]);
+                }
                 
                 this.buildHTML();
                 this.buildCSS();
                 this.setEvents();
             } catch (error) {
                 console.error('❌ Ürünler yüklenirken hata:', error);
+                console.error('❌ Hata detayı:', error.message);
+                
+                // Test için örnek ürünler oluştur
+                console.log('🔄 Test ürünleri oluşturuluyor...');
+          
+                
+                this.buildHTML();
+                this.buildCSS();
+                this.setEvents();
             }
         },
         
         buildHTML: function() {
+            console.log('🏗️ HTML oluşturuluyor...');
+            console.log('📦 Ürün sayısı:', this.products.length);
+            
             if (this.products.length === 0) {
-                console.log('❌ Ürün yok');
+                console.log('❌ Ürün yok, HTML oluşturulmuyor');
                 return;
             }
 
@@ -56,9 +106,9 @@
                         <h3 class="lcw-carousel-title">Benzer Ürünler</h3>
                     </div>
                     <div class="lcw-carousel-wrapper">
-                        <button class="lcw-carousel-btn lcw-carousel-btn-prev" aria-label="Önceki">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                                <path d="M15 18L9 12L15 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <button class="lcw-carousel-btn lcw-carousel-btn-prev" aria-label="previous">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14.242" height="24.242" viewBox="0 0 14.242 24.242">
+                                <path fill="none" stroke="#333" stroke-linecap="round" stroke-width="3px" d="M2106.842 2395.467l-10 10 10 10" transform="translate(-2094.721 -2393.346)"></path>
                             </svg>
                         </button>
                         
@@ -68,7 +118,8 @@
                                     <div class="lcw-carousel-slide" data-product-id="${product.id}">
                                         <div class="lcw-product-card">
                                             <div class="lcw-product-image">
-                                                <img src="${product.image}" alt="${product.name}" loading="lazy">
+                                                <img src="${product.image}" alt="${product.name}" loading="lazy" 
+                                                     onerror="this.src='https://www.lcwaikiki.com/Resource/Images/Product/Default/xxlarge/4375665-1_l.jpg'">
                                                 <button class="lcw-favorite-btn ${this.favorites.includes(product.id) ? 'active' : ''}" 
                                                         data-product-id="${product.id}" aria-label="Favorilere ekle">
                                                     <svg width="20" height="20" viewBox="0 0 24 24" fill="${this.favorites.includes(product.id) ? 'currentColor' : 'none'}">
@@ -80,8 +131,8 @@
                                             <div class="lcw-product-info">
                                                 <h4 class="lcw-product-name">${product.name}</h4>
                                                 <div class="lcw-product-price">
-                                                    <span class="lcw-price-current">${product.price} TRY</span>
-                                                    ${product.oldPrice ? `<span class="lcw-price-old">${product.oldPrice} TRY</span>` : ''}
+                                                    <span class="lcw-price-current">${product.price} TL</span>
+                                                    ${product.oldPrice ? `<span class="lcw-price-old">${product.oldPrice} TL</span>` : ''}
                                                 </div>
                                             </div>
                                         </div>
@@ -90,38 +141,45 @@
                             </div>
                         </div>
                         
-                        <button class="lcw-carousel-btn lcw-carousel-btn-next" aria-label="Sonraki">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                                <path d="M9 18L15 12L9 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <button class="lcw-carousel-btn lcw-carousel-btn-next" aria-label="next">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14.242" height="24.242" viewBox="0 0 14.242 24.242">
+                                <path fill="none" stroke="#333" stroke-linecap="round" stroke-width="3px" d="M2106.842 2395.467l-10 10 10 10" transform="translate(-2094.721 -2393.346)"></path>
                             </svg>
                         </button>
                     </div>
                 </div>
             `;
 
+            console.log('📄 HTML oluşturuldu, DOM\'a ekleniyor...');
+
             // .product-detail elementinden sonra ekle
             const productDetail = document.querySelector('.product-detail');
             if (productDetail) {
+                console.log('✅ .product-detail bulundu, sonrasına ekleniyor');
                 productDetail.insertAdjacentHTML('afterend', html);
             } else {
-                // Test için body'ye ekle
+                console.log('⚠️ .product-detail bulunamadı, body\'ye ekleniyor');
                 document.body.insertAdjacentHTML('beforeend', html);
             }
             
             this.container = document.querySelector('.lcw-carousel-container');
             this.slider = document.querySelector('.lcw-carousel-track');
+            
+            console.log('🎯 Container bulundu mu?', !!this.container);
+            console.log('🎯 Slider bulundu mu?', !!this.slider);
             console.log('✅ HTML oluşturuldu');
         },
         
         buildCSS: function() {
+            console.log('🎨 CSS oluşturuluyor...');
+            
             const css = `
                 .lcw-carousel-container {
                     margin: 40px 0;
-                    padding: 0 20px;
-                    max-width: 1200px;
-                    margin-left: auto;
-                    margin-right: auto;
+                    padding: 20px;
+                    background-color: #f8f9fa;
                     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+                    border: 2px solid red;
                 }
 
                 .lcw-carousel-header {
@@ -133,6 +191,7 @@
                     font-weight: 600;
                     color: #333;
                     margin: 0;
+                    text-align: left;
                 }
 
                 .lcw-carousel-wrapper {
@@ -140,6 +199,8 @@
                     display: flex;
                     align-items: center;
                     gap: 15px;
+                    max-width: 1200px;
+                    margin: 0 auto;
                 }
 
                 .lcw-carousel-slider {
@@ -151,11 +212,11 @@
                 .lcw-carousel-track {
                     display: flex;
                     transition: transform 0.3s ease;
-                    gap: 20px;
+                    gap: 15px;
                 }
 
                 .lcw-carousel-slide {
-                    flex: 0 0 calc(16.666% - 16.67px);
+                    flex: 0 0 calc(16.666% - 12.5px);
                     min-width: 0;
                 }
 
@@ -163,21 +224,23 @@
                     background: white;
                     border-radius: 8px;
                     overflow: hidden;
-                    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+                    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
                     transition: transform 0.2s ease, box-shadow 0.2s ease;
                     cursor: pointer;
                     position: relative;
+                    border: 1px solid #f0f0f0;
                 }
 
                 .lcw-product-card:hover {
                     transform: translateY(-2px);
-                    box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+                    box-shadow: 0 4px 16px rgba(0,0,0,0.12);
                 }
 
                 .lcw-product-image {
                     position: relative;
                     aspect-ratio: 1;
                     overflow: hidden;
+                    background: #fafafa;
                 }
 
                 .lcw-product-image img {
@@ -193,13 +256,13 @@
 
                 .lcw-favorite-btn {
                     position: absolute;
-                    top: 10px;
-                    right: 10px;
+                    top: 8px;
+                    right: 8px;
                     background: white;
                     border: none;
                     border-radius: 50%;
-                    width: 32px;
-                    height: 32px;
+                    width: 28px;
+                    height: 28px;
                     display: flex;
                     align-items: center;
                     justify-content: center;
@@ -220,12 +283,12 @@
                 }
 
                 .lcw-product-info {
-                    padding: 15px;
+                    padding: 12px;
                 }
 
                 .lcw-product-name {
-                    font-size: 14px;
-                    font-weight: 500;
+                    font-size: 13px;
+                    font-weight: 400;
                     color: #333;
                     margin: 0 0 8px 0;
                     line-height: 1.3;
@@ -242,20 +305,20 @@
                 }
 
                 .lcw-price-current {
-                    font-size: 16px;
+                    font-size: 15px;
                     font-weight: 600;
                     color: #333;
                 }
 
                 .lcw-price-old {
-                    font-size: 14px;
+                    font-size: 13px;
                     color: #999;
                     text-decoration: line-through;
                 }
 
                 .lcw-carousel-btn {
                     background: white;
-                    border: 1px solid #e0e0e0;
+                    border: none;
                     border-radius: 50%;
                     width: 40px;
                     height: 40px;
@@ -264,37 +327,47 @@
                     justify-content: center;
                     cursor: pointer;
                     transition: all 0.2s ease;
-                    color: #666;
+                    color: #333;
                     flex-shrink: 0;
+                    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+                    position: relative;
                 }
 
                 .lcw-carousel-btn:hover {
                     background: #f8f9fa;
-                    border-color: #ccc;
-                    color: #333;
+                    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+                    transform: scale(1.05);
                 }
 
                 .lcw-carousel-btn:disabled {
-                    opacity: 0.5;
+                    opacity: 0.3;
                     cursor: not-allowed;
+                    transform: none;
+                    box-shadow: 0 1px 4px rgba(0,0,0,0.1);
                 }
+
+                .lcw-carousel-btn-next svg {
+                    transform: rotate(180deg);
+                }
+
+
 
                 /* Responsive Design */
                 @media (max-width: 1200px) {
                     .lcw-carousel-slide {
-                        flex: 0 0 calc(20% - 16px);
+                        flex: 0 0 calc(20% - 12px);
                     }
                 }
 
                 @media (max-width: 1024px) {
                     .lcw-carousel-slide {
-                        flex: 0 0 calc(25% - 15px);
+                        flex: 0 0 calc(25% - 11.25px);
                     }
                 }
 
                 @media (max-width: 768px) {
                     .lcw-carousel-container {
-                        padding: 0 15px;
+                        padding: 15px;
                         margin: 30px 0;
                     }
 
@@ -303,7 +376,7 @@
                     }
 
                     .lcw-carousel-slide {
-                        flex: 0 0 calc(33.333% - 13.33px);
+                        flex: 0 0 calc(33.333% - 10px);
                     }
 
                     .lcw-carousel-wrapper {
@@ -311,35 +384,35 @@
                     }
 
                     .lcw-carousel-track {
-                        gap: 15px;
+                        gap: 12px;
                     }
 
                     .lcw-product-info {
-                        padding: 12px;
+                        padding: 10px;
                     }
 
                     .lcw-product-name {
-                        font-size: 13px;
+                        font-size: 12px;
                     }
 
                     .lcw-price-current {
-                        font-size: 15px;
+                        font-size: 14px;
                     }
                 }
 
                 @media (max-width: 480px) {
                     .lcw-carousel-slide {
-                        flex: 0 0 calc(50% - 10px);
+                        flex: 0 0 calc(50% - 7.5px);
                     }
 
                     .lcw-carousel-btn {
-                        width: 36px;
-                        height: 36px;
+                        width: 32px;
+                        height: 32px;
                     }
 
                     .lcw-favorite-btn {
-                        width: 28px;
-                        height: 28px;
+                        width: 24px;
+                        height: 24px;
                     }
                 }
             `;
@@ -347,9 +420,13 @@
             const style = document.createElement('style');
             style.textContent = css;
             document.head.appendChild(style);
+            
+            console.log('✅ CSS oluşturuldu');
         },
         
         setEvents: function() {
+            console.log('🎯 Event listener\'lar ekleniyor...');
+            
             const prevBtn = document.querySelector('.lcw-carousel-btn-prev');
             const nextBtn = document.querySelector('.lcw-carousel-btn-next');
 
