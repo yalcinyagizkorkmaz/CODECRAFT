@@ -3,7 +3,7 @@
         products: [],
         favorites: [],
         currentSlide: 0,
-        slidesToShow: 6,
+        slidesToShow: 0,
         container: null,
         slider: null,
         apiUrl: 'https://gist.githubusercontent.com/sevindi/5765c5812bbc8238a38b3cf52f233651/raw/56261d81af8561bf0a7cf692fe572f9e1e91f372/products.json',
@@ -18,12 +18,19 @@
         },
         
         loadFavorites: function() {
-            const favorites = localStorage.getItem(this.favoritesKey);
-            if (favorites) {
-                this.favorites = JSON.parse(favorites);
-                console.log('❤️ Favoriler yüklendi:', this.favorites);
-            } else {
-                console.log('❤️ Favori yok');
+            try {
+                const favorites = localStorage.getItem(this.favoritesKey);
+                if (favorites) {
+                    this.favorites = JSON.parse(favorites);
+                    console.log('❤️ Favoriler yüklendi:', this.favorites);
+                    console.log('📊 Favori sayısı:', this.favorites.length);
+                } else {
+                    this.favorites = [];
+                    console.log('❤️ Favori yok, boş array oluşturuldu');
+                }
+            } catch (error) {
+                console.error('❌ Favoriler yüklenirken hata:', error);
+                this.favorites = [];
             }
         },
         
@@ -34,6 +41,20 @@
         loadProducts: async function() {
             try {
                 console.log('📦 Ürünler yükleniyor...');
+                
+                // Önce localStorage'dan kontrol et
+                const cachedData = this.getCachedProducts();
+                if (cachedData && cachedData.length > 0) {
+                    console.log('💾 Cache\'den ürünler yüklendi');
+                    console.log('📊 Cache\'den yüklenen ürün sayısı:', cachedData.length);
+                    this.products = cachedData;
+                    this.buildHTML();
+                    this.buildCSS();
+                    this.setEvents();
+                    return;
+                }
+                
+                console.log('🌐 Cache boş, API\'den ürünler yükleniyor...');
                 console.log('🌐 API URL:', this.apiUrl);
                 
                 const response = await fetch(this.apiUrl);
@@ -45,8 +66,6 @@
                 
                 const products = await response.json();
                 console.log('📋 Ham ürün verisi:', products);
-                
-            
                 
                 // Ürün verilerini temizle ve eksik alanları doldur
                 this.products = products.map((product, index) => {
@@ -74,6 +93,9 @@
                     console.log('📦 İlk ürün örneği:', this.products[0]);
                 }
                 
+                // localStorage'a kaydet (1 gün süreyle)
+                this.saveProductsToCache();
+                
                 this.buildHTML();
                 this.buildCSS();
                 this.setEvents();
@@ -88,6 +110,45 @@
                 this.buildHTML();
                 this.buildCSS();
                 this.setEvents();
+            }
+        },
+        
+        getCachedProducts: function() {
+            try {
+                const cached = localStorage.getItem(this.storageKey);
+                if (!cached) {
+                    console.log('💾 Cache bulunamadı');
+                    return null;
+                }
+                
+                const data = JSON.parse(cached);
+                const now = new Date().getTime();
+                
+                // 1 gün = 24 * 60 * 60 * 1000 = 86400000 ms
+                if (now - data.timestamp > 86400000) {
+                    console.log('⏰ Cache süresi dolmuş, siliniyor');
+                    localStorage.removeItem(this.storageKey);
+                    return null;
+                }
+                
+                console.log('💾 Cache geçerli, ürünler döndürülüyor');
+                return data.products;
+            } catch (error) {
+                console.error('❌ Cache okuma hatası:', error);
+                return null;
+            }
+        },
+        
+        saveProductsToCache: function() {
+            try {
+                const data = {
+                    products: this.products,
+                    timestamp: new Date().getTime()
+                };
+                localStorage.setItem(this.storageKey, JSON.stringify(data));
+                console.log('💾 Ürünler cache\'e kaydedildi');
+            } catch (error) {
+                console.error('❌ Cache kaydetme hatası:', error);
             }
         },
         
@@ -118,9 +179,9 @@
                                             <div class="lcw-product-image">
                                                 <img src="${product.image}" alt="${product.name}" loading="lazy" 
                                                      onerror="this.src='https://www.lcwaikiki.com/Resource/Images/Product/Default/xxlarge/4375665-1_l.jpg'">
-                                                <button class="lcw-favorite-btn ${this.favorites.includes(product.id) ? 'active' : ''}" 
+                                                <button class="lcw-favorite-btn ${this.favorites.includes(String(product.id)) ? 'active' : ''}" 
                                                         data-product-id="${product.id}" aria-label="Favorilere ekle">
-                                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="${this.favorites.includes(product.id) ? 'currentColor' : 'none'}">
+                                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="${this.favorites.includes(String(product.id)) ? 'currentColor' : 'none'}">
                                                         <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" 
                                                               stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                                                     </svg>
@@ -149,6 +210,19 @@
             `;
 
             console.log('📄 HTML oluşturuldu, DOM\'a ekleniyor...');
+            console.log('❤️ Favori durumu kontrol ediliyor...');
+            console.log('📊 Mevcut favoriler:', this.favorites);
+            console.log('📊 Favori tipi:', typeof this.favorites[0]);
+            
+            // Favori olan ürünleri göster
+            const favoriteProducts = this.products.filter(p => this.favorites.includes(String(p.id)));
+            console.log('❤️ Favori olan ürünler:', favoriteProducts.map(p => ({id: p.id, name: p.name})));
+            
+            // Her ürün için favori durumunu kontrol et
+            this.products.forEach(product => {
+                const isFavorite = this.favorites.includes(String(product.id));
+                console.log(`🔍 Ürün ${product.id} (${typeof product.id}): Favori mi? ${isFavorite}`);
+            });
 
             // .product-detail elementinden sonra ekle
             const productDetail = document.querySelector('.product-detail');
@@ -277,7 +351,11 @@
                 }
 
                 .lcw-favorite-btn.active {
-                    color: #0066cc;
+                    color: #0066cc !important;
+                }
+                
+                .lcw-favorite-btn.active svg {
+                    fill: #0066cc !important;
                 }
 
                 .lcw-product-info {
@@ -498,22 +576,85 @@
         },
 
         toggleFavorite: function(productId, button) {
-            const index = this.favorites.indexOf(productId);
+            const productIdStr = String(productId);
+            const index = this.favorites.indexOf(productIdStr);
             
             if (index > -1) {
+                // Favorilerden çıkar
                 this.favorites.splice(index, 1);
                 button.classList.remove('active');
                 button.querySelector('svg').setAttribute('fill', 'none');
+                console.log(`💔 ${productIdStr} favorilerden çıkarıldı`);
             } else {
-                this.favorites.push(productId);
+                // Favorilere ekle
+                this.favorites.push(productIdStr);
                 button.classList.add('active');
                 button.querySelector('svg').setAttribute('fill', 'currentColor');
+                console.log(`❤️ ${productIdStr} favorilere eklendi`);
             }
 
+            // localStorage'a kaydet
             this.saveFavorites();
+            console.log('💾 Favoriler kaydedildi:', this.favorites);
+            
+            // Debug: localStorage'ı kontrol et
+            this.debugFavorites();
+        },
+        
+        debugFavorites: function() {
+            console.log('🔍 DEBUG: Favori durumu kontrol ediliyor...');
+            console.log('📊 Mevcut favoriler (memory):', this.favorites);
+            
+            const stored = localStorage.getItem(this.favoritesKey);
+            console.log('💾 localStorage\'da saklanan:', stored);
+            
+            if (stored) {
+                const parsed = JSON.parse(stored);
+                console.log('📋 Parse edilmiş favoriler:', parsed);
+            }
+            
+            // Favori butonları kontrol et
+            const activeButtons = document.querySelectorAll('.lcw-favorite-btn.active');
+            console.log('❤️ Aktif favori buton sayısı:', activeButtons.length);
         }
     };
 
     // Başlat
     self.init();
+    
+    // Global debug fonksiyonları
+    window.lcwDebug = {
+        checkFavorites: function() {
+            console.log('🔍 Favori durumu kontrol ediliyor...');
+            const favorites = JSON.parse(localStorage.getItem('lcw_favorites')) || [];
+            console.log('❤️ localStorage\'daki favoriler:', favorites);
+            console.log('📊 Favori sayısı:', favorites.length);
+            return favorites;
+        },
+        
+        checkCache: function() {
+            console.log('🔍 Cache durumu kontrol ediliyor...');
+            const cached = localStorage.getItem('lcw_products');
+            if (cached) {
+                const data = JSON.parse(cached);
+                console.log('💾 Cache verisi:', data);
+                console.log('📊 Cache\'deki ürün sayısı:', data.products ? data.products.length : 0);
+                console.log('⏰ Cache zamanı:', new Date(data.timestamp));
+            } else {
+                console.log('💾 Cache bulunamadı');
+            }
+        },
+        
+        clearAll: function() {
+            console.log('🗑️ Tüm localStorage temizleniyor...');
+            localStorage.removeItem('lcw_favorites');
+            localStorage.removeItem('lcw_products');
+            console.log('✅ Temizlendi, sayfayı yenileyin');
+        }
+    };
+    
+    console.log('🎯 Debug komutları:');
+    console.log('lcwDebug.checkFavorites() - Favorileri kontrol et');
+    console.log('lcwDebug.checkCache() - Cache\'i kontrol et');
+    console.log('lcwDebug.clearAll() - Tüm verileri temizle');
 })();
