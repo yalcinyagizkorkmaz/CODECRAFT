@@ -196,6 +196,7 @@
                     
                     margin: 0 auto;
                     width: 85%;
+                    min-height: 480px;
                 }
 
                 .lcw-carousel-slider {
@@ -209,13 +210,13 @@
                     display: flex;
                     transition: transform 0.3s ease;
                     gap: 12px;
+                    min-height: 480px;
                 }
 
-                .lcw-carousel-slide {
-                    flex: 0 0 calc(14% - 12.5px);
+                                .lcw-carousel-slide {
+                    flex: 0 0 calc(12% - 12.5px);
                     min-width: 0;
                     height: 100%;
-                 
                 }
 
                 .lcw-product-card {
