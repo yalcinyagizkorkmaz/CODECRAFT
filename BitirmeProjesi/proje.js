@@ -262,15 +262,15 @@
     margin: 0;
                 }
 
-                .lcw-carousel-wrapper {
+                                .lcw-carousel-wrapper {
                     position: relative;
                     display: flex;
                     align-items: center;
                     gap: 4px;
                     
-                   
+                    
                     margin: 0 auto;
-                    max-width: 84%;
+                    width: 84%;
                     min-height: 520px;
                     height: 100%;
                 }
@@ -293,7 +293,7 @@
                 }
 
                                 .lcw-carousel-slide {
-                    flex: 0 0 232px;
+                    flex: 0 0 calc((100% - 84px) / 7.8);
                     height: 100%;
                 }
 
@@ -518,7 +518,7 @@
             
             const totalProducts = this.products.length;
             const visibleProducts = 8; // Ekranda görünen ürün sayısı
-            const maxSlides = Math.max(0, totalProducts - visibleProducts);
+            const maxSlides = Math.max(0, totalProducts - visibleProducts + 1); // +1 ekledik
             
             console.log('📊 Toplam ürün sayısı:', totalProducts);
             console.log('📊 Görünen ürün sayısı:', visibleProducts);
@@ -532,11 +532,12 @@
                 console.log('➡️ Sonraki slide\'a geçildi:', this.currentSlide);
             }
 
-            const translateX = -(this.currentSlide * 232); // Her slide 232px
-            console.log('🎯 Transform değeri:', translateX + 'px');
+            const slideWidth = 100 / 8; // Her slide %12.5 genişliğinde
+            const translateX = -(this.currentSlide * slideWidth);
+            console.log('🎯 Transform değeri:', translateX + '%');
             
             if (this.slider) {
-                this.slider.style.transform = `translateX(${translateX}px)`;
+                this.slider.style.transform = `translateX(${translateX}%)`;
                 console.log('✅ Transform uygulandı');
             } else {
                 console.log('❌ Slider bulunamadı!');
@@ -550,7 +551,7 @@
             const nextBtn = document.querySelector('.lcw-carousel-btn-next');
             const totalProducts = this.products.length;
             const visibleProducts = 8;
-            const maxSlides = Math.max(0, totalProducts - visibleProducts);
+            const maxSlides = Math.max(0, totalProducts - visibleProducts + 1); // +1 ekledik
 
             console.log('🔍 Navigation butonları güncelleniyor...');
             console.log('📊 Mevcut slide:', this.currentSlide);
