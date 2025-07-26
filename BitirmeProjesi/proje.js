@@ -249,7 +249,7 @@
                 .lcw-carousel-container {
                     margin: 40px 0;
                     padding: 10px;
-                    background-color: white;
+                    background-color: #f8f9fa;
                     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
                 }
 
@@ -294,12 +294,14 @@
 
                                 .lcw-carousel-slide {
                     flex: 0 0 calc((100% - 84px) / 7.8);
+                    min-width: 180px;
                     height: 100%;
                 }
 
                 .lcw-product-card {
                     background: white;
                     width: 100%;
+                    min-width: 180px;
                  
                     overflow: hidden;
                     box-shadow: 0 1px 3px rgba(0,0,0,0.1);
@@ -317,6 +319,7 @@
                 .lcw-product-image {
                     position: relative;
                     aspect-ratio: 1/1.4;
+                    min-height: 250px;
                     overflow: hidden;
                     background: #f8f9fa;
                 }
@@ -367,6 +370,7 @@
                     padding: 8px;
                   
                     min-height: 120px;
+                    min-width: 180px;
                     display: flex;
                     flex-direction: column;
                     justify-content: space-between;
@@ -383,6 +387,7 @@
                     -webkit-line-clamp: 2;
                     -webkit-box-orient: vertical;
                     overflow: hidden;
+                    min-width: 160px;
                 }
 
                 .lcw-product-price {
@@ -395,6 +400,7 @@
                     font-size: 18px;
                     font-weight: 600;
                     color: #0066cc;
+                    min-width: 80px;
                 }
 
                 .lcw-price-old {
@@ -532,7 +538,7 @@
                 console.log('➡️ Sonraki slide\'a geçildi:', this.currentSlide);
             }
 
-            const slideWidth = 100 / 8; // Her slide %12.5 genişliğinde
+            const slideWidth = 100 / 10; // Her slide %12.5 genişliğinde
             const translateX = -(this.currentSlide * slideWidth);
             console.log('🎯 Transform değeri:', translateX + '%');
             
