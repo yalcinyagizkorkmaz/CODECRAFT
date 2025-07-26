@@ -3,7 +3,7 @@
         products: [],
         favorites: [],
         currentSlide: 0,
-        slidesToShow: 0,
+        slidesToShow: 6,
         container: null,
         slider: null,
         apiUrl: 'https://gist.githubusercontent.com/sevindi/5765c5812bbc8238a38b3cf52f233651/raw/56261d81af8561bf0a7cf692fe572f9e1e91f372/products.json',
@@ -266,8 +266,8 @@
                     position: relative;
                     display: flex;
                     align-items: center;
-                    gap: 10px;
-                    
+                    gap: 8px;
+                   
                     margin: 0 auto;
                     width: 85%;
                     min-height: 520px;
@@ -359,7 +359,9 @@
                 }
 
                 .lcw-product-info {
+                   
                     padding: 8px;
+                  
                     min-height: 120px;
                     display: flex;
                     flex-direction: column;
@@ -371,6 +373,7 @@
                     font-weight: 400;
                     color: #333;
                     margin: 0;
+                    margin-top:0px;
                     line-height: 1.3;
                     display: -webkit-box;
                     -webkit-line-clamp: 2;
@@ -397,31 +400,39 @@
                 }
 
                 .lcw-carousel-btn {
-                    background: transparent;
-                    border: none;
-                    width: 36px;
-                    height: 36px;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    cursor: pointer;
-                    transition: all 0.2s ease;
-                    color: #333;
-                    flex-shrink: 0;
-                    box-shadow: none;
-                    position: relative;
+                    background: transparent !important;
+                    border: none !important;
+                    width: 36px !important;
+                    height: 36px !important;
+                    display: flex !important;
+                    align-items: center !important;
+                    justify-content: center !important;
+                    cursor: pointer !important;
+                    transition: all 0.2s ease !important;
+                    color: #333 !important;
+                    flex-shrink: 0 !important;
+                    box-shadow: none !important;
+                    position: relative !important;
+                    z-index: 10 !important;
+                    pointer-events: auto !important;
                 }
 
                 .lcw-carousel-btn:hover {
-                    background: transparent;
-                    transform: scale(1.02);
+                    background: transparent !important;
+                    transform: scale(1.02) !important;
+                    color: #0066cc !important;
                 }
 
                 .lcw-carousel-btn:disabled {
-                    opacity: 0.3;
-                    cursor: not-allowed;
-                    transform: none;
-                    box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+                    opacity: 0.3 !important;
+                    cursor: not-allowed !important;
+                    transform: none !important;
+                    box-shadow: 0 1px 4px rgba(0,0,0,0.1) !important;
+                }
+
+                .lcw-carousel-btn:not(:disabled) {
+                    opacity: 1 !important;
+                    cursor: pointer !important;
                 }
 
                 .lcw-carousel-btn-next svg {
@@ -451,6 +462,7 @@
 
                     .lcw-carousel-title {
                         font-size: 20px;
+                        font-weight: bold;
                     }
 
                     .lcw-carousel-slide {
@@ -466,11 +478,14 @@
                     }
 
                     .lcw-product-info {
-                        padding: 5px;
+                        padding: 8px;
+                      
+                      
                     }
 
                     .lcw-product-name {
                         font-size: 14px;
+                       
                     }
 
                     .lcw-price-current {
@@ -508,16 +523,31 @@
             const prevBtn = document.querySelector('.lcw-carousel-btn-prev');
             const nextBtn = document.querySelector('.lcw-carousel-btn-next');
 
+            console.log('🔍 Prev buton bulundu mu?', !!prevBtn);
+            console.log('🔍 Next buton bulundu mu?', !!nextBtn);
+
             if (prevBtn) {
-                prevBtn.addEventListener('click', () => {
+                prevBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    console.log('⬅️ Prev buton tıklandı');
                     this.navigateCarousel('prev');
                 });
+                console.log('✅ Prev buton event listener eklendi');
+            } else {
+                console.log('❌ Prev buton bulunamadı!');
             }
 
             if (nextBtn) {
-                nextBtn.addEventListener('click', () => {
+                nextBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    console.log('➡️ Next buton tıklandı');
                     this.navigateCarousel('next');
                 });
+                console.log('✅ Next buton event listener eklendi');
+            } else {
+                console.log('❌ Next buton bulunamadı!');
             }
 
             document.addEventListener('click', (e) => {
@@ -545,17 +575,33 @@
         },
 
         navigateCarousel: function(direction) {
+            console.log(`🎯 Carousel navigasyonu: ${direction}`);
+            console.log('📊 Mevcut slide:', this.currentSlide);
+            
             const totalSlides = this.products.length;
             const maxSlides = Math.ceil(totalSlides / this.slidesToShow);
+            
+            console.log('📊 Toplam ürün sayısı:', totalSlides);
+            console.log('📊 Maksimum slide sayısı:', maxSlides);
+            console.log('📊 Gösterilecek slide sayısı:', this.slidesToShow);
 
             if (direction === 'prev') {
                 this.currentSlide = Math.max(0, this.currentSlide - 1);
+                console.log('⬅️ Önceki slide\'a geçildi:', this.currentSlide);
             } else {
                 this.currentSlide = Math.min(maxSlides - 1, this.currentSlide + 1);
+                console.log('➡️ Sonraki slide\'a geçildi:', this.currentSlide);
             }
 
             const translateX = -(this.currentSlide * (100 / this.slidesToShow));
-            this.slider.style.transform = `translateX(${translateX}%)`;
+            console.log('🎯 Transform değeri:', translateX + '%');
+            
+            if (this.slider) {
+                this.slider.style.transform = `translateX(${translateX}%)`;
+                console.log('✅ Transform uygulandı');
+            } else {
+                console.log('❌ Slider bulunamadı!');
+            }
 
             this.updateNavigationButtons();
         },
@@ -566,12 +612,24 @@
             const totalSlides = this.products.length;
             const maxSlides = Math.ceil(totalSlides / this.slidesToShow);
 
+            console.log('🔍 Navigation butonları güncelleniyor...');
+            console.log('📊 Mevcut slide:', this.currentSlide);
+            console.log('📊 Maksimum slide:', maxSlides - 1);
+
             if (prevBtn) {
-                prevBtn.disabled = this.currentSlide === 0;
+                const prevDisabled = this.currentSlide === 0;
+                prevBtn.disabled = prevDisabled;
+                console.log('⬅️ Prev buton disabled:', prevDisabled);
+            } else {
+                console.log('❌ Prev buton bulunamadı!');
             }
 
             if (nextBtn) {
-                nextBtn.disabled = this.currentSlide >= maxSlides - 1;
+                const nextDisabled = this.currentSlide >= maxSlides - 1;
+                nextBtn.disabled = nextDisabled;
+                console.log('➡️ Next buton disabled:', nextDisabled);
+            } else {
+                console.log('❌ Next buton bulunamadı!');
             }
         },
 
@@ -645,6 +703,41 @@
             }
         },
         
+        testCarousel: function() {
+            console.log('🎯 Carousel test ediliyor...');
+            
+            const prevBtn = document.querySelector('.lcw-carousel-btn-prev');
+            const nextBtn = document.querySelector('.lcw-carousel-btn-next');
+            const slider = document.querySelector('.lcw-carousel-track');
+            
+            console.log('🔍 Prev buton:', prevBtn);
+            console.log('🔍 Next buton:', nextBtn);
+            console.log('🔍 Slider:', slider);
+            
+            if (prevBtn) {
+                console.log('✅ Prev buton bulundu');
+                console.log('📊 Prev buton disabled:', prevBtn.disabled);
+                console.log('📊 Prev buton style:', prevBtn.style.cssText);
+            }
+            
+            if (nextBtn) {
+                console.log('✅ Next buton bulundu');
+                console.log('📊 Next buton disabled:', nextBtn.disabled);
+                console.log('📊 Next buton style:', nextBtn.style.cssText);
+            }
+            
+            if (slider) {
+                console.log('✅ Slider bulundu');
+                console.log('📊 Slider transform:', slider.style.transform);
+            }
+            
+            // Manuel test
+            if (window.self && window.self.navigateCarousel) {
+                console.log('✅ navigateCarousel fonksiyonu mevcut');
+                console.log('📊 Mevcut slide:', window.self.currentSlide);
+            }
+        },
+        
         clearAll: function() {
             console.log('🗑️ Tüm localStorage temizleniyor...');
             localStorage.removeItem('lcw_favorites');
@@ -656,5 +749,6 @@
     console.log('🎯 Debug komutları:');
     console.log('lcwDebug.checkFavorites() - Favorileri kontrol et');
     console.log('lcwDebug.checkCache() - Cache\'i kontrol et');
+    console.log('lcwDebug.testCarousel() - Carousel butonlarını test et');
     console.log('lcwDebug.clearAll() - Tüm verileri temizle');
 })();
