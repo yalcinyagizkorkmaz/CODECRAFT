@@ -196,7 +196,8 @@
                     
                     margin: 0 auto;
                     width: 85%;
-                    min-height: 480px;
+                    min-height: 520px;
+                    height: 100%;
                 }
 
                 .lcw-carousel-slider {
@@ -210,7 +211,7 @@
                     display: flex;
                     transition: transform 0.3s ease;
                     gap: 12px;
-                    min-height: 480px;
+                    min-height: 520px;
                 }
 
                                 .lcw-carousel-slide {
@@ -237,7 +238,7 @@
 
                 .lcw-product-image {
                     position: relative;
-                    aspect-ratio: 1;
+                    aspect-ratio: 1/1.4;
                     overflow: hidden;
                     background: #f8f9fa;
                 }
@@ -259,8 +260,8 @@
                     right: 6px;
                     background: transparent;
                     border: none;
-                    width: 24px;
-                    height: 24px;
+                    width: 32px;
+                    height: 32px;
                     display: flex;
                     align-items: center;
                     justify-content: center;
@@ -271,16 +272,17 @@
                 }
 
                 .lcw-favorite-btn:hover {
-                    transform: scale(1.1);
-                    color: #ff4757;
+                    transform: none;
+                    color: #ccc;
                 }
 
                 .lcw-favorite-btn.active {
-                    color: #ff4757;
+                    color: #0066cc;
                 }
 
                 .lcw-product-info {
                     padding: 10px;
+                    min-height: 100px;
                 }
 
                 .lcw-product-name {
@@ -298,7 +300,7 @@
                 .lcw-product-price {
                     display: flex;
                     align-items: center;
-                    gap: 8px;
+                    gap: 10px;
                 }
 
                 .lcw-price-current {
@@ -350,7 +352,7 @@
                 /* Responsive Design */
                 @media (max-width: 1200px) {
                     .lcw-carousel-slide {
-                        flex: 0 0 calc(20% - 12px);
+                        flex: 0 0 calc(100% - 12px);
                     }
                 }
 
@@ -397,7 +399,7 @@
 
                 @media (max-width: 480px) {
                     .lcw-carousel-slide {
-                        flex: 0 0 calc(50% - 7.5px);
+                        flex: 0 0 calc(100% - 7.5px);
                     }
 
                     .lcw-carousel-btn {
