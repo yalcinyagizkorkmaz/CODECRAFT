@@ -102,9 +102,6 @@
 
             const html = `
                 <div class="lcw-carousel-container">
-                    <div class="lcw-carousel-header">
-                        <h3 class="lcw-carousel-title">Benzer Ürünler</h3>
-                    </div>
                     <div class="lcw-carousel-wrapper">
                         <button class="lcw-carousel-btn lcw-carousel-btn-prev" aria-label="previous">
                             <svg xmlns="http://www.w3.org/2000/svg" width="14.242" height="24.242" viewBox="0 0 14.242 24.242">
@@ -113,6 +110,7 @@
                         </button>
                         
                         <div class="lcw-carousel-slider">
+                            <p class="lcw-carousel-title">Bunları da Beğenebilirsin</p>
                             <div class="lcw-carousel-track">
                                 ${this.products.map(product => `
                                     <div class="lcw-carousel-slide" data-product-id="${product.id}">
@@ -181,16 +179,13 @@
                     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
                 }
 
-                .lcw-carousel-header {
-                    margin-bottom: 20px;
-                }
-
                 .lcw-carousel-title {
-                    font-size: 20px;
-                    font-weight: 500;
-                    color: #333;
-                    margin: 0 0 20px 0;
-                    text-align: left;
+                    font-size: 35px;
+    color: #29323b;
+    line-height: 33px;
+    font-weight: lighter;
+    padding: 15px 0;
+    margin: 0;
                 }
 
                 .lcw-carousel-wrapper {
@@ -200,10 +195,11 @@
                     gap: 10px;
                     
                     margin: 0 auto;
-                    width: 90%;
+                    width: 85%;
                 }
 
                 .lcw-carousel-slider {
+                    height: 100%;
                     flex: 1;
                     overflow: hidden;
                     position: relative;
@@ -216,13 +212,15 @@
                 }
 
                 .lcw-carousel-slide {
-                    flex: 0 0 calc(16.666% - 12.5px);
+                    flex: 0 0 calc(14% - 12.5px);
                     min-width: 0;
+                    height: 100%;
+                 
                 }
 
                 .lcw-product-card {
                     background: white;
-                    border-radius: 6px;
+                 
                     overflow: hidden;
                     box-shadow: 0 1px 3px rgba(0,0,0,0.1);
                     transition: transform 0.2s ease, box-shadow 0.2s ease;
@@ -357,7 +355,7 @@
 
                 @media (max-width: 1024px) {
                     .lcw-carousel-slide {
-                        flex: 0 0 calc(25% - 11.25px);
+                        flex: 0 0 calc(25% - 10.25px);
                     }
                 }
 
