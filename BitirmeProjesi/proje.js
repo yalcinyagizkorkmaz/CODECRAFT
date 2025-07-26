@@ -253,6 +253,155 @@
                     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
                 }
 
+                @media (max-width: 1200px) {
+                    .lcw-carousel-wrapper {
+                        width: 90%;
+                        gap: 8px;
+                    }
+                    
+                    .lcw-carousel-slide {
+                        flex: 0 0 calc((100% - 56px) / 6);
+                        min-width: 160px;
+                    }
+                }
+
+                @media (max-width: 1024px) {
+                    .lcw-carousel-wrapper {
+                        width: 95%;
+                        gap: 6px;
+                    }
+                    
+                    .lcw-carousel-slide {
+                        flex: 0 0 calc((100% - 42px) / 5);
+                        min-width: 150px;
+                    }
+                    
+                    .lcw-carousel-title {
+                        font-size: 28px;
+                        line-height: 30px;
+                    }
+                }
+
+                @media (max-width: 768px) {
+                    .lcw-carousel-container {
+                        margin: 30px 0;
+                        padding: 8px;
+                    }
+                    
+                    .lcw-carousel-wrapper {
+                        width: 98%;
+                        gap: 4px;
+                    }
+                    
+                    .lcw-carousel-slide {
+                        flex: 0 0 calc((100% - 28px) / 4);
+                        min-width: 140px;
+                    }
+                    
+                    .lcw-carousel-title {
+                        font-size: 24px;
+                        line-height: 26px;
+                        padding: 12px 0;
+                    }
+                    
+                    .lcw-product-info {
+                        padding: 6px;
+                        min-height: 100px;
+                    }
+                    
+                    .lcw-product-name {
+                        font-size: 12px;
+                        line-height: 1.2;
+                    }
+                    
+                    .lcw-price-current {
+                        font-size: 16px;
+                    }
+                    
+                    .lcw-price-old {
+                        font-size: 12px;
+                    }
+                    
+                    .lcw-favorite-btn {
+                        width: 28px;
+                        height: 28px;
+                    }
+                }
+
+                @media (max-width: 480px) {
+                    .lcw-carousel-container {
+                        margin: 20px 0;
+                        padding: 6px;
+                    }
+                    
+                    .lcw-carousel-wrapper {
+                        width: 100%;
+                        gap: 3px;
+                    }
+                    
+                    .lcw-carousel-slide {
+                        flex: 0 0 calc((100% - 21px) / 3);
+                        min-width: 120px;
+                    }
+                    
+                    .lcw-carousel-title {
+                        font-size: 20px;
+                        line-height: 22px;
+                        padding: 10px 0;
+                    }
+                    
+                    .lcw-product-info {
+                        padding: 4px;
+                        min-height: 80px;
+                    }
+                    
+                    .lcw-product-name {
+                        font-size: 11px;
+                        line-height: 1.1;
+                        -webkit-line-clamp: 2;
+                    }
+                    
+                    .lcw-price-current {
+                        font-size: 14px;
+                    }
+                    
+                    .lcw-price-old {
+                        font-size: 11px;
+                    }
+                    
+                    .lcw-favorite-btn {
+                        width: 24px;
+                        height: 24px;
+                        top: 4px;
+                        right: 4px;
+                    }
+                    
+                    .lcw-carousel-btn {
+                        width: 32px !important;
+                        height: 32px !important;
+                    }
+                }
+
+                @media (max-width: 360px) {
+                    .lcw-carousel-slide {
+                        flex: 0 0 calc((100% - 14px) / 2);
+                        min-width: 100px;
+                    }
+                    
+                    .lcw-carousel-title {
+                        font-size: 18px;
+                        line-height: 20px;
+                    }
+                    
+                    .lcw-product-name {
+                        font-size: 10px;
+                    }
+                    
+                    .lcw-price-current {
+                        font-size: 12px;
+                    }
+                }
+
                 .lcw-carousel-title {
                     font-size: 35px;
     color: #29323b;
@@ -515,6 +664,11 @@
             });
 
             this.updateNavigationButtons();
+            
+            window.addEventListener('resize', () => {
+                this.updateNavigationButtons();
+            });
+            
             console.log('✅ Event listener\'lar eklendi');
         },
 
@@ -523,7 +677,7 @@
             console.log('📊 Mevcut slide:', this.currentSlide);
             
             const totalProducts = this.products.length;
-            const visibleProducts = 8;
+            const visibleProducts = this.getVisibleProducts();
             const maxSlides = Math.max(0, totalProducts - visibleProducts + 1);
             
             console.log('📊 Toplam ürün sayısı:', totalProducts);
@@ -538,7 +692,7 @@
                 console.log('➡️ Sonraki slide\'a geçildi:', this.currentSlide);
             }
 
-            const slideWidth = 100 / 10;
+            const slideWidth = 100 / visibleProducts;
             const translateX = -(this.currentSlide * slideWidth);
             console.log('🎯 Transform değeri:', translateX + '%');
             
@@ -552,11 +706,21 @@
             this.updateNavigationButtons();
         },
 
+        getVisibleProducts: function() {
+            const width = window.innerWidth;
+            if (width <= 360) return 2;
+            if (width <= 480) return 3;
+            if (width <= 768) return 4;
+            if (width <= 1024) return 5;
+            if (width <= 1200) return 6;
+            return 8;
+        },
+
         updateNavigationButtons: function() {
             const prevBtn = document.querySelector('.lcw-carousel-btn-prev');
             const nextBtn = document.querySelector('.lcw-carousel-btn-next');
             const totalProducts = this.products.length;
-            const visibleProducts = 8;
+            const visibleProducts = this.getVisibleProducts();
             const maxSlides = Math.max(0, totalProducts - visibleProducts + 1);
 
             console.log('🔍 Navigation butonları güncelleniyor...');
