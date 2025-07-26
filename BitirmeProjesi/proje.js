@@ -3,7 +3,7 @@
         products: [],
         favorites: [],
         currentSlide: 0,
-        slidesToShow: 6,
+        slidesToShow: 7,
         container: null,
         slider: null,
         apiUrl: 'https://gist.githubusercontent.com/sevindi/5765c5812bbc8238a38b3cf52f233651/raw/56261d81af8561bf0a7cf692fe572f9e1e91f372/products.json',
@@ -279,6 +279,7 @@
                     flex: 1;
                     overflow: hidden;
                     position: relative;
+                    width: 100%;
                 }
 
                 .lcw-carousel-track {
@@ -286,16 +287,18 @@
                     transition: transform 0.3s ease;
                     gap: 12px;
                     min-height: 520px;
+                    width: 100%;
                 }
 
                                 .lcw-carousel-slide {
-                    flex: 0 0 calc(13.5% - 12px);
+                    flex: 0 0 calc(12% - 10px);
                     min-width: 0;
                     height: 100%;
                 }
 
                 .lcw-product-card {
                     background: white;
+                    width: 100%;
                  
                     overflow: hidden;
                     box-shadow: 0 1px 3px rgba(0,0,0,0.1);
@@ -450,7 +453,8 @@
 
                 @media (max-width: 1024px) {
                     .lcw-carousel-slide {
-                        flex: 0 0 calc(25% - 10.25px);
+                        flex: 0 0 calc(20% - 8px);
+                        width: 100%;
                     }
                 }
 
@@ -466,7 +470,8 @@
                     }
 
                     .lcw-carousel-slide {
-                        flex: 0 0 calc(33.333% - 10px);
+                        flex: 0 0 calc(28% - 8px);
+                        width: 100%;
                     }
 
                     .lcw-carousel-wrapper {
@@ -475,6 +480,7 @@
 
                     .lcw-carousel-track {
                         gap: 12px;
+                        width: 100%;
                     }
 
                     .lcw-product-info {
@@ -496,6 +502,7 @@
                 @media (max-width: 480px) {
                     .lcw-carousel-slide {
                         flex: 0 0 calc(100% - 7.5px);
+                        width: 100%;
                     }
 
                     .lcw-carousel-btn {
