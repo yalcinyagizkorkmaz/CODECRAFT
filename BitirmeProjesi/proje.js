@@ -258,9 +258,8 @@
                     position: absolute;
                     top: 6px;
                     right: 6px;
-                    background: white;
+                    background: transparent;
                     border: none;
-                    border-radius: 50%;
                     width: 24px;
                     height: 24px;
                     display: flex;
@@ -269,7 +268,7 @@
                     cursor: pointer;
                     transition: all 0.2s ease;
                     color: #ccc;
-                    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+                    box-shadow: none;
                 }
 
                 .lcw-favorite-btn:hover {
@@ -279,7 +278,6 @@
 
                 .lcw-favorite-btn.active {
                     color: #ff4757;
-                    background: #fff5f5;
                 }
 
                 .lcw-product-info {
@@ -317,9 +315,8 @@
                 }
 
                 .lcw-carousel-btn {
-                    background: white;
+                    background: transparent;
                     border: none;
-                    border-radius: 50%;
                     width: 36px;
                     height: 36px;
                     display: flex;
@@ -329,13 +326,12 @@
                     transition: all 0.2s ease;
                     color: #333;
                     flex-shrink: 0;
-                    box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+                    box-shadow: none;
                     position: relative;
                 }
 
                 .lcw-carousel-btn:hover {
-                    background: #f8f9fa;
-                    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+                    background: transparent;
                     transform: scale(1.02);
                 }
 
