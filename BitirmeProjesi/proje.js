@@ -215,7 +215,7 @@
                 }
 
                                 .lcw-carousel-slide {
-                    flex: 0 0 calc(12% - 12.5px);
+                    flex: 0 0 calc(13.5% - 12px);
                     min-width: 0;
                     height: 100%;
                 }
@@ -281,15 +281,18 @@
                 }
 
                 .lcw-product-info {
-                    padding: 10px;
-                    min-height: 100px;
+                    padding: 8px;
+                    min-height: 120px;
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: space-between;
                 }
 
                 .lcw-product-name {
-                    font-size: 12px;
+                    font-size: 14px;
                     font-weight: 400;
                     color: #333;
-                    margin: 0 0 6px 0;
+                    margin: 0;
                     line-height: 1.3;
                     display: -webkit-box;
                     -webkit-line-clamp: 2;
@@ -304,9 +307,9 @@
                 }
 
                 .lcw-price-current {
-                    font-size: 14px;
+                    font-size: 18px;
                     font-weight: 600;
-                    color: #333;
+                    color: #0066cc;
                 }
 
                 .lcw-price-old {
@@ -385,11 +388,11 @@
                     }
 
                     .lcw-product-info {
-                        padding: 10px;
+                        padding: 5px;
                     }
 
                     .lcw-product-name {
-                        font-size: 12px;
+                        font-size: 14px;
                     }
 
                     .lcw-price-current {
