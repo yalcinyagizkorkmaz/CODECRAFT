@@ -12,7 +12,15 @@
         
         init: function() {
             console.log('🚀 LC Waikiki Karusel başlatılıyor...');
-            console.log('📍 .product-detail elementi:', document.querySelector('.product-detail'));
+            
+     
+            const productDetail = document.querySelector('.product-detail');
+            if (!productDetail) {
+                console.log('❌ .product-detail elementi bulunamadı - ürün sayfası değil');
+                return;
+            }
+            
+            console.log('✅ Ürün sayfası tespit edildi, karusel başlatılıyor...');
             this.loadFavorites();
             this.loadProducts();
         },
@@ -171,7 +179,7 @@
                         </button>
                         
                         <div class="lcw-carousel-slider">
-                            <p class="lcw-carousel-title">Bunları da Beğenebilirsin</p>
+                            <p class="lcw-carousel-title">Bunları da Beğenebilirsiniz</p>
                             <div class="lcw-carousel-track">
                                 ${this.products.map(product => `
                                     <div class="lcw-carousel-slide" data-product-id="${product.id}">
@@ -404,20 +412,18 @@
 
                 .lcw-carousel-title {
                     font-size: 35px;
-    color: #29323b;
-    line-height: 33px;
-    font-weight: lighter;
-    padding: 15px 0;
-    margin: 0;
+                    color: #29323b;
+                    line-height: 33px;
+                    font-weight: lighter;
+                    padding: 15px 0;
+                    margin: 0;
                 }
 
-                                .lcw-carousel-wrapper {
+                .lcw-carousel-wrapper {
                     position: relative;
                     display: flex;
                     align-items: center;
                     gap: 4px;
-                    
-                    
                     margin: 0 auto;
                     width: 84%;
                     min-height: 520px;
@@ -441,7 +447,7 @@
                     margin-top: 10px;
                 }
 
-                                .lcw-carousel-slide {
+                .lcw-carousel-slide {
                     flex: 0 0 calc((100% - 84px) / 7.8);
                     min-width: 180px;
                     height: 100%;
@@ -451,7 +457,6 @@
                     background: white;
                     width: 100%;
                     min-width: 180px;
-                 
                     overflow: hidden;
                     box-shadow: 0 1px 3px rgba(0,0,0,0.1);
                     transition: transform 0.2s ease, box-shadow 0.2s ease;
@@ -515,9 +520,7 @@
                 }
 
                 .lcw-product-info {
-                   
                     padding: 8px;
-                  
                     min-height: 120px;
                     min-width: 180px;
                     display: flex;
@@ -530,7 +533,7 @@
                     font-weight: 400;
                     color: #333;
                     margin: 0;
-                    margin-top:0px;
+                    margin-top: 0px;
                     line-height: 1.3;
                     display: -webkit-box;
                     -webkit-line-clamp: 2;
@@ -597,10 +600,6 @@
                 .lcw-carousel-btn-next svg {
                     transform: rotate(180deg);
                 }
-
-
-
-                
             `;
 
             const style = document.createElement('style');
